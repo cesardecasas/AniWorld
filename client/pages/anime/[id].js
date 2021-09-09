@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react"
-import {getDetails} from '../api/fetch'
+import {getDetails, getAnime, getSong} from '../api/fetch'
 import {useRouter} from 'next/router'
+import { Loader, ErrorCard} from '../../components/ResponseHandlers'
+import SongCard from "../../components/SongCard"
 
 
 const AnimeDetails = (props)=>{
@@ -8,10 +10,29 @@ const AnimeDetails = (props)=>{
     const route = useRouter()
 
     const[details, setDetails] = useState({})
+    const[aniDetails, setAniDetails] = useState({})
+    const[songList,setSongList]= useState([])
+    const[error, setError]= useState(false)
+    const[load, setLoad] = useState(false)
 
     const fetchDetails =async(id)=>{
         const res = await getDetails(id)
+        console.log(res)
+        const aniRes = await getAnime(res.mal_id)
         setDetails(res)
+        setAniDetails(aniRes.data.documents[0])
+    }
+
+    const fetchSongs = async()=>{
+            setLoad(!load)
+            const res = await getSong(aniDetails.id)
+            if(res.message === "Zero songs found")(
+                setError(!error)
+            )
+            setSongList(res)
+            setLoad(false)
+       
+        
     }
     
     useEffect(()=>{
@@ -26,7 +47,7 @@ const AnimeDetails = (props)=>{
                 <div style={{display:'grid', gridTemplateColumns:'1fr 1fr'}}>
                     <img  src={details.image_url} alt='Anime Poster' sizes='150%'/>
                     <aside>
-                        {details.rating === 'None' ? <p>Rating: To Be Confirmed</p> : <p>Rating: {details.premiered}</p>}
+                        {details.rating === 'None' ? <p>Rating: To Be Confirmed</p> : <p>Rating: {details.rating}</p>}
                         {details.premiered ?  <p>Premiered on: {details.premiered}</p> :<p>Premiered on: To Be Confirmed</p>}
                         {details.airing ? <p>On emission</p> : details.status === 'Not yet aired' ? <p>Upcoming Realease</p> : <p>Finished</p>}
                     </aside>
@@ -39,8 +60,17 @@ const AnimeDetails = (props)=>{
             </section>
             <section>
                 <h4>Trailer</h4>
-                {details.trailer_url ? <iframe width="560" height="315" src={details.trailer_url} title="YouTube video player" frameBorder="0" allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe> : <p>No trailer Available</p>}
+                {details.trailer_url ? <iframe width="560" height="315" src={details.trailer_url} title="YouTube video player" frameBorder="0" allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen></iframe> : <p>No trailer Available</p>}
             </section>
+            
+            <div>
+                {songList.data ? <p>Here are the songs preview found</p> :  error ? <p></p> : <p>Look for songs</p>}
+                {songList.data ? <div style={{display:'grid', gridTemplateColumns:'1fr 1fr'}}>
+                                    {songList.data.documents.map((song, i)=><SongCard spotify={song.open_spotify_url} title={song.title} url={song.preview_url} id={i} album={song.album} artist={song.artist} />)}
+                                </div>:
+                                load ?  <Loader/> : error ? <ErrorCard msg='Songs'/> :
+                                        <button className='btn btn-dark btn-lg' onClick={fetchSongs}> Search</button>}
+            </div>
         </div>
     )
 }

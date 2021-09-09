@@ -10,7 +10,6 @@ export default function Home() {
   const populate = async()=>{
     const res = await getUpcoming()
     setAnimes(res.top)
-    console.log(animes) 
   }
 
   useEffect(()=>{
