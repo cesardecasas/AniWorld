@@ -1,5 +1,6 @@
 import {useRouter} from "next/router"
 import { useState } from "react"
+import Link from "next/link"
 
 const Nav = ()=>{
 
@@ -27,7 +28,9 @@ const Nav = ()=>{
         <nav className="navbar navbar-dark bg-dark" style={{height:'5rem'}}>
             <ul className="navbar-nav me-auto mb-2 mb-lg-0">
                 <li className="nav-item">
-                    <a className="nav-link active" aria-current="page" style={{fontSize:'150%', marginLeft:'20%', fontFamily:'sans-serif'}} href="/">AniWorld</a>
+                    <Link href="/">
+                    <a className="nav-link active" aria-current="page" style={{fontSize:'150%', marginLeft:'20%', fontFamily:'sans-serif'}} >AniWorld</a>
+                    </Link>
                 </li>
             </ul>
             <form className="d-flex" style={{marginRight:'10%'}} onSubmit={(e)=>{

@@ -1,6 +1,6 @@
 export const ErrorCard =(props)=>{
 
-    return(<div class="alert alert-danger" role="alert">No {props.msg} Found</div>)
+    return(<div className="alert alert-danger" role="alert">No {props.msg} Found</div>)
 }
 
 export const Loader = ()=>{
