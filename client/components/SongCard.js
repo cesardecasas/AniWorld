@@ -9,7 +9,7 @@ const SongCard = (props)=>{
             <p>Album: {album}</p>
             <p>Artist: {artist}</p>
             <p>Listen the full song <a href={spotify}>here</a></p>
-            <ReactPlayer url={url} controls={true} height='-30px' width='50%' style={{marginLeft:'20%'}}/>
+            {url ? <ReactPlayer url={url} controls={true} height='-30px' width='50%' style={{marginLeft:'20%'}}/> : <p style={{fontWeight:'bold'}}>No Preview Available</p>}
         </div>
     )
 }

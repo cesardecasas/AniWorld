@@ -1,0 +1,13 @@
+{
+    "genres":[
+        {"Action":1}
+    ],
+    "rated":[
+        {"name":"g"},
+        {"name":"pg"},
+        {"name":"pg13"},
+        {"name":"r17"},
+        {"name":"r"},
+        {"name":"rx"}
+    ]
+}

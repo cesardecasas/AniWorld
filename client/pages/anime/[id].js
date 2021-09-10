@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react"
 import {getDetails, getAnime, getSong} from '../api/fetch'
-import {useRouter} from 'next/router'
+import router, {useRouter} from 'next/router'
 import { Loader, ErrorCard} from '../../components/ResponseHandlers'
 import SongCard from "../../components/SongCard"
 
@@ -16,6 +16,10 @@ const AnimeDetails = ()=>{
     const[load, setLoad] = useState(false)
 
     const fetchDetails =async(id)=>{
+        if(!id){
+            router.push('/')
+            return
+        }
         const res = await getDetails(id)
         const aniRes = await getAnime(res.mal_id)
         setDetails(res)
@@ -65,7 +69,7 @@ const AnimeDetails = ()=>{
             <div>
                 {songList.data ? <p>Here are the songs preview found</p> :  error ? <p></p> : <p>Look for songs</p>}
                 {songList.data ? <div style={{display:'grid', gridTemplateColumns:'1fr 1fr'}}> 
-                                    {songList.data.documents.map((song, i)=><SongCard spotify={song.open_spotify_url} title={song.title} url={song.preview_url} id={i} album={song.album} artist={song.artist} />)}
+                                    {songList.data.documents.map((song, i)=><SongCard key={i} spotify={song.open_spotify_url} title={song.title} url={song.preview_url} id={i} album={song.album} artist={song.artist} />)}
                                 </div>:
                                 load ?  <Loader/> : error ? <ErrorCard msg='Songs'/> :
                                         <button className='btn btn-dark btn-lg' onClick={fetchSongs}> Search</button>}

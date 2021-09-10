@@ -10,7 +10,7 @@ const AnimeCard =(props)=>{
             <img src={image} style={{width:'100%', maxHeight:'50%'}} className="card-img-top" alt="Anime poster"/>
             <div className="card-body">
                 <h5 className="card-title" style={{maxHeight:'60%', overflow:'clip'}}>{name}</h5>
-                <p className="card-text">Realease Date: {date ? date : <p>Uknown</p>}</p>
+                {date ? <p className="card-text">Realease Date: {date}</p> :  <p className="card-text">Realease Date: Uknown</p>}
                 <Link href={`/anime/${id}`} passHref>
                     <a  className="btn btn-primary" style={{position:'revert'}}>Details</a>
                 </Link>

@@ -13,13 +13,12 @@ const Nav = ()=>{
     const handleSubmit =()=>{
         const cleanQuery = query.replace(' ','_')
         if(router.pathname.includes('search')){
-            router.push(`anime=${cleanQuery}`)
+            router.push(`anime=${cleanQuery}&page=1`)
         }else if(router.pathname.includes('anime')){
-            console.log(1)
-            router.push(`/search/anime=${cleanQuery}`)
+            router.push(`/search/anime=${cleanQuery}&page=1`)
         }else{
 
-            router.push(`search/anime=${cleanQuery}`)
+            router.push(`search/anime=${cleanQuery}&page=1`)
         }
     }
 
