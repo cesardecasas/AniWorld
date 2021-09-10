@@ -42,3 +42,12 @@ export const getSong =async(id)=>{
     console.log(error)
   }
 }
+
+export const getAnimeSearch =async(query)=>{
+  try {
+    const res = await JikanClient.get(`/search/anime?${query}`)
+    return res.data
+  } catch (error) {
+    console.log(error)
+  }
+}

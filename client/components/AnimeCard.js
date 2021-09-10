@@ -6,8 +6,8 @@ const AnimeCard =(props)=>{
 
 
     return(
-        <div className="card" style={{width: "17rem", marginTop:'4%', marginLeft:'2%', height:'26rem', boxShadow:'12px 12px 2px 1px rgba(0, 0, 255, .2)'}}>
-            <img src={image} style={{width:'17rem', maxHeight:'50%'}} className="card-img-top" alt="Anime poster"/>
+        <div className="card" style={{width: "93%", marginTop:'4%', marginLeft:'2%', height:'90%', boxShadow:'12px 12px 2px 1px rgba(0, 0, 255, .2)'}}>
+            <img src={image} style={{width:'100%', maxHeight:'50%'}} className="card-img-top" alt="Anime poster"/>
             <div className="card-body">
                 <h5 className="card-title" style={{maxHeight:'60%', overflow:'clip'}}>{name}</h5>
                 <p className="card-text">Realease Date: {date ? date : <p>Uknown</p>}</p>
