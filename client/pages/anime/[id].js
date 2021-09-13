@@ -16,14 +16,13 @@ const AnimeDetails = ()=>{
     const[load, setLoad] = useState(false)
 
     const fetchDetails =async(id)=>{
-        if(!id){
-            router.push('/')
-            return
+        if(id){
+            const res = await getDetails(id)
+            const aniRes = await getAnime(res.mal_id)
+            setDetails(res)
+            setAniDetails(aniRes.data.documents[0])
         }
-        const res = await getDetails(id)
-        const aniRes = await getAnime(res.mal_id)
-        setDetails(res)
-        setAniDetails(aniRes.data.documents[0])
+        
     }
 
     const fetchSongs = async()=>{
@@ -40,7 +39,7 @@ const AnimeDetails = ()=>{
     
     useEffect(()=>{
         fetchDetails(route.query.id)
-    },[])
+    },[route.query.id])
 
 
     return(
