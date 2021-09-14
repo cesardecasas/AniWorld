@@ -1,7 +1,7 @@
 import React from "react";
 import Link from 'next/link'
 
-const AnimeCard =(props)=>{
+const MangaCard =(props)=>{
     const {image, name, date, id} = props
 
 
@@ -11,7 +11,7 @@ const AnimeCard =(props)=>{
             <div className="card-body">
                 <h5 className="card-title" style={{maxHeight:'60%', overflow:'clip'}}>{name}</h5>
                 {date ? <p className="card-text">Realease Date: {date}</p> :  <p className="card-text">Realease Date: Uknown</p>}
-                <Link href={`/anime/${id}`} passHref>
+                <Link href={`/manga/${id}`} passHref>
                     <a  className="btn btn-primary" style={{position:'revert'}}>Details</a>
                 </Link>
             </div>
@@ -19,4 +19,4 @@ const AnimeCard =(props)=>{
     )
 }
 
-export default AnimeCard
+export default MangaCard

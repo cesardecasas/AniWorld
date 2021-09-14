@@ -25,6 +25,15 @@ export const getDetails = async(id)=>{
 
 }
 
+export const getMangaDetails =async(id)=>{
+  try {
+    const res = await JikanClient.get(`manga/${id}`)
+    return res.data
+  } catch (error) {
+    console.log(error)
+  }
+}
+
 export const getAnime =async(id)=>{
   try {
     const res = await AniClient.get(`anime?mal_id=${id}`)

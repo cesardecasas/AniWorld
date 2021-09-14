@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react"
 import {getDetails, getAnime, getSong} from '../api/fetch'
-import router, {useRouter} from 'next/router'
+import {useRouter} from 'next/router'
 import { Loader, ErrorCard} from '../../components/ResponseHandlers'
 import SongCard from "../../components/SongCard"
 
@@ -32,7 +32,7 @@ const AnimeDetails = ()=>{
                 setError(!error)
             )
             setSongList(res)
-            setLoad(false)
+            setLoad(!load)
        
         
     }
