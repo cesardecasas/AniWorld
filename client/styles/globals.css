@@ -15,6 +15,14 @@ a {
   box-sizing: border-box;
 }
 
+footer{
+  background-color: rgb(39, 39, 39);
+  color: white;
+  text-align: center;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+}
+
 .rating{
   font-size:1.5rem;
   background-color: rgb(163, 163, 163);

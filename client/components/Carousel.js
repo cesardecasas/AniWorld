@@ -22,7 +22,6 @@ const CarouselComponent =({animes, type})=>{
           slidesToSlide: 1 // optional, default to 1.
         }
       };
-      console.log(type)
 
     return(
         <Carousel

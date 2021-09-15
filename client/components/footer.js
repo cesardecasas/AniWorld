@@ -5,14 +5,14 @@ const Footer =()=>{
 
     return (
         <footer>
-             
-            <div className='social'>
-                <a href='https://github.com/cesardecasas'><SiGithub className='icon'/> </a>
-                <a href='https://www.linkedin.com/in/cesardecasas/'><SiLinkedin className='icon'/></a> 
-                <a href="mailto:cesar.decasasgarcia@gmail.com?"><MdMail className='icon'/>  </a>
-            <p className='register' style={{color:'white'}}>© Cesar De Casas. All rights reserved</p>
-            </div>
-            <br/>
+                <div>
+                    <h6>Social Media</h6>
+                    <p><a href='https://www.linkedin.com/in/cesardecasas/'>LinkedIn</a></p>
+                    <p><a href='https://github.com/cesardecasas'>Github</a></p>
+                    <p><a href='https://cesardecasas.com/'>Website</a></p>
+                    <p><a href='https://drive.google.com/file/d/136sfn_Cyy1ApZP9rf7h8d4hj5_o0XIQt/view'>Resume</a></p>
+                </div>
+                Created by Cesar De Casas
         </footer>
     )
 }

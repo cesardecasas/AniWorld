@@ -18,9 +18,9 @@ const AnimeDetails = ()=>{
     const fetchDetails =async(id)=>{
         if(id){
             const res = await getDetails(id)
-            // const aniRes = await getAnime(res.mal_id)
+            const aniRes = await getAnime(res.mal_id)
             setDetails(res)
-            // setAniDetails(aniRes.data.documents[0])
+            setAniDetails(aniRes.data.documents[0])
         }
         
     }
@@ -31,8 +31,8 @@ const AnimeDetails = ()=>{
             if(res.message === "Zero songs found")(
                 setError(!error)
             )
+            setLoad(false)
             setSongList(res)
-            setLoad(!load)
     }
     
     useEffect(()=>{
@@ -65,7 +65,7 @@ const AnimeDetails = ()=>{
                 
             </section>
             <section style={{marginTop:'3%'}}>
-                <h4>Background</h4>
+                {details?.background ? <h4>Background</h4> : <></>}
                 <p>{details.background}</p>
                 <h4>Synopsis</h4>
                 <p>{details.synopsis}</p>

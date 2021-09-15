@@ -27,7 +27,6 @@ const SearchDetails =()=>{
     
     return(
         <section style={{display:'grid', gridTemplateColumns:'15% 70% 15%'}}>
-            {/* {router.query.type ? } */}
             <aside style={{gridColumn:'1',gridRow:'2', marginTop:'20%', marginLeft:'8%'}}>
                 <Filters/>
             </aside>
