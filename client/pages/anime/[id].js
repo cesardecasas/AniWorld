@@ -4,6 +4,7 @@ import {useRouter} from 'next/router'
 import { Loader, ErrorCard} from '../../components/ResponseHandlers'
 import SongCard from "../../components/SongCard"
 import RelatedCard from "../../components/RelatedCard"
+import CommentBox from '../../components/CommentBox'
 
 const AnimeDetails = ()=>{
 
@@ -41,7 +42,7 @@ const AnimeDetails = ()=>{
 
 
     return(
-        <div style={{width:'70%', marginLeft:'15%', display:'block', backgroundColor:'rgb(240,248,255)', padding:'3px'}}>
+        <div style={{width:'70%', marginLeft:'15%', display:'block', backgroundColor:'rgb(240,248,255)', padding:'1%'}}>
             <section style={{marginTop:'3%'}}>
                 <h1>{details.title}</h1>
                 <div style={{display:'grid', gridTemplateColumns:'30% 70%'}}>
@@ -90,6 +91,10 @@ const AnimeDetails = ()=>{
                 {details?.related?.Adaptation?.map((card,i)=><RelatedCard card={card} key={i} type='Adaptacion'/>)}
                 {details?.related?.Sequel?.map((card,i)=><RelatedCard card={card} key={i} type='Sequel'/>)}
                 {details?.related?.Prequel?.map((card,i)=><RelatedCard card={card} key={i} type='Prequel'/>)}
+            </section>
+            <br/>
+            <section>
+                <CommentBox/>
             </section>
 
         </div>

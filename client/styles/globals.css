@@ -19,8 +19,7 @@ footer{
   background-color: rgb(39, 39, 39);
   color: white;
   text-align: center;
-  display: grid;
-  grid-template-columns: 1fr 1fr;
+
 }
 
 .rating{
@@ -41,6 +40,12 @@ footer{
   justify-content: center;
   display: flex;
   align-items: center;
+}
+
+.icon{
+  color: white;
+  margin: 1%;
+  font-size: 2rem;
 }
 
 .premiered{

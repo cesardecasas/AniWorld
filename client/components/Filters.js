@@ -10,6 +10,7 @@ const Filters =()=>{
     const [rate, setRate] = useState('')
     const [genre, setGenre] = useState('Genre')
     const [genreCode, setCode]=useState(null)
+    const [filters, setFilters] = useState(false)
 
     const onApply =()=>{
         if(genreCode && rate){
@@ -35,6 +36,7 @@ const Filters =()=>{
 
     const onClear =()=>{
         let n = router.asPath.split('page=1')[0]
+        setGenre('Genre')
         router.push(`${n}page=1`)
     }
     return(
@@ -47,6 +49,7 @@ const Filters =()=>{
             <DropdownButton id="dropdown-basic-button" title={genre}>
                 {EnumInfo.genres.map((genre,i)=><Dropdown.Item onClick={()=>setGenreFilter(genre)} key={i}>{genre.name}</Dropdown.Item>)}
             </DropdownButton>
+            <br/>
             <button className='btn btn-dark btn-lg' onClick={onApply}> Apply</button>
             <button className='btn btn-dark btn-lg' style={{margin:'4%'}} onClick={onClear}> Clear</button>
         </div>

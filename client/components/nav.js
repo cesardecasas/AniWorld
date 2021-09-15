@@ -1,6 +1,7 @@
 import {useRouter} from "next/router"
 import { useState } from "react"
 import Link from "next/link"
+import {BiSearch} from 'react-icons/bi'
 
 const Nav = ()=>{
 
@@ -37,7 +38,7 @@ const Nav = ()=>{
                 e.preventDefault()
                 handleSubmit()}}>
                 <input className="form-control me-2" style={{width:'150%'}} type="search" placeholder="Search" aria-label="Search" onChange={(e)=>handleChange(e)}/>
-                <button className="btn btn-outline-success" type="submit">Search</button>
+                <button className="btn btn-outline-success" type="submit"><BiSearch/></button>
             </form>
         </nav>
     )

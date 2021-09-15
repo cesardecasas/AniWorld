@@ -12,7 +12,6 @@ const SearchDetails =()=>{
     const[searchResults, setResults] =useState([])
     
     const populate =()=>{
-        console.log(router)
         if(router.query.type){
             let acceptableQuery =  router.query.type.split('anime=')[1].replace('_','/')
             getAnimeSearch('q='+acceptableQuery).then(r=>setResults(r.results))
