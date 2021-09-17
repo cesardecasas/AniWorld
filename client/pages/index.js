@@ -32,21 +32,24 @@ const Home=(props)=> {
         <p style={{fontStyle:'italic'}}>{props.quote.quote}</p>
         <p style={{fontStyle:'italic'}}>-{props.quote.character}</p>
       </section>
-      <div style={{width:'80%', marginLeft:'3%', marginTop:'3%', display:'grid', gridTemplateColumns:'60% 40%'}}>
+      <div style={{width:'90%', marginLeft:'3%', marginTop:'3%', display:'grid', gridTemplateColumns:'60% 40%'}}>
         <ImgCarousel carousel={carousel}/>
         <section>
           <h4>Top upcoming</h4>
-          <div style={{height:'500px', overflow:'scroll'}}>
-          {animes.slice(4,animes.length).map((anime, i)=> <AnimeCard key={i} name={anime.title} image={anime.image_url} date={anime.start_date} id={anime.mal_id}/>)}
+          <div style={{}}>
+          {animes.slice(4, 8).map((anime, i)=> <AnimeCard key={i} name={anime.title} image={anime.image_url} date={anime.start_date} id={anime.mal_id}/>)}
           </div>
         </section>
+        <div >
+          hello
+        </div>
       </div>
       
-        <h2>Top Manga</h2>
+        {/* <h2>Top Manga</h2>
         <section style={{width:'80%', marginLeft:'3%', height:'60%' }}>
           {animes[0] ? <CarouselComponent type='Manga' animes={manga}/> : <p>Loading</p>}
           
-        </section>
+        </section> */}
       
       
       

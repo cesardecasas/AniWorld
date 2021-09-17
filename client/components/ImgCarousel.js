@@ -10,7 +10,7 @@ const ImgCarousel =({carousel})=>{
     };
   
     return (
-      <Carousel activeIndex={index} onSelect={handleSelect} style={{width:'70%', marginLeft:'5%'}}>
+      <Carousel activeIndex={index} onSelect={handleSelect} style={{width:'80%'}}>
 
           {carousel?.map((item,i)=>(
               <Carousel.Item key={i}>
@@ -19,7 +19,7 @@ const ImgCarousel =({carousel})=>{
                 className="d-block w-100"
                 src={item.image_url}
                 alt="First slide"
-                height='500px'
+                height='600px'
               />
               </Link>
               <Carousel.Caption>
