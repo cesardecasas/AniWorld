@@ -87,7 +87,7 @@ const AnimeDetails = ()=>{
                                 {songList.data.documents.map((song, i)=><SongCard key={i} spotify={song.open_spotify_url} title={song.title} url={song.preview_url} id={i} album={song.album} artist={song.artist} />)}
                             </div>:
                             load ?  <Loader/> : error ? <ErrorCard msg='Songs'/> :
-                                    <button className='btn btn-dark btn-lg' onClick={fetchSongs}>Search</button>}
+                                    <button className='btn btn-dark btn-lg' id='search' onClick={fetchSongs}>Search</button>}
         </div> : <></>
             }
             {/* <div>

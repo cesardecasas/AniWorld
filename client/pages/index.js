@@ -4,6 +4,7 @@ import styles from '../styles/Home.module.css'
 import CarouselComponent from '../components/Carousel'
 import ImgCarousel from '../components/ImgCarousel'
 import AnimeCard from '../components/AnimeCard'
+import { xmlToJson } from '../components/XMLconverter'
 
 const Home=(props)=> {
   const [animes, setAnimes] = useState([])
@@ -40,16 +41,11 @@ const Home=(props)=> {
           {animes.slice(4, 8).map((anime, i)=> <AnimeCard key={i} name={anime.title} image={anime.image_url} date={anime.start_date} id={anime.mal_id}/>)}
           </div>
         </section>
-        <div >
-          hello
+        <div style={{gridColumn:'1', gridRow:'1', marginTop:'95%'}}>
+          <h4>News</h4>
         </div>
       </div>
       
-        {/* <h2>Top Manga</h2>
-        <section style={{width:'80%', marginLeft:'3%', height:'60%' }}>
-          {animes[0] ? <CarouselComponent type='Manga' animes={manga}/> : <p>Loading</p>}
-          
-        </section> */}
       
       
       
@@ -60,11 +56,15 @@ const Home=(props)=> {
 export default Home
 
 export const getStaticProps =async()=>{
+
   const res = await fetch('https://api.jikan.moe/v3/top/anime/1/upcoming')
   const resManga = await fetch('https://api.jikan.moe/v3/top/manga/1')
   const Quote = await fetch('https://animechan.vercel.app/api/random')
+  const xml = await fetch('https://cdn.animenewsnetwork.com/encyclopedia/reports.xml?id=155&type=anime&nlist=all')
   const quoteJson = await Quote.json()
   const mangaData = await resManga.json()
+  
+
   const data = await res.json()
   return{
     props:{

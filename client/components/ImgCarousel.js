@@ -10,7 +10,7 @@ const ImgCarousel =({carousel})=>{
     };
   
     return (
-      <Carousel activeIndex={index} onSelect={handleSelect} style={{width:'80%'}}>
+      <Carousel activeIndex={index} onSelect={handleSelect} style={{width:'80%', gridColumn:'1', gridRow:'1'}}>
 
           {carousel?.map((item,i)=>(
               <Carousel.Item key={i}>
