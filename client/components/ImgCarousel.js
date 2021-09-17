@@ -22,6 +22,9 @@ const ImgCarousel =({carousel})=>{
                 height='500px'
               />
               </Link>
+              <Carousel.Caption>
+              <h3 style={{backgroundColor:'rgba(182, 182, 182, .4)'}}>{item.title}</h3>
+            </Carousel.Caption>
             </Carousel.Item>
           ))}
       </Carousel>

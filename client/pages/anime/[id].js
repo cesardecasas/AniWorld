@@ -21,7 +21,10 @@ const AnimeDetails = ()=>{
             const res = await getDetails(id)
             const aniRes = await getAnime(res.mal_id)
             setDetails(res)
-            setAniDetails(aniRes.data.documents[0])
+            if(aniRes.data.documents){
+                setAniDetails(aniRes.data.documents[0])
+            }
+            
         }
         
     }
@@ -77,14 +80,24 @@ const AnimeDetails = ()=>{
             </section>
             <h4>Related</h4>
 
+            {aniDetails?.id ?
             <div>
+            {songList.data ? <p>Here are the songs preview found</p> :  error ? <></> : <p>Look for songs</p>}
+            {songList.data ? <div style={{display:'grid', gridTemplateColumns:'1fr 1fr'}}> 
+                                {songList.data.documents.map((song, i)=><SongCard key={i} spotify={song.open_spotify_url} title={song.title} url={song.preview_url} id={i} album={song.album} artist={song.artist} />)}
+                            </div>:
+                            load ?  <Loader/> : error ? <ErrorCard msg='Songs'/> :
+                                    <button className='btn btn-dark btn-lg' onClick={fetchSongs}>Search</button>}
+        </div> : <></>
+            }
+            {/* <div>
                 {songList.data ? <p>Here are the songs preview found</p> :  error ? <></> : <p>Look for songs</p>}
                 {songList.data ? <div style={{display:'grid', gridTemplateColumns:'1fr 1fr'}}> 
                                     {songList.data.documents.map((song, i)=><SongCard key={i} spotify={song.open_spotify_url} title={song.title} url={song.preview_url} id={i} album={song.album} artist={song.artist} />)}
                                 </div>:
                                 load ?  <Loader/> : error ? <ErrorCard msg='Songs'/> :
                                         <button className='btn btn-dark btn-lg' onClick={fetchSongs}>Search</button>}
-            </div>
+            </div> */}
             <br/>
             <h4>Related Searches</h4>
             <section style={{display:'grid',gridTemplateColumns:'1fr 1fr 1fr 1fr'}}>
