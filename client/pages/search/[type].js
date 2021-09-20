@@ -1,7 +1,7 @@
 import {useRouter} from 'next/router'
 import { useEffect, useState } from 'react'
 import { getAnimeSearch} from '../api/fetch'
-import SearchCard from '../../components/SearchCard'
+import SearchCard from '../../components/cards/SearchCard'
 import {Loader} from '../../components/ResponseHandlers'
 import Pagination from '../../components/Pagination'
 import Filters from '../../components/Filters'

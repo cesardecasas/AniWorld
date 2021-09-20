@@ -2,8 +2,8 @@ import { useEffect, useState } from "react"
 import {getDetails, getAnime, getSong} from '../api/fetch'
 import {useRouter} from 'next/router'
 import { Loader, ErrorCard} from '../../components/ResponseHandlers'
-import SongCard from "../../components/SongCard"
-import RelatedCard from "../../components/RelatedCard"
+import SongCard from "../../components/cards/SongCard"
+import RelatedCard from "../../components/cards/RelatedCard"
 import CommentBox from '../../components/CommentBox'
 
 const AnimeDetails = ()=>{

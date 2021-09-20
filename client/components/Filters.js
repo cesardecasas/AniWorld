@@ -29,7 +29,6 @@ const Filters =()=>{
     }
 
     const setGenreFilter =(gen)=>{
-        console.log(gen)
         setCode(gen.code)
         setGenre(gen.name)
     }

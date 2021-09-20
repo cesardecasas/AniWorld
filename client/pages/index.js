@@ -1,9 +1,8 @@
 import Head from 'next/head'
 import { useEffect, useState } from 'react'
 import styles from '../styles/Home.module.css'
-import CarouselComponent from '../components/Carousel'
 import ImgCarousel from '../components/ImgCarousel'
-import AnimeCard from '../components/AnimeCard'
+import AnimeCard from '../components/cards/AnimeCard'
 import { xmlToJson } from '../components/XMLconverter'
 
 const Home=(props)=> {
@@ -60,9 +59,13 @@ export const getStaticProps =async()=>{
   const res = await fetch('https://api.jikan.moe/v3/top/anime/1/upcoming')
   const resManga = await fetch('https://api.jikan.moe/v3/top/manga/1')
   const Quote = await fetch('https://animechan.vercel.app/api/random')
-  const xml = await fetch('https://cdn.animenewsnetwork.com/encyclopedia/reports.xml?id=155&type=anime&nlist=all')
+  const xml = await fetch('https://cdn.animenewsnetwork.com/encyclopedia/reports.xml?id=155&type=anime&nlist=all', {headers: {
+    'content-type': 'text/xml;charset=UTF-8'
+  }})
+  // const xmlJson = await xml.json()
   const quoteJson = await Quote.json()
   const mangaData = await resManga.json()
+  console.log(xml)
   
 
   const data = await res.json()
