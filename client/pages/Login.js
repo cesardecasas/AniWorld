@@ -9,19 +9,21 @@ const Login = ()=>{
 
     return(
         <div>
+            <section style={{width:'50%', marginLeft:'25%', border:'2px solid black', borderRadius:'1.5rem', marginTop:'13%', marginBottom:'11.5%',padding:'3%'}}>
             <Form>
                 <Form.Group className="mb-3" controlId="formBasicEmail">
                     <Form.Label>Email address</Form.Label>
-                    <Form.Control type="email" placeholder="Enter email" />
+                    <Form.Control onChange={(e)=>setEmail(e.target.value)} type="email" placeholder="Enter email" />
                 </Form.Group>
                 <Form.Group className="mb-3" controlId="formBasicPassword">
                     <Form.Label>Password</Form.Label>
-                    <Form.Control type="password" placeholder="Password" />
+                    <Form.Control onChange={(e)=>setPassword(e.target.value)} type="password" placeholder="Password" />
                 </Form.Group>
                 <Button variant="dark" type="submit">
                     Submit
                 </Button>
             </Form>
+            </section>
         </div>
     )
 }
