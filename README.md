@@ -4,7 +4,7 @@
 
 Front-end(soon to be FullStack) web app for anime discovery using Next.js.
 
-Anime focus web app, amde to search for anime/manga details and upcoming releases.
+Anime focus web app, made to search for anime/manga details and upcoming releases.
 
 ## Technologies
 
