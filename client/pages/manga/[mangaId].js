@@ -1,8 +1,7 @@
 import { useEffect, useState } from "react"
 import {getMangaDetails} from '../api/fetch'
 import {useRouter} from 'next/router'
-import { Loader, ErrorCard} from '../../components/ResponseHandlers'
-import SongCard from "../../components/SongCard"
+
 
 
 const AnimeDetails = ()=>{

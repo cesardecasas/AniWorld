@@ -5,6 +5,7 @@ import { Loader, ErrorCard} from '../../components/ResponseHandlers'
 import SongCard from "../../components/cards/SongCard"
 import RelatedCard from "../../components/cards/RelatedCard"
 import CommentBox from '../../components/CommentBox'
+import Image from 'next/image'
 
 const AnimeDetails = ()=>{
 
