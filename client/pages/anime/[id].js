@@ -41,6 +41,10 @@ const AnimeDetails = ()=>{
             setSongList(res)
     }
     
+    const myLoader = ({ src, width, quality }) => {
+        return `https://example.com/${src}?w=${width}&q=${quality || 75}`
+      }
+    
     useEffect(()=>{
         fetchDetails(route.query.id)
     },[route.query.id])
@@ -51,8 +55,10 @@ const AnimeDetails = ()=>{
             <section style={{marginTop:'3%'}}>
                 <h1>{details.title}</h1>
                 <div style={{display:'grid', gridTemplateColumns:'30% 70%'}}>
-                    <img  src={details.image_url} alt='Anime Poster' style={{width:'90%'}} />
-                    <aside style={{display:'grid', gridTemplateColumns:'1fr 1fr 1fr', border:'1px solid black', height:'30%', borderRadius:'1.5rem', gridColumn:'2', gridRow:'1'}}>
+                    <div height='100%' width='30px'>
+                        { details.image_url ? <Image  src={details.image_url} alt='Anime Poster'  width='100%' height='100%' quality={100} layout='responsive'  /> : <></>}
+                    </div>
+                    <aside style={{display:'grid', gridTemplateColumns:'1fr 1fr 1fr', height:'30%', borderRadius:'1.5rem', gridColumn:'2', gridRow:'1', marginLeft:'2%'}}>
                         <div className='rating'>
                             {details.rating === 'None' ? <p>Rating: To Be Confirmed</p> : <p>{details.rating}</p>}
                         </div>
@@ -63,7 +69,7 @@ const AnimeDetails = ()=>{
                             {details.airing ? <p>On emission</p> : details.status === 'Not yet aired' ? <p>Upcoming Realease</p> : <p>Finished</p>}
                         </div>
                     </aside>
-                    <aside style={{gridColumn:'2', gridRow:'1', marginTop:'20%'}}>
+                    <aside style={{gridColumn:'2',marginLeft:'2%', gridRow:'1', marginTop:'20%'}}>
                         <p>Rating Ranked: {details.rank}</p>
                         <p>Popularity Ranked: #{details.popularity}</p>
                     </aside>

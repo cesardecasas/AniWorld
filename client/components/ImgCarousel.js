@@ -1,6 +1,7 @@
 import Carousel from "react-bootstrap/Carousel";
 import {useState} from 'react'
 import Link from "next/link";
+import Image from 'next/image'
 
 const ImgCarousel =({carousel})=>{
     const [index, setIndex] = useState(0);
@@ -15,11 +16,13 @@ const ImgCarousel =({carousel})=>{
           {carousel?.map((item,i)=>(
               <Carousel.Item key={i}>
                   <Link href={`/anime/${item.mal_id}`}>
-              <img
+              <Image
                 className="d-block w-100"
                 src={item.image_url}
                 alt="First slide"
                 height='600px'
+                width='500%'
+                layout="responsive"
               />
               </Link>
               <Carousel.Caption>

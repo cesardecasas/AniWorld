@@ -37,7 +37,7 @@ const Home=(props)=> {
         <section>
           <h4>Top upcoming</h4>
           <div style={{}}>
-          {animes.slice(4, 8).map((anime, i)=> <AnimeCard key={i} name={anime.title} image={anime.image_url} date={anime.start_date} id={anime.mal_id}/>)}
+          {animes.slice(4, 9).map((anime, i)=> <AnimeCard key={i} name={anime.title} image={anime.image_url} date={anime.start_date} id={anime.mal_id}/>)}
           </div>
         </section>
         <div style={{gridColumn:'1', gridRow:'1', marginTop:'95%'}}>
@@ -65,7 +65,6 @@ export const getStaticProps =async()=>{
   // const xmlJson = await xml.json()
   const quoteJson = await Quote.json()
   const mangaData = await resManga.json()
-  console.log(xml)
   
 
   const data = await res.json()

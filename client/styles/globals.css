@@ -22,6 +22,15 @@ footer{
 
 }
 
+.premiered{
+  display: flex;
+  align-items: center;
+  font-size: 1.5rem;
+  justify-content: center;
+  text-align: center;
+  background-color: rgb(255, 255, 255);
+}
+
 .rating{
   font-size:1.5rem;
   background-color: rgb(163, 163, 163);
@@ -48,13 +57,7 @@ footer{
   font-size: 2rem;
 }
 
-.premiered{
-  display: flex;
-  align-items: center;
-  font-size: 1.5rem;
-  justify-content: center;
-  text-align: center;
-}
+
 
 .refCard :hover{
   cursor: pointer;
