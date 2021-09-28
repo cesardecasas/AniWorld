@@ -33,7 +33,6 @@ const AnimeDetails = ()=>{
     const fetchSongs = async()=>{
             setLoad(!load)
             const res = await getSong(aniDetails.id)
-            console.log(res)
             if(res.message === "Zero songs found")(
                 setError(!error)
             )
