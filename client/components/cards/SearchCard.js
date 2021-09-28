@@ -1,4 +1,5 @@
 import Link from "next/dist/client/link"
+import Image from 'next/image'
 
 const SearchCard =(props)=>{
     const{name, image, rated, episodes, id, synopsis, score} = props
@@ -6,8 +7,8 @@ const SearchCard =(props)=>{
     return(
         <div className="card mb-3" style={{maxWidth:'100%'}}>
         <div className="row g-0">
-            <div className="col-md-4">
-            <img src={image} className="img-fluid rounded-start" alt="Anime poster"/>
+            <div className="col-md-4" width='100%' height='100%'>
+                <Image height='510%' width='400%' src={image} className="img-fluid rounded-start" alt="Anime poster"/>
             </div>
             <div className="col-md-8">
             <div className="card-body">
