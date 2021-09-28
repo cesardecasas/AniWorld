@@ -37,4 +37,4 @@ Anime focus web app, made to search for anime/manga details and upcoming release
 
 ### Deployed Link Here
 
-[Deployment](https://ani-world-5vqzyhd85-cesardecasas.vercel.app/)
+[Deployment](https://ani-world.vercel.app/)
