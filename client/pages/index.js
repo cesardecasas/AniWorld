@@ -48,10 +48,6 @@ const Home=(props)=> {
           {seasonAnimes.slice(3,9).map((anime,i )=> <AnimeCard key={i} name={anime.title} image={anime.image_url} id={anime.mal_id} date={anime.airing_start} />)}
         </div>
       </div>
-      
-      
-      
-      
     </div>
   )
 }

@@ -1,15 +1,16 @@
 import { useEffect, useState } from "react"
-import {getDetails, getAnime, getSong} from '../api/fetch'
+import {getAnime, getSong} from '../api/fetch'
 import {useRouter} from 'next/router'
 import { Loader, ErrorCard} from '../../components/ResponseHandlers'
 import SongCard from "../../components/cards/SongCard"
 import RelatedCard from "../../components/cards/RelatedCard"
 import CommentBox from '../../components/CommentBox'
 import Image from 'next/image'
+import Axios from 'axios'
 
-const AnimeDetails = ()=>{
-
+const AnimeDetails = ({data})=>{
     const route = useRouter()
+    
 
     const[details, setDetails] = useState({})
     const[aniDetails, setAniDetails] = useState({})
@@ -17,11 +18,10 @@ const AnimeDetails = ()=>{
     const[error, setError]= useState(false)
     const[load, setLoad] = useState(false)
 
-    const fetchDetails =async(id)=>{
-        if(id){
-            const res = await getDetails(id)
-            const aniRes = await getAnime(res.mal_id)
-            setDetails(res)
+    const fetchDetails =async()=>{
+        if(data){
+            const aniRes = await getAnime(data.mal_id)
+            setDetails(data)
             if(aniRes.data.documents){
                 setAniDetails(aniRes.data.documents[0])
             }
@@ -42,7 +42,7 @@ const AnimeDetails = ()=>{
     
     
     useEffect(()=>{
-        fetchDetails(route.query.id)
+        fetchDetails()
     },[route.query.id])
 
 
@@ -111,3 +111,16 @@ const AnimeDetails = ()=>{
 }
 
 export default AnimeDetails
+
+
+export const getServerSideProps = async(context)=>{
+        const id = context.query.id
+        const JikanClient = Axios.create({baseURL:'https://api.jikan.moe/v3/'})
+        const res = await JikanClient.get(`anime/${id}`)
+    return{
+        props:{
+            data:res.data
+        }
+    }
+
+}
