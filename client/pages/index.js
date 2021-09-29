@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react'
 import styles from '../styles/Home.module.css'
 import ImgCarousel from '../components/ImgCarousel'
 import AnimeCard from '../components/cards/AnimeCard'
-import {getNews} from './api/fetch'
+import Axios from 'axios'
 
 const Home=(props)=> {
   const [animes, setAnimes] = useState([])
@@ -16,10 +16,10 @@ const Home=(props)=> {
     setSeasonAnimes(props.season.anime)
     setManga(props.manga.top)
     setCarousel(props.animees.top.slice(0,3))
+    console.log(props.xml)
   }
 
   useEffect(()=>{
-    // getNews()
     populate()
   },[])
 
@@ -55,40 +55,36 @@ const Home=(props)=> {
 export default Home
 
 export const getStaticProps =async()=>{
-
   const date = new Date()
 
   const season = getSeason(date.getMonth())
-  console.log(season, date.getMonth())
   
 
   const res = await fetch('https://api.jikan.moe/v3/top/anime/1/upcoming')
   const resManga = await fetch('https://api.jikan.moe/v3/top/manga/1')
   const Quote = await fetch('https://animechan.vercel.app/api/random')
-  const seasonAnimes = await fetch(`https://api.jikan.moe/v3/season/${date.getFullYear()}/${season}`)
-  // const xml = await fetch('https://cdn.animenewsnetwork.com/encyclopedia/reports.xml?id=155&type=anime&nlist=all', {headers: {
-  //   'content-type': 'text/xml;charset=UTF-8'
-  // }})
-  // const xmlJson = await xml.json()
+  const seasonAnimes = await fetch(`https://api.jikan.moe/v3/season/${date.getFullYear()}/${season}`) 
+
   const quoteJson = await Quote.json()
   const mangaData = await resManga.json()
   const seasonJson = await seasonAnimes.json()
-  
-
   const data = await res.json()
+
+
   return{
     props:{
       animees:data,
       manga:mangaData,
       quote:quoteJson,
       season:seasonJson,
+      xml:json
     },
     revalidate:3600
   }
 }
 
 const getSeason =(month) => {
-  console.log(month)
+
   if (month <= 2  && month <= 4) {
       return 'spring';
   } else if (month <= 5 && month <= 7) {
