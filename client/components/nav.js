@@ -26,7 +26,7 @@ const Nav = ()=>{
 
     
     return(
-        <nav className="navbar navbar-dark bg-dark" style={{height:'5rem'}}>
+        <nav className="navbar navbar-dark bg-dark" style={{height:'5rem', display:''}}>
             <ul className="navbar-nav me-auto mb-2 mb-lg-0">
                 <li className="nav-item">
                     <Link href="/">
@@ -34,6 +34,13 @@ const Nav = ()=>{
                     </Link>
                 </li>
             </ul>
+             <u className="navbar-nav me-auto mb-2 mb-lg-0">
+                <li className="nav-item">
+                    <Link href="/manga">
+                    <a className="nav-link active" aria-current="page" style={{fontSize:'100%', marginLeft:'20%', fontFamily:'sans-serif'}} >Manga</a>
+                    </Link>
+                </li>
+             </u>
             <form className="d-flex" style={{marginRight:'10%'}} onSubmit={(e)=>{
                 e.preventDefault()
                 handleSubmit()}}>
