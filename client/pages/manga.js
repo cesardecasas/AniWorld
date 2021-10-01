@@ -1,17 +1,16 @@
 import axios from 'axios'
+import MangaCard from '../components/cards/MangaCard'
 
 const Manga = ({manga})=>{
 
-
+    console.log(manga)
 
 
     return(
-        <div>
-            {manga?.results?.map((manga,i)=>
-            <div key={i}>
-                <p>{manga.title}</p>
-                <img src={manga.mainCover}/>
-            </div>)}
+        <div style={{display:'grid', gridTemplateColumns:'1fr 1fr 1fr 1fr', width:'80%', marginLeft:'10%'}}>
+            {manga?.data?.map((manga,i)=>
+            <MangaCard key={i} name={manga.attributes.title.en} id={manga.id} att={manga.relationships} />
+           )}
 hello
         </div>
     )
@@ -20,9 +19,9 @@ hello
 export default Manga
 
 export const getStaticProps =async()=>{
-    const dbClient = axios.create({baseURL:'http://mangadb-search.herokuapp.com/mangadb'})
+    const client = axios.create({baseURL:'https://api.mangadex.org/'})
 
-    const res = await dbClient.get('?sortby=rating&ascending=false&nsfw=false&limit=12&skip=0', {method:'GET'})
+    const res = await client.get('manga?limit=12')
 
 
     return {

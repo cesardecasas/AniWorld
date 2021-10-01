@@ -13,10 +13,10 @@ const AnimeDetails = ()=>{
     const[load, setLoad] = useState(false)
 
     const fetchDetails =async(id)=>{
-        if(id){
-            const res = await getMangaDetails(id)
-            setDetails(res)
-        }
+        // if(id){
+        //     const res = await getMangaDetails(id)
+        //     setDetails(res)
+        // }
         
     }
     

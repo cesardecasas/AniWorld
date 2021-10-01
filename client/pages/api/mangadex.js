@@ -11,10 +11,23 @@ const dbClient = axios.create({baseURL:'http://mangadb-search.herokuapp.com/mang
 
 // get server https://api.mangadex.org/at-home/server/{chapterId}
 
+// get cover https://uploads.mangadex.org/covers/{ manga.id }/{ cover.filename }
+
 export const login =async()=>{
     try {
         const res = await client.post('auth/login')
         return res 
+    } catch (error) {
+        console.log(error)
+    }
+}
+
+export const getCover =async(mangaId)=>{
+    try {
+
+        const res = await client.get(`cover/${mangaId}`)
+        console.log(res, 1)
+        return res.data
     } catch (error) {
         console.log(error)
     }

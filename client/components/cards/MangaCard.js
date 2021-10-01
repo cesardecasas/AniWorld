@@ -1,21 +1,36 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Link from 'next/link'
+import Image from 'next/image'
+import { getCover } from "../../pages/api/mangadex";
 
 const MangaCard =(props)=>{
-    const {image, name, date, id} = props
+    const {name,att, id} = props
+    const [image, setImage] = useState('')
+    
+    const populate =async(id)=>{
+        let cover 
+        att.forEach((e)=>{
+            if(e.type === 'cover_art'){
+                cover = e.id
+            }
+        })
+        const res = await getCover(cover)
+        console.log(res.data)
+        const file = res.data.attributes.fileName
+        setImage(`https://uploads.mangadex.org/covers/${id}/${file}`)
+    }
 
+
+    useEffect(()=>{
+        populate(id)
+    },[])
 
     return(
-        <div id={id} className="card" style={{width: "93%", marginTop:'4%', marginLeft:'2%', height:'90%', boxShadow:'12px 12px 2px 1px rgba(0, 0, 255, .2)'}}>
-            <img src={image} style={{width:'100%', maxHeight:'50%'}} className="card-img-top" alt="Anime poster"/>
-            <div className="card-body">
-                <h5 className="card-title" style={{maxHeight:'60%', overflow:'clip'}}>{name}</h5>
-                {date ? <p className="card-text">Realease Date: {date}</p> :  <p className="card-text">Realease Date: Uknown</p>}
-                <Link href={`/manga/${id}`} passHref>
-                    <a  className="btn btn-primary" style={{position:'revert'}}>Details</a>
-                </Link>
+        <Link href={`/manga/${id}`} passHref>
+            <div className="card" style={{width: "93%", marginTop:'5%', marginLeft:'2%', height:'80%', boxShadow:'12px 12px 2px 1px rgba(0, 0, 255, .2)'}}>
+                { image ? <Image src={image} height='300%' width='150%' className="card-img-top" alt="Anime poster"/> : <></>}            
             </div>
-        </div>
+        </Link>
     )
 }
 
