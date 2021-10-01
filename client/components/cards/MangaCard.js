@@ -15,7 +15,6 @@ const MangaCard =(props)=>{
             }
         })
         const res = await getCover(cover)
-        console.log(res.data)
         const file = res.data.attributes.fileName
         setImage(`https://uploads.mangadex.org/covers/${id}/${file}`)
     }

@@ -1,53 +1,67 @@
 import { useEffect, useState } from "react"
 import {getMangaDetails} from '../api/fetch'
 import {useRouter} from 'next/router'
+import { getCover } from "../../pages/api/mangadex";
+import Axios from "axios";
 
+const AnimeDetails = ({details})=>{
 
-
-const AnimeDetails = ()=>{
+    const {id, description,title, status}= details.attributes
 
     const route = useRouter()
 
-    const[details, setDetails] = useState({})
-    const[error, setError]= useState(false)
+    const[image, setImage]= useState('')
     const[load, setLoad] = useState(false)
 
-    const fetchDetails =async(id)=>{
-        // if(id){
-        //     const res = await getMangaDetails(id)
-        //     setDetails(res)
-        // }
-        
+    const populate =async()=>{
+        let cover
+
+        details.relationships.forEach((e)=>{
+            if(e.type === 'cover_art'){
+                cover = e.id
+            }
+        })
+        const res = await getCover(cover)
+
+        const file = res.data.attributes.fileName
+        setImage(`https://uploads.mangadex.org/covers/${details.id}/${file}`)
     }
     
     useEffect(()=>{
-        console.log(route)
-        fetchDetails(route.query.mangaId)
+        populate()
     },[route.query.id])
 
 
     return(
         <div style={{width:'70%', marginLeft:'20%', display:'block'}}>
             <section style={{marginTop:'3%'}}>
-                <h1>{details.title}</h1>
+                <h1>{title.en}</h1>
                 <div style={{display:'grid', gridTemplateColumns:'1fr 1fr'}}>
-                    <img  src={details.image_url} alt='Anime Poster' style={{width:'60%'}} />
+                    <img  src={image} alt='Anime Poster' style={{width:'60%'}} />
                     <aside>
-                        {details.score === 'None' ? <p>Rating: To Be Confirmed</p> : <p>Rating: {details.score}</p>}
-                        {details.published ?  <p>Published on: {details.published.string}</p> :<p>Premiered on: To Be Confirmed</p>}
-                        {details.publishing ? <p>Publishing</p> : <p>Finished</p>}
+                        <p>{status}</p>
                     </aside>
                 </div>
                 
             </section>
             <section style={{marginTop:'3%'}}>
-                <h4>Background</h4>
-                <p>{details.background}</p>
                 <h4>Synopsis</h4>
-                <p>{details.synopsis}</p>
+                <p>{description.en}</p>
             </section>
         </div>
     )
 }
 
 export default AnimeDetails
+
+export const getServerSideProps = async(context)=>{
+    const id = context.query.mangaId
+    const client = Axios.create({baseURL:'https://api.mangadex.org/'})
+    const res = await client.get(`manga/${id}`)
+return{
+    props:{
+        details:res.data.data
+    }
+}
+
+}

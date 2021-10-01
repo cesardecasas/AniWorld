@@ -3,8 +3,6 @@ import MangaCard from '../components/cards/MangaCard'
 
 const Manga = ({manga})=>{
 
-    console.log(manga)
-
 
     return(
         <div style={{display:'grid', gridTemplateColumns:'1fr 1fr 1fr 1fr', width:'80%', marginLeft:'10%'}}>
@@ -27,6 +25,7 @@ export const getStaticProps =async()=>{
     return {
         props:{
            manga:res.data
-        }
+        },
+        revalidate:3600
     }
 }
