@@ -2,8 +2,9 @@ import { useEffect, useState } from "react"
 import {useRouter} from 'next/router'
 import { getCover } from "../../pages/api/mangadex";
 import Axios from "axios";
+import Link from 'next/link'
 
-const AnimeDetails = ({details})=>{
+const AnimeDetails = ({details,chapters})=>{
 
     const {id, description,title, status}= details.attributes
 
@@ -44,8 +45,13 @@ const AnimeDetails = ({details})=>{
                 
             </section>
             <section style={{marginTop:'3%'}}>
-                <h4>Synopsis</h4>
+                <h3>Synopsis</h3>
                 <p>{description.en}</p>
+            </section>
+            <h3>Chapter List</h3>
+            <section style={{}}>
+                {chapters?.sort((a,b)=> a.attributes.chapter - b.attributes.chapter).map((chap,i)=><Link key={i} href={`/chapter/${chap.id}`} passHref><p>{chap.attributes.chapter}.-{chap.attributes.title}</p></Link>)}
+
             </section>
         </div>
     )
@@ -57,9 +63,12 @@ export const getServerSideProps = async(context)=>{
     const id = context.query.mangaId
     const client = Axios.create({baseURL:'https://api.mangadex.org/'})
     const res = await client.get(`manga/${id}`)
+    const chapters = await client.get(`manga/${id}/feed`)
+
 return{
     props:{
-        details:res.data.data
+        details:res.data.data,
+        chapters:chapters.data.data
     }
 }
 
