@@ -5,11 +5,15 @@ const Manga = ({manga})=>{
 
 
     return(
-        <div style={{display:'grid', gridTemplateColumns:'1fr 1fr 1fr 1fr', width:'80%', marginLeft:'10%'}}>
-            {manga?.data?.map((manga,i)=>
-            <MangaCard key={i} name={manga.attributes.title.en} id={manga.id} att={manga.relationships} />
-           )}
-hello
+        <div>
+            <h2 style={{textAlign:'center'}} >Most Popular Manga</h2>
+            <div style={{display:'grid', gridTemplateColumns:'1fr 1fr 1fr 1fr', width:'80%', marginLeft:'10%'}}>
+
+                
+                {manga?.data?.map((manga,i)=>
+                <MangaCard key={i} name={manga.attributes.title.en} id={manga.id} att={manga.relationships} />
+            )}
+            </div>
         </div>
     )
 }

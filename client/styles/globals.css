@@ -86,3 +86,15 @@ footer{
   grid-template-columns:30% 70%;
   border-radius: 1rem;
 }
+
+.mangaCard{
+  width: "93%";
+  margin-top:'5%'; 
+  margin-left:'2%'; 
+  height:'80%';
+  box-shadow:12px 12px 2px 1px rgba(0, 0, 255, .2)
+}
+
+.mangaCard :hover{
+  cursor: pointer;
+}

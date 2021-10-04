@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react"
-import {getMangaDetails} from '../api/fetch'
 import {useRouter} from 'next/router'
 import { getCover } from "../../pages/api/mangadex";
 import Axios from "axios";
