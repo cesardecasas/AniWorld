@@ -1,6 +1,6 @@
 import Link from "next/link"
 
-const RelatedCard =({card, type})=>{
+const RelatedCard =({card})=>{
 
     return(
         <Link href={`/${card.type}/${card.mal_id}`}>

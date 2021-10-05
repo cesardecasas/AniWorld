@@ -4,5 +4,27 @@
         "name":"Jujutsu Kaisen 0 Movie",
         "id":48561,
         "image":"https://cdn.myanimelist.net/images/anime/1813/115732.jpg?s=ab9aed5c30625a0f0111cafb547c5cfb"
+    },
+    "relatedCard":{
+        "mal_id":3649,
+        "name":"Fate/Zero",
+        "type":"manga"
+    },
+    "searchCard":{
+        "episodes":13,
+        "id":10087,
+        "image":"https://cdn.myanimelist.net/images/anime/2/73249.jpg?s=0ddd3d84549e11eda144df33626f97ae",
+        "name":"Fate/Zero",
+        "rated":"R",
+        "score":8.31,
+        "synopsis":"With the promise of granting any wish, the omnipotent Holy Grail triggered three wars in the past, each too cruel and fierce to leave a victor. In spite of that, the wealthy Einzbern family is confide..."
+    },
+    "songCard":{
+        "id":0,
+        "album":"BLAU",
+        "artist":"Eir Aoi",
+        "spotify":"https://open.spotify.com/track/6qpGlLv9MHaChP5hEx6Pni",
+        "title":"MEMORIA",
+        "url":"https://p.scdn.co/mp3-preview/b2886e5730268ef14ca6bb1404066b61fa31e62c?cid=b074c52808fb4394a28785f381872ea2"
     }
 }
