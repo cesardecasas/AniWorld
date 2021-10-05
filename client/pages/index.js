@@ -3,7 +3,6 @@ import { useEffect, useState } from 'react'
 import styles from '../styles/Home.module.css'
 import ImgCarousel from '../components/ImgCarousel'
 import AnimeCard from '../components/cards/AnimeCard'
-import Axios from 'axios'
 
 const Home=(props)=> {
   const [animes, setAnimes] = useState([])
