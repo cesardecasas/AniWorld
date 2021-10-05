@@ -6,8 +6,10 @@ const Chapter =({baseURL, chapter})=>{
 
 
     return(
-        <div   style={{display:'inline'}}>
-            {chapter?.attributes?.data?.map((page,i)=><Image width='300px' height='500px' key={i} src={`${baseURL}/data/${chapter.attributes.hash}/${page}`} />)}
+        <div   style={{display:'flex', flexDirection:'column', width:'80%', marginLeft:'10%'}}>
+            <section style={{width:'70%', height:'80%', marginLeft:'15%'}}>
+            {chapter?.attributes?.data?.map((page,i)=><Image width='100%' height='200%' layout='responsive' key={i} src={`${baseURL}/data/${chapter.attributes.hash}/${page}`} />)}
+            </section>
         </div>
     )
 }
