@@ -15,7 +15,6 @@ const Home=(props)=> {
     setSeasonAnimes(props.season.anime)
     setManga(props.manga.top)
     setCarousel(props.animees.top.slice(0,3))
-    console.log(props.xml)
   }
 
   useEffect(()=>{
