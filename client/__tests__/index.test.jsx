@@ -9,13 +9,19 @@ describe('Home', () => {
     
 
 
-  it('renders a heading', async() => {
+  it('renders correctly', async() => {
     
 
     render(<Home animees={indexData.animees} manga={indexData.manga} quote={indexData.quote} season={indexData.season} />)
 
-    const heading = screen.getByText('Top upcoming')
-
-
+    const heading = screen.getByText(/Top upcoming/)
+    const imgCarousel =  screen.getAllByAltText(/First slide/)
+    const quote = screen.getByTestId('quote')
+  
+    expect(imgCarousel)
+    expect(heading)
+    expect(quote)
   })
+
+  
 })

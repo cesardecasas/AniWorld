@@ -30,7 +30,7 @@ const Home=(props)=> {
       </Head>
       <section className='quote' style={{width:'80%', marginLeft:'3%', marginTop:'3%'}}>
         <p style={{fontSize:'large', fontWeight:'bolder'}}>{props.quote.anime}</p>
-        <p style={{fontStyle:'italic'}}>{props.quote.quote}</p>
+        <p data-testid="quote" style={{fontStyle:'italic'}}>{props.quote.quote}</p>
         <p style={{fontStyle:'italic'}}>-{props.quote.character}</p>
       </section>
       <div style={{width:'90%', marginLeft:'3%', marginTop:'3%', display:'grid', gridTemplateColumns:'60% 40%'}}>
