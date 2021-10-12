@@ -26,6 +26,8 @@ const AnimeDetails = ({details,chapters})=>{
         const file = res.data.attributes.fileName
         setImage(`https://uploads.mangadex.org/covers/${details.id}/${file}`)
     }
+
+    const missing = 'Chapter #'
     
     useEffect(()=>{
         populate()
@@ -50,7 +52,7 @@ const AnimeDetails = ({details,chapters})=>{
             </section>
             <h3>Chapter List</h3>
             <section style={{}}>
-                {chapters?.sort((a,b)=> a.attributes.chapter - b.attributes.chapter).map((chap,i)=><Link key={i} href={`/chapter/${chap.id}`} passHref><p>{chap.attributes.chapter}.-{chap.attributes.title}</p></Link>)}
+                {chapters?.sort((a,b)=> a.attributes.chapter - b.attributes.chapter).map((chap,i)=><div key={i}><Link  href={`/chapter/${chap.id}`} passHref><p>{chap.attributes.chapter}.-{chap.attributes.title ? chap.attributes.title :  missing}{ chap.attributes.title ? <></> : chap.attributes.chapter }</p></Link></div>)}
 
             </section>
         </div>

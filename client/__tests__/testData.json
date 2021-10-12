@@ -32,6 +32,10 @@
         "att":[{"id":"54bd9e68-2c7b-4f69-b000-af0f15057dca","type":"author"},{"id":"d105b4d9-1452-4f1d-9b30-47773b3381a2","type":"author"},{"id":"78b4e908-4eec-4f85-bc8c-1af80cd6c811","type":"cover_art"}],
         "id":"6a5ffb3e-7c8d-4f6c-8408-e2b403df66fd",
         "name":"The Gangster Boss is 16 Again"
+    },
+    "mangaSearchCard":{
+         "id":"ee767a2a-20cb-4188-ad47-83730c43dfe8",
+         "rating":{"bayesian":"7.79"}
     }
 
 }

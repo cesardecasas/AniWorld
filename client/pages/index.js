@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react'
 import styles from '../styles/Home.module.css'
 import ImgCarousel from '../components/ImgCarousel'
 import AnimeCard from '../components/cards/AnimeCard'
+import axios from 'axios'
 
 const Home=(props)=> {
   const [animes, setAnimes] = useState([])
@@ -56,15 +57,18 @@ export const getStaticProps =async()=>{
   const date = new Date()
 
   const season = getSeason(date.getMonth())
+
+  const client = axios.create({baseURL:'https://api.mangadex.org/'})
+
+
   
 
   const res = await fetch('https://api.jikan.moe/v3/top/anime/1/upcoming')
-  const resManga = await fetch('https://api.jikan.moe/v3/top/manga/1')
+  const mangaRes = await client.get('manga?limit=12')
   const Quote = await fetch('https://animechan.vercel.app/api/random')
   const seasonAnimes = await fetch(`https://api.jikan.moe/v3/season/${date.getFullYear()}/${season}`) 
 
   const quoteJson = await Quote.json()
-  const mangaData = await resManga.json()
   const seasonJson = await seasonAnimes.json()
   const data = await res.json()
 
@@ -72,7 +76,7 @@ export const getStaticProps =async()=>{
   return{
     props:{
       animees:data,
-      manga:mangaData,
+      manga:mangaRes.data.data,
       quote:quoteJson,
       season:seasonJson
     },

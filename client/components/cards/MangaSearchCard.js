@@ -41,7 +41,7 @@ const MangaSearchCard =(props)=>{
             { image ? <Image data-testid="img" src={image} height='300%' width='250%' className="card-img-top" alt="Anime poster"/> : <Loader/>}                        </div>
             <div className="col-md-8">
             <div className="card-body">
-                <h5 className="card-title">{manga?.attributes?.title.en}</h5>
+                <h5 className="card-title" data-testid="title">{manga?.attributes?.title.en}</h5>
                 <p className="card-text">{rating.bayesian}/10</p>
                 <p className="card-text" style={{height:'90px', overflow:'hidden'}}> {manga?.attributes?.description.en}</p>
                 <p className="card-text"><small className="text-muted"> {manga?.attributes?.publicationDemographic}</small></p>
