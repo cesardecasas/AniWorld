@@ -6,6 +6,24 @@ body {
     Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
 }
 
+
+:root{
+  --main-color: rgb(39, 39, 39);
+  --desktop:1200px;
+  --laptop:1024px;
+  --tablet:768px;
+  --phone:480px;
+}
+
+@media (max-width: 480px) {
+  .holder{
+    width:80%;
+    margin-left:3%;
+    margin-top:3%; 
+    
+  }
+}
+
 a {
   color: inherit;
   text-decoration: none;
@@ -15,8 +33,23 @@ a {
   box-sizing: border-box;
 }
 
+.holder{
+  width:90%;
+  margin-left:3%;
+  margin-top:3%; 
+  display:grid; 
+  grid-template-columns:60% 40%;
+  
+}
+
+.quote{
+  width:80%; 
+  margin-left:3%; 
+  margin-top:3%
+}
+
 footer{
-  background-color: rgb(39, 39, 39);
+  background-color: var(--main-color);
   color: white;
   text-align: center;
 

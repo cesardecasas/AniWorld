@@ -1,3 +1,10 @@
+/* 
+$desktop:1200px;
+$laptop:1024px;
+$tablet:768px;
+$phone:480px; */
+
+
 .container {
   padding: 0 0.5rem;
   display: flex;
@@ -17,3 +24,27 @@
   align-items: center;
 }
 
+
+.holder{
+  width:90%;
+  margin-left:3%;
+  margin-top:3%; 
+  display:grid; 
+  grid-template-columns:60% 40%;
+  
+}
+
+.quote{
+  width:80%; 
+  margin-left:3%; 
+  margin-top:3%
+}
+
+@media (max-width: 480px) {
+  .holder{
+    width:80%;
+    margin-left:3%;
+    margin-top:3%; 
+    background-color: tomato;
+  }
+}
