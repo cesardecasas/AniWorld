@@ -1,34 +1,29 @@
 import Link from "next/dist/client/link"
 import Image from 'next/image'
 import { useEffect, useState } from "react"
-import axios from "axios"
-import { getCover } from "../../pages/api/mangadex";
 import { Loader } from "../ResponseHandlers"
 
 
 const MangaSearchCard =(props)=>{
     console.log(props)
-    const {id, attributes, relationships} = props.man
-    // const client = axios.create({baseURL:'https://api.mangadex.org/manga'})
+    const {id, relationships} = props.man
 
     const[manga, setManga] = useState({})
     const[image, setImage] = useState('')
 
 
     const populate =async(id, att)=>{
-        let cover 
+        let file
         att.forEach((e)=>{
-            if(e.type === 'cover_art'){
-                cover = e.id
+            if(e.attributes){
+                file = e.attributes.fileName
             }
         })
-        const res = await getCover(cover)
-        const file = res.data.attributes.fileName
+        
         setImage(`https://uploads.mangadex.org/covers/${id}/${file}`)
     }
 
     useEffect(()=>{
-        // const inf = await client.get(`/${id}`)
         setManga(props.man)
         populate(id, relationships)
     },[])

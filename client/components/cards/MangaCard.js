@@ -9,15 +9,14 @@ const MangaCard =(props)=>{
     const [image, setImage] = useState('')
     
     const populate =async(id)=>{
-        let cover 
+        let file
         att.forEach((e)=>{
-            if(e.type === 'cover_art'){
-                cover = e.id
+            if(e.attributes){
+                file = e.attributes.fileName
             }
         })
-        const res = await getCover(cover)
-        const file = res.data.attributes.fileName
-        setImage(`https://uploads.mangadex.org/covers/${id}/${file}`)
+        
+        setImage(`https://uploads.mangadex.org/covers/${id}/${file}.512.jpg`)
     }
 
 
