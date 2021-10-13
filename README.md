@@ -16,10 +16,10 @@ Anime focus web app, made to search for anime/manga details and upcoming release
 
 ## API's
 
-* AniAPI
-* Animechan
-* Jinkan
-* Animenewsnetwork
+* [AniAPI](https://aniapi.com/)
+* [Animechan](https://animechan.vercel.app/)
+* [Jinkan](https://jikan.docs.apiary.io/#reference/0/season-archive/season-archive-request-example+schema?console=1)
+* [Mangadex](https://api.mangadex.org/docs.html#section/Acceptable-use-policy)
 
 ## Future Updates
 
