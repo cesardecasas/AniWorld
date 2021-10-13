@@ -20,7 +20,7 @@ const MangaSearchCard =(props)=>{
             }
         })
         
-        setImage(`https://uploads.mangadex.org/covers/${id}/${file}`)
+        setImage(`https://uploads.mangadex.org/covers/${id}/${file}.512.jpg`)
     }
 
     useEffect(()=>{
