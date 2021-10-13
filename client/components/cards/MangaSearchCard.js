@@ -7,8 +7,9 @@ import { Loader } from "../ResponseHandlers"
 
 
 const MangaSearchCard =(props)=>{
-    const{id, rating} = props.man
-    const client = axios.create({baseURL:'https://api.mangadex.org/manga'})
+    console.log(props)
+    const {id, attributes, relationships} = props.man
+    // const client = axios.create({baseURL:'https://api.mangadex.org/manga'})
 
     const[manga, setManga] = useState({})
     const[image, setImage] = useState('')
@@ -26,10 +27,10 @@ const MangaSearchCard =(props)=>{
         setImage(`https://uploads.mangadex.org/covers/${id}/${file}`)
     }
 
-    useEffect(async()=>{
-        const inf = await client.get(`/${id}`)
-        setManga(inf.data.data)
-        populate(id,inf.data.data.relationships)
+    useEffect(()=>{
+        // const inf = await client.get(`/${id}`)
+        setManga(props.man)
+        populate(id, relationships)
     },[])
 
 
@@ -42,7 +43,6 @@ const MangaSearchCard =(props)=>{
             <div className="col-md-8">
             <div className="card-body">
                 <h5 className="card-title" data-testid="title">{manga?.attributes?.title.en}</h5>
-                <p className="card-text">{rating.bayesian}/10</p>
                 <p className="card-text" style={{height:'90px', overflow:'hidden'}}> {manga?.attributes?.description.en}</p>
                 <p className="card-text"><small className="text-muted"> {manga?.attributes?.publicationDemographic}</small></p>
                 <Link href={`/manga/${id}`} passHref>

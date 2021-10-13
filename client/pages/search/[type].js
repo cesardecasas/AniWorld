@@ -20,10 +20,11 @@ const SearchDetails =()=>{
         if(router.query.type){
             let acceptableQuery =  router.query.type.split('anime=')[1].replace('_','/')
             getAnimeSearch('q='+acceptableQuery).then(r=>setResults(r.results))
-            let query =  router.query.type.split('anime=')[1].replace('_','+')
+            let query =  router.query.type.split('anime=')[1].replace('_','+').split('page=')[0]
             let page = router.query.type.split('page=')[1]
             const skip = (page*12)-12
-            getManga(query,showNSFW, skip).then(r=>setManga(r.results))
+            console.log(query)
+            getManga(query, skip).then(r=>setManga(r))
             
         }
     }

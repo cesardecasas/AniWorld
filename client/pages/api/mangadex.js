@@ -33,10 +33,11 @@ export const getCover =async(mangaId)=>{
     }
 }
 
-export const getManga = async(query, nsfw, page)=>{
+export const getManga = async(query, page)=>{
     try {
-        const res = await dbClient.get(`/search?q=${query}&nsfw=${nsfw}&limit=12&skip=${page}`)
-        return res.data
+        const res = await client.get(`/manga?title=${query}&limit=12&offset=${page}`)
+        console.log(res)
+        return res.data.data
     } catch (error) {
         console.log(error)
     }
