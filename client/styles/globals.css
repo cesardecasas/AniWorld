@@ -16,11 +16,38 @@ body {
 }
 
 @media (max-width: 480px) {
-  .holder{
-    width:80%;
-    margin-left:3%;
-    margin-top:3%; 
-    
+  .CarouselTitle{
+    font-size: 12px;
+  }
+
+  .card-title{
+    font-size: 14px;
+  }
+
+  .card-text{
+    font-size: 13px;
+  }
+
+  .animeCard{
+    width:98%;
+    grid-template-columns:40% 60%;
+  }
+}
+
+@media (min-width:481px) and (max-width: 770px) {
+  .CarouselTitle{
+    font-size: 15px;
+  }
+
+  .imgCarousel{
+    width: 550px;
+    height: 750px;
+    border-radius: 1.5rem;
+  }
+
+  .animeCard{
+    width:98%;
+    grid-template-columns:40% 60%;
   }
 }
 

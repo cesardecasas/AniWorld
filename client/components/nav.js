@@ -32,7 +32,7 @@ const Nav = ()=>{
     
     return(
         <Navbar collapseOnSelect bg="dark" expand="sm" sticky='top'>
-            <Navbar.Brand href="/" style={{color:'white'}}>AniWorld</Navbar.Brand>
+            <Navbar.Brand href="/" style={{color:'white', marginLeft:'4%'}}>AniWorld</Navbar.Brand>
             <Navbar.Toggle aria-controls="responsive-navbar-nav" bg="light" style={{color:'white', backgroundColor:'grey', marginRight:'4%'}}/>
             <Navbar.Collapse id="responsive-navbar-nav">
             <Link href="/manga">
