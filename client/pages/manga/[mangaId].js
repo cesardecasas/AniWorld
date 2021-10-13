@@ -24,7 +24,7 @@ const AnimeDetails = ({details,chapters})=>{
         const res = await getCover(cover)
 
         const file = res.data.attributes.fileName
-        setImage(`https://uploads.mangadex.org/covers/${details.id}/${file}`)
+        setImage(`https://uploads.mangadex.org/covers/${details.id}/${file}.512.jpg`)
     }
 
     const missing = 'Chapter #'
