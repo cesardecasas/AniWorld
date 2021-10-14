@@ -8,7 +8,7 @@ import Filters from '../../components/Filters'
 import { getManga } from '../api/mangadex'
 import MangaSearchCard from '../../components/cards/MangaSearchCard'
 
-const SearchDetails =()=>{
+const SearchDetails =({results, resultsManga})=>{
     const router = useRouter()
 
     const[searchResults, setResults] =useState([])
@@ -17,16 +17,8 @@ const SearchDetails =()=>{
     const[showNSFW, setNSFW] = useState(false)
     
     const populate =()=>{
-        if(router.query.type){
-            let acceptableQuery =  router.query.type.split('anime=')[1].replace('_','/')
-            getAnimeSearch('q='+acceptableQuery).then(r=>setResults(r.results))
-            let query =  router.query.type.split('anime=')[1].replace('_','+').split('page=')[0]
-            let page = router.query.type.split('page=')[1]
-            const skip = (page*12)-12
-            console.log(query)
-            getManga(query, skip).then(r=>setManga(r))
-            
-        }
+        setResults(results)
+        setManga(resultsManga)
     }
 
     const handleChange =()=>{
@@ -61,3 +53,22 @@ const SearchDetails =()=>{
 }
 
 export default SearchDetails
+
+export const getServerSideProps = async(context)=>{
+    
+
+    let acceptableQuery =  context.query.type.split('anime=')[1].replace('_','/')
+    const resResults = await getAnimeSearch('q='+acceptableQuery)
+    let query =  context.query.type.split('anime=')[1].replace('_','+').split('page=')[0]
+    let page = context.query.type.split('page=')[1]
+    const skip = (page*12)-12
+    const resManga = await getManga(query, skip)
+    console.log(resManga)
+
+    return{
+        props:{
+            results:resResults.results,
+            resultsManga:resManga
+        }
+    }
+}
