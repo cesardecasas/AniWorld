@@ -14,8 +14,8 @@ const Manga = ({manga})=>{
                 <Container style={{width:'90%', marginLeft:'5%'}}>
                     <Row xs={3} sm={3} md={4} >
                     {manga?.data?.map((manga,i)=>
-                    <Col>
-                        <MangaCard key={i} name={manga.attributes.title.en} id={manga.id} att={manga.relationships} />
+                    <Col  key={i}>
+                        <MangaCard name={manga.attributes.title.en} id={manga.id} att={manga.relationships} />
                     </Col>
                     )}
                     </Row> 
