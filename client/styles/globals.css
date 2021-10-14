@@ -32,6 +32,11 @@ body {
     width:98%;
     grid-template-columns:40% 60%;
   }
+  .chapter{
+    width:90%;
+    height:80%;
+    margin-left:5%;
+  }
 }
 
 @media (min-width:481px) and (max-width: 770px) {
@@ -49,6 +54,18 @@ body {
     width:98%;
     grid-template-columns:40% 60%;
   }
+
+  .chapter{
+    width:80%;
+    height:80%;
+    margin-left:10%;
+  }
+}
+
+.chapter{
+  width:70%;
+  height:80%;
+  margin-left:15%;
 }
 
 a {
@@ -58,6 +75,10 @@ a {
 
 * {
   box-sizing: border-box;
+}
+
+.page-link:hover{
+  cursor: pointer;
 }
 
 .holder{
