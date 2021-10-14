@@ -52,7 +52,7 @@ const SearchDetails =({results, resultsManga})=>{
                         Manga only
                     </label>
                 </div>
-                <Filters/>
+                {/* <Filters/> */}
             </Offcanvas>
             <h3 style={{textAlign:'center',gridColumn:'2'}}>Search Results</h3>
             <div style={{gridColumn:'2'}}>
