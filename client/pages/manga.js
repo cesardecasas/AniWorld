@@ -1,5 +1,8 @@
 import axios from 'axios'
 import MangaCard from '../components/cards/MangaCard'
+import Container from 'react-bootstrap/Container'
+import Col from 'react-bootstrap/Col'
+import Row from 'react-bootstrap/Row'
 
 const Manga = ({manga})=>{
 
@@ -7,13 +10,16 @@ const Manga = ({manga})=>{
     return(
         <div>
             <h2 style={{textAlign:'center'}} >Most Popular Manga</h2>
-            <div style={{display:'grid', gridTemplateColumns:'1fr 1fr 1fr 1fr', width:'80%', marginLeft:'10%'}}>
 
-                
-                {manga?.data?.map((manga,i)=>
-                <MangaCard key={i} name={manga.attributes.title.en} id={manga.id} att={manga.relationships} />
-            )}
-            </div>
+                <Container style={{width:'90%', marginLeft:'5%'}}>
+                    <Row xs={3} sm={3} md={4} >
+                    {manga?.data?.map((manga,i)=>
+                    <Col>
+                        <MangaCard key={i} name={manga.attributes.title.en} id={manga.id} att={manga.relationships} />
+                    </Col>
+                    )}
+                    </Row> 
+                </Container>
         </div>
     )
 }

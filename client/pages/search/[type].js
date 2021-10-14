@@ -39,7 +39,6 @@ const SearchDetails =({results, resultsManga})=>{
                     Manga only
                 </label>
             </div>
-
                 <Filters/>
             </aside>
             <h3 style={{textAlign:'center',gridColumn:'2'}}>Search Results</h3>
@@ -63,7 +62,6 @@ export const getServerSideProps = async(context)=>{
     let page = context.query.type.split('page=')[1]
     const skip = (page*12)-12
     const resManga = await getManga(query, skip)
-    console.log(resManga)
 
     return{
         props:{
