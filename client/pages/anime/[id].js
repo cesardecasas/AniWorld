@@ -7,6 +7,10 @@ import RelatedCard from "../../components/cards/RelatedCard"
 import CommentBox from '../../components/CommentBox'
 import Image from 'next/image'
 import Axios from 'axios'
+import Container from 'react-bootstrap/Container'
+import Col from 'react-bootstrap/Col'
+import Row from 'react-bootstrap/Row'
+
 
 const AnimeDetails = ({data})=>{
     const route = useRouter()
@@ -47,29 +51,39 @@ const AnimeDetails = ({data})=>{
 
 
     return(
-        <div style={{width:'70%', marginLeft:'15%', display:'block', backgroundColor:'rgb(240,248,255)', padding:'1%'}}>
+        <div className='detailsBody' >
             <section style={{marginTop:'3%'}}>
                 <h1>{details.title}</h1>
-                <div style={{display:'grid', gridTemplateColumns:'30% 70%'}}>
-                    <div height='100%' width='30px'>
-                        { details.image_url ? <Image  src={details.image_url} alt='Anime Poster'  width='100%' height='100%' quality={100} layout='responsive'  /> : <></>}
-                    </div>
-                    <aside style={{display:'grid', gridTemplateColumns:'1fr 1fr 1fr', height:'30%', borderRadius:'1.5rem', gridColumn:'2', gridRow:'1', marginLeft:'2%'}}>
-                        <div className='rating'>
-                            {details.rating === 'None' ? <p>Rating: To Be Confirmed</p> : <p>{details.rating}</p>}
-                        </div>
-                        <div className='premiered'>
-                            {details.premiered ?  <p>Premiered on: {details.premiered}</p> :<p>Premiered on: To Be Confirmed</p>}
-                        </div>
-                        <div className='status'>                        
-                            {details.airing ? <p>On emission</p> : details.status === 'Not yet aired' ? <p>Upcoming Realease</p> : <p>Finished</p>}
-                        </div>
-                    </aside>
-                    <aside style={{gridColumn:'2',marginLeft:'2%', gridRow:'1', marginTop:'20%'}}>
-                        <p>Rating Ranked: {details.rank}</p>
-                        <p>Popularity Ranked: #{details.popularity}</p>
-                    </aside>
-                </div>
+                <Container>
+                    <Row xs={1} sm={1} md={2}>
+                        <Col  md={4} lg={4}>
+                            <div height='100%' width='30px'>
+                                { details.image_url ? <Image  src={details.image_url} alt='Anime Poster'  width='100%' height='100%' quality={100} layout='responsive'  /> : <></>}
+                            </div>
+                        </Col>
+                        <Col md={7} lg={7}>
+                            <Row>
+                                <aside style={{display:'grid', gridTemplateColumns:'1fr 1fr 1fr', height:'30%', borderRadius:'1.5rem', gridColumn:'2', gridRow:'1', marginTop:'3%'}}>
+                                    <div className='rating desc'>
+                                        {details.rating === 'None' ? <p className='desc'>Rating: To Be Confirmed</p> : <p className='desc'>{details.rating}</p>}
+                                    </div>
+                                    <div className='premiered desc'>
+                                        {details.premiered ?  <p className='desc'>Premiered on: {details.premiered}</p> :<p className='desc'>Premiered on: To Be Confirmed</p>}
+                                    </div>
+                                    <div className='status desc'>                        
+                                        {details.airing ? <p className='desc'>On emission</p> : details.status === 'Not yet aired' ? <p className='desc'>Upcoming Realease</p> : <p className='desc'>Finished</p>}
+                                    </div>
+                                </aside>
+                            </Row>
+                            <Row>
+                                <aside style={{gridColumn:'2',marginLeft:'2%', gridRow:'1', marginTop:'20%'}}>
+                                    <p>Rating Ranked: {details.rank}</p>
+                                    <p>Popularity Ranked: #{details.popularity}</p>
+                                </aside>
+                            </Row>
+                        </Col>
+                    </Row>
+                </Container>
                 
             </section>
             <section style={{marginTop:'3%'}}>
@@ -80,26 +94,30 @@ const AnimeDetails = ({data})=>{
             </section>
             <section>
                 <h4>Trailer</h4>
-                {details.trailer_url ? <iframe width="75%" height="315" src={details.trailer_url} title="YouTube video player" frameBorder="0" allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen></iframe> : <p>No trailer Available</p>}
+                {details.trailer_url ? <iframe className='trailer' width="75%" height="315" src={details.trailer_url} title="YouTube video player" frameBorder="0" allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen></iframe> : <p>No trailer Available</p>}
             </section>
             <h4>Related</h4>
 
             {aniDetails?.id ?
             <div>
             {songList.data ? <p>Here are the songs preview found</p> :  error ? <></> : <p>Look for songs</p>}
-            {songList.data ? <div style={{display:'grid', gridTemplateColumns:'1fr 1fr'}}> 
-                                {songList.data.documents.map((song, i)=><SongCard key={i} spotify={song.open_spotify_url} title={song.title} url={song.preview_url} id={i} album={song.album} artist={song.artist} />)}
-                            </div>:
+            {songList.data ?  
+                                <Row xs={1} sm={1} md={2}>
+                                {songList.data.documents.map((song, i)=><Col><SongCard key={i} spotify={song.open_spotify_url} title={song.title} url={song.preview_url} id={i} album={song.album} artist={song.artist} /></Col>)}
+                                </Row>
+                            :
                             load ?  <Loader/> : error ? <ErrorCard msg='Songs'/> :
                                     <button className='btn btn-dark btn-lg' id='search' onClick={fetchSongs}>Search</button>}
         </div> : <></>
             }
             <br/>
             <h4>Related Searches</h4>
-            <section style={{display:'grid',gridTemplateColumns:'1fr 1fr 1fr 1fr'}}>
-                 {details?.related?.Sequel?.map((card,i)=><RelatedCard card={card} key={i} type='Sequel'/>)}
-                {details?.related?.Prequel?.map((card,i)=><RelatedCard card={card} key={i} type='Prequel'/>)}
-            </section>
+            {/* <section style={{display:'grid',gridTemplateColumns:'1fr 1fr 1fr 1fr'}}> */}
+            <Row xs={2} sm={2} md={4}>
+                 {details?.related?.Sequel?.map((card,i)=><Col><RelatedCard card={card} key={i} type='Sequel'/></Col>)}
+                {details?.related?.Prequel?.map((card,i)=><Col><RelatedCard card={card} key={i} type='Prequel'/></Col>)}
+            </Row>
+            {/* </section> */}
             <br/>
             <section>
                 <CommentBox/>

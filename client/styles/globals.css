@@ -20,6 +20,22 @@ body {
     font-size: 12px;
   }
 
+  .trailer{
+    width: 100%;
+  }
+  
+  .detailsBody{
+    width:95%;
+    margin-left:2.5%;
+  }
+
+  .desc{
+    font-size: 10px;
+    font-weight:400;
+    align-items: center;
+
+  }
+
   .card-title{
     font-size: 14px;
   }
@@ -42,6 +58,17 @@ body {
 @media (min-width:481px) and (max-width: 770px) {
   .CarouselTitle{
     font-size: 15px;
+  }
+
+  .desc{
+    font-size: 14px;
+    align-items: center;
+
+  }
+
+  .detailsBody{
+    width:80%;
+    margin-left:10%;
   }
 
   .imgCarousel{
@@ -79,6 +106,14 @@ a {
 
 .page-link:hover{
   cursor: pointer;
+}
+
+.detailsBody{
+  width:80%;
+  margin-left:10%;
+  display:block;
+  background-color:rgb(240,248,255);
+  padding:1%
 }
 
 .holder{
