@@ -103,7 +103,7 @@ const AnimeDetails = ({data})=>{
             {songList.data ? <p>Here are the songs preview found</p> :  error ? <></> : <p>Look for songs</p>}
             {songList.data ?  
                                 <Row xs={1} sm={1} md={2}>
-                                {songList.data.documents.map((song, i)=><Col><SongCard key={i} spotify={song.open_spotify_url} title={song.title} url={song.preview_url} id={i} album={song.album} artist={song.artist} /></Col>)}
+                                {songList.data.documents.map((song, i)=><Col key={i}><SongCard spotify={song.open_spotify_url} title={song.title} url={song.preview_url} id={i} album={song.album} artist={song.artist} /></Col>)}
                                 </Row>
                             :
                             load ?  <Loader/> : error ? <ErrorCard msg='Songs'/> :
