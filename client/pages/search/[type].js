@@ -7,6 +7,9 @@ import Pagination from '../../components/Pagination'
 import Filters from '../../components/Filters'
 import { getManga } from '../api/mangadex'
 import MangaSearchCard from '../../components/cards/MangaSearchCard'
+import Offcanvas from 'react-bootstrap/Offcanvas'
+import Button from 'react-bootstrap/Button'
+
 
 const SearchDetails =({results, resultsManga})=>{
     const router = useRouter()
@@ -15,6 +18,10 @@ const SearchDetails =({results, resultsManga})=>{
     const[manga, setManga] =useState([])
     const[showManga, setShowManga] = useState(false)
     const[showNSFW, setNSFW] = useState(false)
+    const [show, setShow] = useState(false);
+
+    const handleClose = () => setShow(false);
+    const handleShow = () => setShow(true);
     
     const populate =()=>{
         setResults(results)
@@ -32,15 +39,21 @@ const SearchDetails =({results, resultsManga})=>{
     
     return(
         <section style={{display:'grid', gridTemplateColumns:'15% 70% 15%'}}>
-            <aside style={{gridColumn:'1',gridRow:'2', marginTop:'20%', marginLeft:'8%'}}>
-            <div className="form-check">
-                <input className="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault1" onChange={()=>handleChange()}/>
-                <label className="form-check-label" htmlFor="flexRadioDefault1">
-                    Manga only
-                </label>
-            </div>
+            <Button size='sm' style={{gridColumn:'1', marginTop:'20%', marginLeft:'8%'}} variant="dark" onClick={handleShow} className="me-2">
+                Filters
+            </Button>
+            <Offcanvas show={show} onHide={handleClose}>
+                <Offcanvas.Header closeButton>
+                <Offcanvas.Title>Filters</Offcanvas.Title>
+                </Offcanvas.Header>
+                <div className="form-check">
+                    <input className="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault1" onChange={()=>handleChange()}/>
+                    <label className="form-check-label" htmlFor="flexRadioDefault1">
+                        Manga only
+                    </label>
+                </div>
                 <Filters/>
-            </aside>
+            </Offcanvas>
             <h3 style={{textAlign:'center',gridColumn:'2'}}>Search Results</h3>
             <div style={{gridColumn:'2'}}>
                 {showManga ? manga?.map((man, i)=><MangaSearchCard man={man} key={i} />) : <></>}
