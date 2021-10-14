@@ -5,7 +5,7 @@ import { Loader } from "../ResponseHandlers"
 
 
 const MangaSearchCard =(props)=>{
-    console.log(props)
+
     const {id, relationships} = props.man
 
     const[manga, setManga] = useState({})

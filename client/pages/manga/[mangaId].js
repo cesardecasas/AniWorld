@@ -4,7 +4,7 @@ import { getCover } from "../../pages/api/mangadex";
 import Axios from "axios";
 import Link from 'next/link'
 
-const AnimeDetails = ({details,chapters})=>{
+const AnimeDetails = ({details,chapters, cover})=>{
 
     const {id, description,title, status}= details.attributes
 
@@ -14,16 +14,7 @@ const AnimeDetails = ({details,chapters})=>{
     const[load, setLoad] = useState(false)
 
     const populate =async()=>{
-        let cover
-
-        details.relationships.forEach((e)=>{
-            if(e.type === 'cover_art'){
-                cover = e.id
-            }
-        })
-        const res = await getCover(cover)
-
-        const file = res.data.attributes.fileName
+        const file = cover?.attributes?.fileName
         setImage(`https://uploads.mangadex.org/covers/${details.id}/${file}.512.jpg`)
     }
 
@@ -64,13 +55,25 @@ export default AnimeDetails
 export const getServerSideProps = async(context)=>{
     const id = context.query.mangaId
     const client = Axios.create({baseURL:'https://api.mangadex.org/'})
+    
+    
+
     const res = await client.get(`manga/${id}`)
+    let cover
+    res.data.data.relationships.forEach((e)=>{
+        if(e.type === 'cover_art'){
+            cover = e.id
+        }
+    })
+    const resCover = await getCover(cover)
     const chapters = await client.get(`manga/${id}/feed`)
+
 
 return{
     props:{
         details:res.data.data,
-        chapters:chapters.data.data
+        chapters:chapters.data.data,
+        cover:resCover.data
     }
 }
 

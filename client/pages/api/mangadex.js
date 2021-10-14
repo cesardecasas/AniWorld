@@ -26,7 +26,6 @@ export const getCover =async(mangaId)=>{
     try {
 
         const res = await client.get(`cover/${mangaId}`)
-        console.log(res, 1)
         return res.data
     } catch (error) {
         console.log(error)
@@ -36,7 +35,6 @@ export const getCover =async(mangaId)=>{
 export const getManga = async(query, page)=>{
     try {
         const res = await client.get(`/manga?title=${query}&limit=12&offset=${page}&includes[]=cover_art`)
-        console.log(res)
         return res.data.data
     } catch (error) {
         console.log(error)
