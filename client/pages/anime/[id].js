@@ -114,8 +114,8 @@ const AnimeDetails = ({data})=>{
             <h4>Related Searches</h4>
             {/* <section style={{display:'grid',gridTemplateColumns:'1fr 1fr 1fr 1fr'}}> */}
             <Row xs={2} sm={2} md={4}>
-                 {details?.related?.Sequel?.map((card,i)=><Col><RelatedCard card={card} key={i} type='Sequel'/></Col>)}
-                {details?.related?.Prequel?.map((card,i)=><Col><RelatedCard card={card} key={i} type='Prequel'/></Col>)}
+                 {details?.related?.Sequel?.map((card,i)=><Col key={i}><RelatedCard card={card} type='Sequel'/></Col>)}
+                {details?.related?.Prequel?.map((card,i)=><Col key={i}><RelatedCard card={card} type='Prequel'/></Col>)}
             </Row>
             {/* </section> */}
             <br/>
