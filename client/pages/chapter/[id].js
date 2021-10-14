@@ -22,9 +22,9 @@ const Chapter =({baseURL, chapter,chapters})=>{
 
 
         if(e.target.innerHTML === 'Next'){
-            router.push(`${url.replace(`chapter/${currentChapter}`, `chapter/${chapterIds[idx+1].id}`)}`)
+            router.push(`${url.replace(`chapter/${currentChapter}`, `chapter/${chapterIds[idx+1]?.id}`)}`)
         } else if(e.target.innerHTML === 'Previous'){
-            router.push(`${url.replace(`chapter/${currentChapter}`, `chapter/${chapterIds[idx-1].id}`)}`)
+            router.push(`${url.replace(`chapter/${currentChapter}`, `chapter/${chapterIds[idx-1]?.id}`)}`)
         }
     }
 
@@ -40,7 +40,7 @@ const Chapter =({baseURL, chapter,chapters})=>{
             </section>
             <nav aria-label="Page navigation example" style={{gridColumn:'2', marginTop:'5%'}}>
                 <ul className="pagination justify-content-center">
-                    {currentChapter === chapterIds[0].id ?  <li className="page-item disabled">
+                    {currentChapter === chapterIds[0]?.id ?  <li className="page-item disabled">
                     <a className="page-link">Previous</a>
                     </li> : 
                     <a className="page-link" onClick={(e)=>changePage(e)}>Previous</a>
