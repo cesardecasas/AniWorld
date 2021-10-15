@@ -31,7 +31,7 @@ const Chapter =({baseURL, chapter,chapters})=>{
     useEffect(()=>{
         setChapters(chapters?.sort((a,b)=> a.attributes.chapter - b.attributes.chapter))
         setCurrentChapter(chapter.id)
-    },[])
+    },[router.asPath])
 
     return(
         <div   style={{display:'flex', flexDirection:'column', width:'80%', marginLeft:'10%'}}>
