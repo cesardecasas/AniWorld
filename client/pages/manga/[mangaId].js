@@ -43,7 +43,7 @@ const AnimeDetails = ({details,chapters, cover})=>{
             </section>
             <h3>Chapter List</h3>
             <section style={{}}>
-                {chapters?.sort((a,b)=> a.attributes.chapter - b.attributes.chapter).map((chap,i)=><div key={i}><Link  href={`/chapter/${chap.id}`} passHref><p>{chap.attributes.chapter}.-{chap.attributes.title ? chap.attributes.title :  missing}{ chap.attributes.title ? <></> : chap.attributes.chapter }</p></Link></div>)}
+                {chapters?.sort((a,b)=> a.attributes.chapter - b.attributes.chapter).map((chap,i)=><div key={i} className='chapters'><Link  href={`/chapter/${chap.id}`} passHref><p style={{border:'2px solid black', borderRadius:'1.5rem'}}>{chap.attributes.chapter}.-{chap.attributes.title ? chap.attributes.title :  missing}{ chap.attributes.title ? <></> : chap.attributes.chapter }</p></Link></div>)}
 
             </section>
         </div>

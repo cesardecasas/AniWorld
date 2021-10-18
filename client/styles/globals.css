@@ -89,6 +89,14 @@ body {
   }
 }
 
+.chapters:hover{
+  cursor: pointer;
+}
+
+.chapters{
+  width: auto;
+}
+
 .chapter{
   width:70%;
   height:80%;
