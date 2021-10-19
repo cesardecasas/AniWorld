@@ -29,7 +29,7 @@ const AnimeDetails = ({details,chapters, cover})=>{
 
 
     return(
-        <div style={{width:'70%', marginLeft:'20%', display:'block'}}>
+        <div className='detailsBody' style={{width:'70%', marginLeft:'20%', display:'block'}}>
             <section style={{marginTop:'3%'}}>
                 <h1>{title.en}</h1>
                     <Row xs={1} sm={1} md={2}>

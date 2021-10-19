@@ -36,7 +36,7 @@ const Chapter =({baseURL, chapter,chapters})=>{
     return(
         <div   style={{display:'flex', flexDirection:'column', width:'80%', marginLeft:'10%'}}>
             <section className='chapter'>
-            {chapter?.attributes?.data?.map((page,i)=><Image width='100%' height='200%' layout='responsive' key={i} src={`${baseURL}/data/${chapter.attributes.hash}/${page}`} />)}
+            {chapter?.attributes?.data?.map((page,i)=><Image width='200%' height='200%' layout='responsive' key={i} src={`${baseURL}/data/${chapter.attributes.hash}/${page}`} />)}
             </section>
             <nav aria-label="Page navigation example" style={{gridColumn:'2', marginTop:'5%'}}>
                 <ul className="pagination justify-content-center">

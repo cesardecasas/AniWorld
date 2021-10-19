@@ -29,7 +29,7 @@ export default Manga
 export const getStaticProps =async()=>{
     const client = axios.create({baseURL:'https://api.mangadex.org/'})
 
-    const res = await client.get('manga?limit=12&includes[]=cover_art')
+    const res = await client.get('manga?limit=12&includes[]=cover_art&originalLanguage[]=en&availableTranslatedLanguage[]=en')
 
 
     return {

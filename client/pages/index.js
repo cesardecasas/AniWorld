@@ -39,29 +39,20 @@ const Home=(props)=> {
             <p data-testid="quote" style={{fontStyle:'italic'}}>{props.quote.quote}</p>
             <p style={{fontStyle:'italic'}}>-{props.quote.character}</p>
           </section>
-        </Row>
-        
-        {/* <div className='holder'> */}
+        </Row>        
         <Row  xs={1} sm={1} md={2} >
-          <Col>
+          <Col style={{marginBottom:'5%', marginTop:'4%'}}>
             <ImgCarousel carousel={carousel}/>
             <div style={{gridColumn:'1', gridRow:'1',marginLeft:'5%', width:'90%'}}>
             <h4>Season Animes</h4>
             {seasonAnimes.slice(3,9).map((anime,i )=> <AnimeCard key={i} name={anime.title} image={anime.image_url} id={anime.mal_id} date={anime.airing_start} />)}
           </div>
           </Col>
-          <Col >
-            <section>
+          <Col style={{marginBottom:'10%', marginTop:'4%'}}>
               <h4>Top upcoming</h4>
-              <div style={{}}>
               {animes.slice(4, 9).map((anime, i)=> <AnimeCard key={i} name={anime.title} image={anime.image_url} date={anime.start_date} id={anime.mal_id}/>)}
-              </div>
-            </section>
           </Col>
-        </Row>
-          
-        {/* </div> */}
-        
+        </Row>        
       </Container>
     </div>
   )
@@ -80,7 +71,7 @@ export const getStaticProps =async()=>{
   
 
   const res = await fetch('https://api.jikan.moe/v3/top/anime/1/upcoming')
-  const mangaRes = await client.get('manga?limit=12')
+  const mangaRes = await client.get('manga?limit=12&includes[]=cover_art&originalLanguage[]=en&availableTranslatedLanguage[]=en')
   const Quote = await fetch('https://animechan.vercel.app/api/random')
   const seasonAnimes = await fetch(`https://api.jikan.moe/v3/season/${date.getFullYear()}/${season}`) 
 
