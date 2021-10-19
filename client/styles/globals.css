@@ -30,7 +30,7 @@ body {
   }
 
   .desc{
-    font-size: 10px;
+    font-size: 14px;
     font-weight:400;
     align-items: center;
 
@@ -61,9 +61,8 @@ body {
   }
 
   .desc{
-    font-size: 14px;
+    font-size: 16px;
     align-items: center;
-
   }
 
   .detailsBody{

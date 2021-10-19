@@ -3,10 +3,13 @@ import {useRouter} from 'next/router'
 import { getCover } from "../../pages/api/mangadex";
 import Axios from "axios";
 import Link from 'next/link'
+import Row from 'react-bootstrap/Row'
+import Col from 'react-bootstrap/Col'
+import Image from 'next/image'
 
 const AnimeDetails = ({details,chapters, cover})=>{
 
-    const {id, description,title, status}= details.attributes
+    const {year, description,title, status, publicationDemographic}= details.attributes
 
     const route = useRouter()
 
@@ -29,13 +32,24 @@ const AnimeDetails = ({details,chapters, cover})=>{
         <div style={{width:'70%', marginLeft:'20%', display:'block'}}>
             <section style={{marginTop:'3%'}}>
                 <h1>{title.en}</h1>
-                <div style={{display:'grid', gridTemplateColumns:'1fr 1fr'}}>
-                    <img  src={image} alt='Anime Poster' style={{width:'60%'}} />
-                    <aside>
-                        <p>{status}</p>
-                    </aside>
-                </div>
-                
+                    <Row xs={1} sm={1} md={2}>
+                        <Col>
+                            <img  src={image} width='90%' height='90%' quality={100} layout='responsive'  alt='Manga Poster'  />
+                        </Col>
+                        <Col>
+                            <aside style={{display:'grid', gridTemplateColumns:'1fr 1fr 1fr', height:'30%', borderRadius:'1.5rem', gridColumn:'2', gridRow:'1', marginTop:'3%'}}>
+                                    <div className='rating desc'>
+                                        <p className='desc'>Status: {status}</p>
+                                    </div>
+                                    <div className='premiered desc'>
+                                        <p className='desc'>Genre: {publicationDemographic}</p>
+                                    </div>
+                                    <div className='status desc'>     
+                                        <p className='desc'>Realease year: {year}</p>                   
+                                    </div>
+                                </aside>
+                        </Col>
+                    </Row>                
             </section>
             <section style={{marginTop:'3%'}}>
                 <h3>Synopsis</h3>
