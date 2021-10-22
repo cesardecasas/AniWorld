@@ -23,12 +23,14 @@ const Nav = ()=>{
             router.push(`anime=${cleanQuery}&page=1`)
         }else if(router.pathname.includes('anime')){
             router.push(`/search/anime=${cleanQuery}&page=1`)
+        }else if(router.pathname.includes('manga') || router.pathname.includes('chapter')){
+            router.push(`/search/anime=${cleanQuery}&page=1`)
         }else{
 
             router.push(`search/anime=${cleanQuery}&page=1`)
         }
     }
-
+    console.log(router)
     
     return(
         <Navbar collapseOnSelect bg="dark" expand="sm" sticky='top'>

@@ -19,7 +19,7 @@ describe('MangaCard',()=>{
 
     it('uses Loader',()=>{
         
-        render(<MangaCard name={name} id={id} att={att} />)
+        render(<MangaCard name={name} id={id}  />)
 
         expect(screen.getByRole('status'))
     })

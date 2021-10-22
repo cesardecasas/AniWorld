@@ -7,6 +7,7 @@ import axios from 'axios'
 import Container from 'react-bootstrap/Container'
 import Row from 'react-bootstrap/Row'
 import Col from 'react-bootstrap/Col'
+import MangaIndexCard from '../components/cards/MangaIndexCard'
 
 const Home=(props)=> {
   const [animes, setAnimes] = useState([])
@@ -17,7 +18,8 @@ const Home=(props)=> {
   const populate =()=>{
     setAnimes(props.animees.top)
     setSeasonAnimes(props.season.anime)
-    setManga(props.manga.top)
+    // setManga(props.manga)
+    setManga(props.manga)
     setCarousel(props.animees.top.slice(0,3))
   }
 
@@ -45,12 +47,14 @@ const Home=(props)=> {
             <ImgCarousel carousel={carousel}/>
             <div style={{gridColumn:'1', gridRow:'1',marginLeft:'5%', width:'90%'}}>
             <h4>Season Animes</h4>
-            {seasonAnimes.slice(3,9).map((anime,i )=> <AnimeCard key={i} name={anime.title} image={anime.image_url} id={anime.mal_id} date={anime.airing_start} />)}
+            {seasonAnimes.slice(3,11).map((anime,i )=> <AnimeCard key={i} name={anime.title} image={anime.image_url} id={anime.mal_id} date={anime.airing_start} />)}
           </div>
           </Col>
           <Col style={{marginBottom:'10%', marginTop:'4%'}}>
               <h4>Top upcoming</h4>
               {animes.slice(4, 9).map((anime, i)=> <AnimeCard key={i} name={anime.title} image={anime.image_url} date={anime.start_date} id={anime.mal_id}/>)}
+              <h4 style={{marginTop:'4%'}}>Top Manga</h4>
+              {manga?.map((man, i)=><MangaIndexCard key={i} att={man.attributes} id={man.id} relationships={man.relationships} />)}
           </Col>
         </Row>        
       </Container>

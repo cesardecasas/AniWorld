@@ -14,9 +14,7 @@ describe('SearchCard',()=>{
         
 
         const title = screen.getByTestId('title')
-        const rating = screen.getByText('7.79/10')
 
         expect(title).toBeInTheDocument
-        expect(rating).toBeInTheDocument
     })
 })
