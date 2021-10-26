@@ -1,5 +1,5 @@
 import {useRouter} from "next/router"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import Link from "next/link"
 import {BiSearch} from 'react-icons/bi'
 import Navbar from 'react-bootstrap/Navbar'
@@ -7,10 +7,14 @@ import Button from 'react-bootstrap/Button'
 import Form from 'react-bootstrap/Form'
 import FormControl from 'react-bootstrap/FormControl'
 import Navigation from 'react-bootstrap/Nav'
+import {BsMoon, BsSun} from 'react-icons/bs'
 
-const Nav = ()=>{
+const Nav = ({darkMode, setDarkMode})=>{
+
 
     const[query, setQuery] =useState()
+    const[color, setColor] =useState('black')
+    const[bg, setBg] =useState('white')
     const router = useRouter()
 
     const handleChange =(e)=>{
@@ -30,16 +34,31 @@ const Nav = ()=>{
             router.push(`search/anime=${cleanQuery}&page=1`)
         }
     }
-    console.log(router)
+
+
+    useEffect(()=>{
+
+        if(darkMode){
+            setBg('black')
+            setColor('white')
+        }else{
+            setBg('white')
+            setColor('black')
+        }
+
+    },[darkMode])
     
     return(
-        <Navbar collapseOnSelect bg="dark" expand="sm" sticky='top'>
-            <Navbar.Brand href="/" style={{color:'white', marginLeft:'4%'}}>AniWorld</Navbar.Brand>
+        <Navbar collapseOnSelect bg='dark' expand="sm" sticky='top'>
+            <Link href='/'>
+                <Navbar.Brand style={{color:'white', marginLeft:'4%'}}>AniWorld</Navbar.Brand>
+            </Link>
             <Navbar.Toggle aria-controls="responsive-navbar-nav" bg="light" style={{color:'white', backgroundColor:'grey', marginRight:'4%'}}/>
             <Navbar.Collapse id="responsive-navbar-nav">
             <Link href="/manga">
-                <Navigation.Link href="#action1">Manga</Navigation.Link>
+                <Navigation.Link href="#action1" style={{color:'white'}}>Manga</Navigation.Link>
             </Link>
+            {/* {darkMode ? <BsSun className='icon' style={{color:'white'}} onClick={()=>setDarkMode(!darkMode)} /> : <BsMoon style={{color:'white'}} onClick={()=>setDarkMode(!darkMode)} className='icon'/>} */}
             <Form className="d-flex"  onSubmit={(e)=>{
                 e.preventDefault()
                 handleSubmit()}}>
@@ -50,32 +69,10 @@ const Nav = ()=>{
                 aria-label="Search"
                 onChange={(e)=>handleChange(e)}
             />
-            <Button variant="outline-success">Search</Button>
+            <Button variant='outline-light' ><BiSearch/></Button>
             </Form>
             </Navbar.Collapse>
         </Navbar>
-        // <nav className="navbar navbar-dark bg-dark" style={{height:'5rem', display:''}}>
-        //     <ul className="navbar-nav me-auto mb-2 mb-lg-0">
-        //         <li className="nav-item">
-        //             <Link href="/">
-        //             <a className="nav-link active" aria-current="page" style={{fontSize:'150%', marginLeft:'20%', fontFamily:'sans-serif'}} >AniWorld</a>
-        //             </Link>
-        //         </li>
-        //     </ul>
-        //      <u className="navbar-nav me-auto mb-2 mb-lg-0">
-        //         <li className="nav-item">
-        //             <Link href="/manga">
-        //             <a className="nav-link active" aria-current="page" style={{fontSize:'100%', marginLeft:'20%', fontFamily:'sans-serif'}} >Manga</a>
-        //             </Link>
-        //         </li>
-        //      </u>
-        //     <form className="d-flex" style={{marginRight:'10%'}} onSubmit={(e)=>{
-        //         e.preventDefault()
-        //         handleSubmit()}}>
-        //         <input className="form-control me-2" style={{width:'150%'}} type="search" placeholder="Search" aria-label="Search" onChange={(e)=>handleChange(e)}/>
-        //         <button className="btn btn-outline-success" type="submit"><BiSearch/></button>
-        //     </form>
-        // </nav>
     )
 }
 

@@ -9,7 +9,7 @@
     "lint": "next lint",
     "test": "cypress open",
     "inTest": "jest --watch",
-    "coverage":" jest --coverage --collectCoverageFrom='components' "
+    "coverage": " jest --coverage --collectCoverageFrom='components' "
   },
   "dependencies": {
     "axios": "^0.21.4",
