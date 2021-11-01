@@ -9,6 +9,7 @@ import Row from 'react-bootstrap/Row'
 import Col from 'react-bootstrap/Col'
 import MangaIndexCard from '../components/cards/MangaIndexCard'
 
+
 const Home=(props)=> {
   const [animes, setAnimes] = useState([])
   const [manga, setManga] = useState([])

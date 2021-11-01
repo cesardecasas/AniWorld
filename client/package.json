@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "nodemon server/index.js",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
@@ -13,7 +13,10 @@
   },
   "dependencies": {
     "axios": "^0.21.4",
+    "body-parser": "^1.19.0",
     "bootstrap": "^5.1.0",
+    "cors": "^2.8.5",
+    "express": "^4.17.1",
     "next": "11.1.2",
     "react": "17.0.2",
     "react-bootstrap": "^2.0.0-beta.6",

@@ -28,7 +28,7 @@ const MangaIndexCard =({id, relationships, att})=>{
 
     return(
         <Link href={`/manga/${id}`} passHref>
-            <div id={id} data-testid="container" className="animeCard">
+            <div id={id} style={{backgroundColor:'white'}} data-testid="container" className="animeCard">
                 {image ? <Image data-testid="image" layout="responsive" borderRadius='1.5rem 1.5rem 1.5rem 1.5rem' src={image} width='100px' quality={100} height='100%' className="card-img-top" alt="Anime poster"/>: <Loader/>}
                 <div className="card-body">
                     <h6 className="card-title" style={{maxHeight:'60%', overflow:'hide'}}>{att.title.en}</h6>
