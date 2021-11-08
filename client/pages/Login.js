@@ -63,7 +63,7 @@ const Login = ({setAuthenticated})=>{
                 </Form.Group>
                 <Form.Group>
                     <Form.Text className="text-muted">
-                        Don't have an account? <Link href='/signup' passHref><a>Click here</a></Link>
+                        Don&apos;t have an account? <Link href='/signup' passHref><a>Click here</a></Link>
                     </Form.Text>
                 </Form.Group>
 
