@@ -17,7 +17,6 @@ function MyApp({ Component, pageProps }) {
     if (token) {
       try {
         const session = await client.get('api/user/session')
-        
         props.setAuthenticated(true)
         props.setCurrentUser(session.user)
         localStorage.setItem('user',JSON.stringify(session.user));
@@ -26,7 +25,6 @@ function MyApp({ Component, pageProps }) {
         
         
       } catch (error) {
-        console.log(error);
         setCurrentUser(null)
         setAuthenticated(false)
         localStorage.clear()
@@ -40,8 +38,8 @@ function MyApp({ Component, pageProps }) {
   },[])
 
   return (
-  <Layout  darkMode={darkMode} setDarkMode={setDarkMode}  >
-    <Component darkMode={darkMode} {...pageProps} />
+  <Layout authenticated={authenticated}  darkMode={darkMode} setDarkMode={setDarkMode}  >
+    <Component currentUser={currentUser} setAuthenticated={setAuthenticated} authenticated={authenticated} darkMode={darkMode} {...pageProps} />
   </Layout>
   )
 }

@@ -8,8 +8,9 @@ import Form from 'react-bootstrap/Form'
 import FormControl from 'react-bootstrap/FormControl'
 import Navigation from 'react-bootstrap/Nav'
 import {BsMoon, BsSun} from 'react-icons/bs'
+import {FaUserCircle} from 'react-icons/fa'
 
-const Nav = ({darkMode, setDarkMode})=>{
+const Nav = ({darkMode, setDarkMode, authenticated})=>{
 
 
     const[query, setQuery] =useState()
@@ -58,6 +59,12 @@ const Nav = ({darkMode, setDarkMode})=>{
             <Link href="/manga" passHref>
                 <Navigation.Link  style={{color:'white'}}>Manga</Navigation.Link>
             </Link>
+            {authenticated ? 
+            <Navigation.Link><FaUserCircle style={{color:'white', fontSize:'150%'}}/></Navigation.Link> : 
+            <Link href='/login' passHref>
+                <Navigation.Link  style={{color:'white'}}>Login</Navigation.Link>
+            </Link>
+            }
             <Form className="d-flex"  onSubmit={(e)=>{
                 e.preventDefault()
                 handleSubmit()}}>

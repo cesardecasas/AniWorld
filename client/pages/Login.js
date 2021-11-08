@@ -4,26 +4,29 @@ import { useReducer, useState } from 'react'
 import { ErrorCard} from '../components/ResponseHandlers'
 import axios from 'axios'
 import { useRouter } from 'next/router'
+import Link from 'next/link'
+import {Loader} from '../components/ResponseHandlers'
 
-const Login = ()=>{
+const Login = ({setAuthenticated})=>{
 
     const router = useRouter()
     const [email, setEmail]=useState('')
     const [password, setPassword] =useState('')
     const [validated, setValidated] = useState(false);
     const [error, setError] = useState(false)
+    const [load, setLoad] = useState(false)
     const client = axios.create({baseURL:'https://aniworld-api.herokuapp.com/'})
 
 
     const handleSubmit = async(event) => {
         const form = event.currentTarget;
+        setLoad(true)
         event.preventDefault()
         if (form.checkValidity() === false) {
           event.preventDefault();
           event.stopPropagation();
-        }
-    
-        setValidated(true);
+        }else{
+            setValidated(true);
 
         const body ={
             email:email,
@@ -31,11 +34,15 @@ const Login = ()=>{
         }
 
         const login = await client.post('/api/user/login', body)
-        console.log(login)
         if(login.data.token){
             localStorage.setItem('token', login.data.token)
+            setAuthenticated(true)
             router.push('/')
         }
+        setLoad(false)
+        }
+    
+        
       };
 
     return(
@@ -52,9 +59,17 @@ const Login = ()=>{
                     <Form.Label>Password</Form.Label>
                     <Form.Control required onChange={(e)=>setPassword(e.target.value)} type="password" placeholder="Password" />
                 </Form.Group>
-                <Button variant="dark" type="submit">
+                <Form.Group>
+                    <Form.Text className="text-muted">
+                        Don't have an account? <Link href='/signup' passHref><a>Click here</a></Link>
+                    </Form.Text>
+                </Form.Group>
+
+                {load ? <Loader/> : 
+                <Button style={{marginTop:'2%'}} variant="dark" type="submit">
                     Submit
                 </Button>
+                }     
             </Form>
             </section>
         </div>
