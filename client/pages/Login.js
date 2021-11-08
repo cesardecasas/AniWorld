@@ -1,6 +1,6 @@
 import Form from 'react-bootstrap/Form'
 import Button from 'react-bootstrap/Button'
-import { useReducer, useState } from 'react'
+import { useState } from 'react'
 import { ErrorCard} from '../components/ResponseHandlers'
 import axios from 'axios'
 import { useRouter } from 'next/router'
@@ -26,20 +26,20 @@ const Login = ({setAuthenticated})=>{
           event.preventDefault();
           event.stopPropagation();
         }else{
-            setValidated(true);
+                setValidated(true);
 
-        const body ={
-            email:email,
-            password:password
-        }
+            const body ={
+                email:email,
+                password:password
+            }
 
-        const login = await client.post('/api/user/login', body)
-        if(login.data.token){
-            localStorage.setItem('token', login.data.token)
-            setAuthenticated(true)
-            router.push('/')
-        }
-        setLoad(false)
+            const login = await client.post('/api/user/login', body)
+            if(login.data.token){
+                localStorage.setItem('token', login.data.token)
+                setAuthenticated(true)
+                router.push('/')
+            }
+            setLoad(false)
         }
     
         
