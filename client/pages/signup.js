@@ -2,8 +2,12 @@ import Form from 'react-bootstrap/Form'
 import Button from 'react-bootstrap/Button'
 import { useState } from 'react'
 import { ErrorCard} from '../components/ResponseHandlers'
+import axios from 'axios'
+import {useRouter} from 'next/router'
 
 const Login = ()=>{
+
+    const router = useRouter()
 
     const [email, setEmail]=useState('')
     const [password, setPassword] =useState('')
@@ -11,7 +15,11 @@ const Login = ()=>{
     const [Username, setUsername] = useState('')
     const [error, setError] = useState(false)
 
-    const handleSubmit = (event) => {
+    const client = axios.create({baseURL:'https://aniworld-api.herokuapp.com/'})
+
+
+    const handleSubmit = async(event) => {
+        event.preventDefault()
         const form = event.currentTarget;
         if (form.checkValidity() === false) {
           event.preventDefault();
@@ -19,6 +27,16 @@ const Login = ()=>{
         }
     
         setValidated(true);
+
+        const inf = {
+            email:email,
+            password:password,
+            userName:Username
+        }
+        const registration = await client.post('api/user/register', inf)
+        if(registration){
+            router.push('/login')
+        }
       };
 
     return(

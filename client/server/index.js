@@ -23,6 +23,8 @@ app
         })
 
         server.use('/api', routes)
+        server.get('/h', (req, res) => res.json({ message: 'Server Works x2' }))
+
 
         server.get('/hello', (req,res)=>{
             res.send({
