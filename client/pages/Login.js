@@ -25,8 +25,10 @@ const Login = ({setAuthenticated})=>{
         if (form.checkValidity() === false) {
           event.preventDefault();
           event.stopPropagation();
-        }else{
-                setValidated(true);
+        }
+        setValidated(true);
+        if(validated){
+                
 
             const body ={
                 email:email,
