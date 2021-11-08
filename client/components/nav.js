@@ -50,15 +50,14 @@ const Nav = ({darkMode, setDarkMode})=>{
     
     return(
         <Navbar collapseOnSelect bg='dark' expand="sm" sticky='top'>
-            <Link href='/'>
+            <Link href='/' passHref>
                 <Navigation.Link id='brand' style={{color:'white', marginLeft:'4%', fontSize:'20px'}}>AniWorld</Navigation.Link>
             </Link>
             <Navbar.Toggle aria-controls="responsive-navbar-nav" bg="light" style={{color:'white', backgroundColor:'grey', marginRight:'4%'}}/>
             <Navbar.Collapse id="responsive-navbar-nav">
-            <Link href="/manga">
+            <Link href="/manga" passHref>
                 <Navigation.Link  style={{color:'white'}}>Manga</Navigation.Link>
             </Link>
-            {/* {darkMode ? <BsSun className='icon' style={{color:'white'}} onClick={()=>setDarkMode(!darkMode)} /> : <BsMoon style={{color:'white'}} onClick={()=>setDarkMode(!darkMode)} className='icon'/>} */}
             <Form className="d-flex"  onSubmit={(e)=>{
                 e.preventDefault()
                 handleSubmit()}}>
