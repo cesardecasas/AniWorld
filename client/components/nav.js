@@ -60,8 +60,8 @@ const Nav = ({darkMode, setDarkMode, authenticated})=>{
                 <Navigation.Link  style={{color:'white'}}>Manga</Navigation.Link>
             </Link>
             {authenticated ? 
-            <Navigation.Link><FaUserCircle style={{color:'white', fontSize:'150%'}}/></Navigation.Link> : 
-            <Link href='/login' passHref>
+            <FaUserCircle style={{color:'white', fontSize:'150%'}}/> : 
+            <Link href='/Login' passHref>
                 <Navigation.Link  style={{color:'white'}}>Login</Navigation.Link>
             </Link>
             }
