@@ -20,6 +20,7 @@ Anime focus web app, made to search for anime/manga details and upcoming release
 * [Animechan](https://animechan.vercel.app/)
 * [Jinkan](https://jikan.docs.apiary.io/#reference/0/season-archive/season-archive-request-example+schema?console=1)
 * [Mangadex](https://api.mangadex.org/docs.html#section/Acceptable-use-policy)
+* [AniWorldAPI](https://github.com/cesardecasas/AniWorldAPI) Docs for the backend of ANiWorld 
 
 ## Future Updates
 
