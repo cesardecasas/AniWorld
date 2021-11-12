@@ -39,7 +39,7 @@ function MyApp({ Component, pageProps }) {
 
   return (
   <Layout authenticated={authenticated}  darkMode={darkMode} setDarkMode={setDarkMode}  >
-    <Component currentUser={currentUser} setAuthenticated={setAuthenticated} authenticated={authenticated} darkMode={darkMode} {...pageProps} />
+    <Component setCurrentUser={setCurrentUser} currentUser={currentUser} setAuthenticated={setAuthenticated} authenticated={authenticated} darkMode={darkMode} {...pageProps} />
   </Layout>
   )
 }

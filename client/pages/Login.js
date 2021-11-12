@@ -7,7 +7,7 @@ import { useRouter } from 'next/router'
 import Link from 'next/link'
 import {Loader} from '../components/ResponseHandlers'
 
-const Login = ({setAuthenticated})=>{
+const Login = ({setAuthenticated, setCurrentUser})=>{
 
     const router = useRouter()
     const [email, setEmail]=useState('')
@@ -15,7 +15,7 @@ const Login = ({setAuthenticated})=>{
     const [validated, setValidated] = useState(false);
     const [error, setError] = useState(false)
     const [load, setLoad] = useState(false)
-    const client = axios.create({baseURL:'https://aniworld-api.herokuapp.com/'})
+    const client = axios.create({baseURL:'https://aniworld-api.herokuapp.com'})
 
 
     const handleSubmit = async(event) => {
@@ -27,7 +27,7 @@ const Login = ({setAuthenticated})=>{
           event.stopPropagation();
         }
         setValidated(true);
-        if(validated){
+
                 
 
             const body ={
@@ -36,13 +36,18 @@ const Login = ({setAuthenticated})=>{
             }
 
             const login = await client.post('/api/user/login', body)
+            console.log(login.data)
             if(login.data.token){
                 localStorage.setItem('token', login.data.token)
+                setCurrentUser( {
+                    userName:login.data.user.userName,
+                    id:login.data.user.id
+                })
                 setAuthenticated(true)
                 router.push('/')
             }
             setLoad(false)
-        }
+        
     
         
       };

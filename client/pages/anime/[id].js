@@ -6,13 +6,13 @@ import SongCard from "../../components/cards/SongCard"
 import RelatedCard from "../../components/cards/RelatedCard"
 import CommentBox from '../../components/CommentBox'
 import Image from 'next/image'
-import Axios from 'axios'
+import axios from 'axios'
 import Container from 'react-bootstrap/Container'
 import Col from 'react-bootstrap/Col'
 import Row from 'react-bootstrap/Row'
+import Button from "react-bootstrap/Button"
 
-
-const AnimeDetails = ({data})=>{
+const AnimeDetails = ({data, authenticated, currentUser})=>{
     const route = useRouter()
     
 
@@ -21,6 +21,8 @@ const AnimeDetails = ({data})=>{
     const[songList,setSongList]= useState([])
     const[error, setError]= useState(false)
     const[load, setLoad] = useState(false)
+    const[userList, setList] = useState({})
+    const aniapi = axios.create({baseURL:'https://aniworld-api.herokuapp.com'})
 
     const fetchDetails =async()=>{
         if(data){
@@ -34,6 +36,26 @@ const AnimeDetails = ({data})=>{
         
     }
 
+    const addAnime = async()=>{
+        const body = {
+            type:'anime',
+            newItem:`${data.mal_id}`
+        }
+        const item =  await aniapi.put(`/api/list/update/${currentUser.id}`, body)
+        setList(item.data)
+    }
+
+    const removeAnime = async()=>{
+        const arr = userList.anime_id.splice(1, `${data.mal_id}`)
+        const body = {
+            type:'anime',
+            newItem:arr
+        }
+        console.log(body)
+        const item =  await aniapi.put(`/api/list/remove/${currentUser.id}`, body)
+        setList(item.data)
+    }
+
     const fetchSongs = async()=>{
             setLoad(!load)
             const res = await getSong(aniDetails.id)
@@ -45,8 +67,12 @@ const AnimeDetails = ({data})=>{
     }
     
     
-    useEffect(()=>{
+    useEffect(async()=>{
         fetchDetails()
+        if(currentUser?.id){
+            const userList = await aniapi.get(`/api/list/get/${currentUser.id}`)
+            setList(userList.data)
+        }
     },[route.query.id])
 
 
@@ -60,6 +86,7 @@ const AnimeDetails = ({data})=>{
                             <div height='100%' width='30px'>
                                 { details.image_url ? <Image  src={details.image_url} alt='Anime Poster'  width='100%' height='100%' quality={100} layout='responsive'  /> : <></>}
                             </div>
+                            {authenticated ? userList?.anime_id?.includes(`${data.mal_id}`) ? <Button style={{marginTop:'3%'}} variant='dark' onClick={()=>removeAnime()}>Remove from List</Button>  : <Button style={{marginTop:'3%'}} variant='dark' onClick={()=>addAnime()}>Add to List</Button> : <></>}
                         </Col>
                         <Col md={7} lg={7}>
                             <Row>
@@ -130,7 +157,7 @@ export default AnimeDetails
 
 export const getServerSideProps = async(context)=>{
         const id = context.query.id
-        const JikanClient = Axios.create({baseURL:'https://api.jikan.moe/v3/'})
+        const JikanClient = axios.create({baseURL:'https://api.jikan.moe/v3/'})
         const res = await JikanClient.get(`anime/${id}`)
     return{
         props:{
