@@ -75,6 +75,7 @@ export const getServerSideProps = async(context)=>{
     let page = context.query.type.split('page=')[1]
     const skip = (page*12)-12
     const resManga = await getManga(query, skip)
+    console.log(query, skip)
 
     return{
         props:{

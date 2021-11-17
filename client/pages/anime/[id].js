@@ -46,14 +46,14 @@ const AnimeDetails = ({data, authenticated, currentUser})=>{
     }
 
     const removeAnime = async()=>{
-        const arr = userList.anime_id.splice(1, `${data.mal_id}`)
+        let idx = userList?.anime_id.indexOf(`${data.mal_id}`)
+        const arr = userList?.anime_id?.splice(idx, 0)
         const body = {
             type:'anime',
-            newItem:arr
+            arr:arr
         }
-        console.log(body)
         const item =  await aniapi.put(`/api/list/remove/${currentUser.id}`, body)
-        setList(item.data)
+        setList(item.data[1][0])
     }
 
     const fetchSongs = async()=>{

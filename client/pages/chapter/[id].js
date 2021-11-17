@@ -14,12 +14,11 @@ const Chapter =({baseURL, chapter,chapters})=>{
         let url = router.asPath
         let idx
 
-        chapters.forEach((el,i)=>{
+        chapterIds.forEach((el,i)=>{
             if(el.id === currentChapter){
                 idx = i
             }
         })
-
 
         if(e.target.innerHTML === 'Next'){
             router.push(`${url.replace(`chapter/${currentChapter}`, `chapter/${chapterIds[idx+1]?.id}`)}`)
@@ -29,12 +28,14 @@ const Chapter =({baseURL, chapter,chapters})=>{
     }
 
     useEffect(()=>{
-        setChapters(chapters?.sort((a,b)=> a.attributes.chapter - b.attributes.chapter))
+        const n = chapters.filter(el => el.attributes.translatedLanguage === chapter.attributes.translatedLanguage)
+        setChapters(n?.sort((a,b)=> a.attributes.chapter - b.attributes.chapter))
         setCurrentChapter(chapter.id)
     },[router.asPath])
 
     return(
         <div   style={{display:'flex', flexDirection:'column', width:'80%', marginLeft:'10%'}}>
+            <h3 style={{margin:'3%'}}>The images take a little time to load, please be patient</h3>
             <section className='chapter'>
             {chapter?.attributes?.data?.map((page,i)=><Image width='200%' height='200%' layout='responsive' key={i} src={`${baseURL}/data/${chapter.attributes.hash}/${page}`} />)}
             </section>

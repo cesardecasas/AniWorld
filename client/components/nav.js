@@ -13,7 +13,7 @@ import {FaUserCircle} from 'react-icons/fa'
 const Nav = ({darkMode, setDarkMode, authenticated})=>{
 
 
-    const[query, setQuery] =useState()
+    const[query, setQuery] =useState('')
     const[color, setColor] =useState('black')
     const[bg, setBg] =useState('white')
     const router = useRouter()
