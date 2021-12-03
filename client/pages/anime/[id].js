@@ -11,8 +11,9 @@ import Container from 'react-bootstrap/Container'
 import Col from 'react-bootstrap/Col'
 import Row from 'react-bootstrap/Row'
 import Button from "react-bootstrap/Button"
+import Link from 'next/link'
 
-const AnimeDetails = ({data, authenticated, currentUser})=>{
+const AnimeDetails = ({data, authenticated, currentUser, ep, pics})=>{
     const route = useRouter()
     
 
@@ -84,7 +85,7 @@ const AnimeDetails = ({data, authenticated, currentUser})=>{
                     <Row xs={1} sm={1} md={2}>
                         <Col  md={4} lg={4}>
                             <div height='100%' width='30px'>
-                                { details.image_url ? <Image  src={details.image_url} alt='Anime Poster'  width='100%' height='100%' quality={100} layout='responsive'  /> : <></>}
+                                {details.image_url ? <Image  src={details.image_url} alt='Anime Poster'  width='100%' height='100%' quality={100} layout='responsive'  /> : <></>}
                             </div>
                             {authenticated ? userList?.anime_id?.includes(`${data.mal_id}`) ? <Button style={{marginTop:'3%'}} variant='dark' onClick={()=>removeAnime()}>Remove from List</Button>  : <Button style={{marginTop:'3%'}} variant='dark' onClick={()=>addAnime()}>Add to List</Button> : <></>}
                         </Col>
@@ -135,12 +136,23 @@ const AnimeDetails = ({data, authenticated, currentUser})=>{
                             :
                             load ?  <Loader/> : error ? <ErrorCard msg='Songs'/> :
                                     <button className='btn btn-dark btn-lg' id='search' onClick={fetchSongs}>Search</button>}
-        </div> : <></>
+            </div> : <></>
             }
+            
+            {ep?.episodes[0].video_url ? 
+            <section style={{marginTop:'2%'}}>
+                 <h3>Episodes</h3>
+                 <Row xs={1} sm={1} md={2}>
+                     {ep ? ep?.episodes.map((el,i)=><Col key={i} className='chapters'><a href={el.video_url} target='_blank' rel='noopener noreferrer' ><p style={{border:'2px solid black', borderRadius:'1.5rem', color:'black', textDecorationColor:'black', backgroundColor:'white'}}>{el.episode_id}.-{el.title}</p></a></Col>) : <></>}
+                 </Row>
+             </section> :   
+            <></>
+        }
+           
             <br/>
-            <h4>Related Searches</h4>
+            <h4>Related Search</h4>
             <Row xs={2} sm={2} md={4}>
-                 {details?.related?.Sequel?.map((card,i)=><Col key={i}><RelatedCard card={card} type='Sequel'/></Col>)}
+                {details?.related?.Sequel?.map((card,i)=><Col key={i}><RelatedCard card={card} type='Sequel'/></Col>)}
                 {details?.related?.Prequel?.map((card,i)=><Col key={i}><RelatedCard card={card} type='Prequel'/></Col>)}
             </Row>
             <br/>
@@ -159,12 +171,12 @@ export const getServerSideProps = async(context)=>{
         const JikanClient = axios.create({baseURL:'https://api.jikan.moe/v3/'})
         const res = await JikanClient.get(`anime/${id}`)
         const episodes = await JikanClient.get(`anime/${id}/episodes`)
-        const vid = await JikanClient.get(`anime/${id}/pictures`)
+        const pictures = await JikanClient.get(`anime/${id}/pictures`)
     return{
         props:{
             data:res.data,
-            ep:episodes.data,
-            video:vid.data
+            ep:episodes.data, 
+            pics:pictures.data
         }
     }
 
