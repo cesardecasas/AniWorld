@@ -139,11 +139,11 @@ const AnimeDetails = ({data, authenticated, currentUser, ep, pics})=>{
             </div> : <></>
             }
             
-            {ep?.episodes[0].video_url ? 
+            {ep?.episodes[0]?.video_url ? 
             <section style={{marginTop:'2%'}}>
                  <h3>Episodes</h3>
                  <Row xs={1} sm={1} md={2}>
-                     {ep ? ep?.episodes.map((el,i)=><Col key={i} className='chapters'><a href={el.video_url} target='_blank' rel='noopener noreferrer' ><p style={{border:'2px solid black', borderRadius:'1.5rem', color:'black', textDecorationColor:'black', backgroundColor:'white'}}>{el.episode_id}.-{el.title}</p></a></Col>) : <></>}
+                     {ep ? ep?.episodes.map((el,i)=><Col key={i} className='chapters'><a href={el.video_url} target='_blank' rel='noopener noreferrer' ><p style={{border:'2px solid black', borderRadius:'1.5rem', color:'black', textDecorationColor:'black', backgroundColor:'white', textAlign:'center'}}>{el.episode_id}.-{el.title}</p></a></Col>) : <></>}
                  </Row>
              </section> :   
             <></>
