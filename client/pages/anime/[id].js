@@ -147,7 +147,6 @@ const AnimeDetails = ({data, authenticated, currentUser})=>{
             <section>
                 <CommentBox/>
             </section>
-
         </div>
     )
 }
@@ -159,9 +158,13 @@ export const getServerSideProps = async(context)=>{
         const id = context.query.id
         const JikanClient = axios.create({baseURL:'https://api.jikan.moe/v3/'})
         const res = await JikanClient.get(`anime/${id}`)
+        const episodes = await JikanClient.get(`anime/${id}/episodes`)
+        const vid = await JikanClient.get(`anime/${id}/pictures`)
     return{
         props:{
-            data:res.data
+            data:res.data,
+            ep:episodes.data,
+            video:vid.data
         }
     }
 

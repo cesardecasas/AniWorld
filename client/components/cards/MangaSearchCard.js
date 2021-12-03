@@ -26,7 +26,7 @@ const MangaSearchCard =(props)=>{
     useEffect(()=>{
         setManga(props.man)
         populate(id, relationships)
-    },[])
+    },[id])
 
 
 
