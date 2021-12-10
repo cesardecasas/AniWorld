@@ -88,7 +88,7 @@ export const getStaticProps =async()=>{
   
 
   const res = await fetch('https://api.jikan.moe/v3/top/anime/1/upcoming')
-  const mangaRes = await client.get('manga?limit=12&includes[]=cover_art&originalLanguage[]=en&availableTranslatedLanguage[]=en')
+  const mangaRes = await client.get('manga?limit=4&includes[]=cover_art&originalLanguage[]=en&availableTranslatedLanguage[]=en')
   const Quote = await fetch('https://animechan.vercel.app/api/random')
   const seasonAnimes = await fetch(`https://api.jikan.moe/v3/season/${date.getFullYear()}/${season}`) 
 
