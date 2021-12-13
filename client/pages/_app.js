@@ -13,18 +13,23 @@ function MyApp({ Component, pageProps }) {
 
   const checkSession = async()=>{ 
     const token = localStorage.getItem('token')
+    const config = {headers:  {
+      'Authorization': `Bearer ${token}`,
+  }
+};
         
     if (token) {
       try {
-        const session = await client.get('api/user/session')
-        props.setAuthenticated(true)
-        props.setCurrentUser(session.user)
-        localStorage.setItem('user',JSON.stringify(session.user));
-        console.log('authenticated')
+        const session = await client.get('api/user/session', config)
+        setAuthenticated(true)
+        console.log(session)
+        setCurrentUser({userName:session?.data?.user?.userName, id:session?.data?.user?.id})
+        localStorage.setItem('user',JSON.stringify(session?.data?.user?.userName));
         
         
         
       } catch (error) {
+        console.log(error)
         setCurrentUser(null)
         setAuthenticated(false)
         localStorage.clear()
@@ -38,7 +43,7 @@ function MyApp({ Component, pageProps }) {
   },[])
 
   return (
-  <Layout authenticated={authenticated}  darkMode={darkMode} setDarkMode={setDarkMode}  >
+  <Layout setCurrentUser={setCurrentUser} setAuthenticated={setAuthenticated} currentUser={currentUser} authenticated={authenticated}  darkMode={darkMode} setDarkMode={setDarkMode}  >
     <Component setCurrentUser={setCurrentUser} currentUser={currentUser} setAuthenticated={setAuthenticated} authenticated={authenticated} darkMode={darkMode} {...pageProps} />
   </Layout>
   )

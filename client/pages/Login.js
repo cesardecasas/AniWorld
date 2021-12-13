@@ -36,7 +36,6 @@ const Login = ({setAuthenticated, setCurrentUser})=>{
             }
 
             const login = await client.post('/api/user/login', body)
-            console.log(login.data)
             if(login.data.token){
                 localStorage.setItem('token', login.data.token)
                 setCurrentUser( {

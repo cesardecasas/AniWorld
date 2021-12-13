@@ -9,8 +9,9 @@ import FormControl from 'react-bootstrap/FormControl'
 import Navigation from 'react-bootstrap/Nav'
 import {BsMoon, BsSun} from 'react-icons/bs'
 import {FaUserCircle} from 'react-icons/fa'
+import NavDropdown  from "react-bootstrap/NavDropdown"
 
-const Nav = ({darkMode, setDarkMode, authenticated})=>{
+const Nav = ({darkMode, setDarkMode, authenticated, currentUser, setCurrentUser, setAuthenticated})=>{
 
 
     const[query, setQuery] =useState('')
@@ -20,6 +21,12 @@ const Nav = ({darkMode, setDarkMode, authenticated})=>{
 
     const handleChange =(e)=>{
         setQuery(e.target.value)
+    }
+    
+    const logOut =()=>{
+        setCurrentUser(null)
+        setAuthenticated(false)
+        localStorage.clear()
     }
 
     const handleSubmit =()=>{
@@ -39,15 +46,7 @@ const Nav = ({darkMode, setDarkMode, authenticated})=>{
 
     useEffect(()=>{
 
-        if(darkMode){
-            setBg('black')
-            setColor('white')
-        }else{
-            setBg('white')
-            setColor('black')
-        }
-
-    },[darkMode])
+    },[currentUser])
     
     return(
         <Navbar collapseOnSelect bg='dark' expand="sm" sticky='top'>
@@ -59,8 +58,17 @@ const Nav = ({darkMode, setDarkMode, authenticated})=>{
             <Link href="/manga" passHref>
                 <Navigation.Link  style={{color:'white'}}>Manga</Navigation.Link>
             </Link>
-            {authenticated ? 
-            <FaUserCircle style={{color:'white', fontSize:'150%'}}/> : 
+            {authenticated && currentUser ? 
+            <NavDropdown
+                id="nav-dropdown-dark-example"
+                title={currentUser?.userName}
+                menuVariant="dark"
+            >
+                <Link href={`/list/${currentUser?.id}`}  passHref>
+                    <NavDropdown.Item >My List</NavDropdown.Item>
+                </Link>
+                <NavDropdown.Item onClick={()=> logOut()}>Log Out</NavDropdown.Item>
+            </NavDropdown> : 
             <Link href='/login' passHref>
                 <Navigation.Link  style={{color:'white'}}>Login</Navigation.Link>
             </Link>
