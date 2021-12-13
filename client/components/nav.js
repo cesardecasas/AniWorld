@@ -69,7 +69,7 @@ const Nav = ({darkMode, setDarkMode, authenticated, currentUser, setCurrentUser,
                 </Link>
                 <NavDropdown.Item onClick={()=> logOut()}>Log Out</NavDropdown.Item>
             </NavDropdown> : 
-            <Link href='/login' passHref>
+            <Link href='/Login' passHref>
                 <Navigation.Link  style={{color:'white'}}>Login</Navigation.Link>
             </Link>
             }

@@ -7,7 +7,7 @@ import { useRouter } from 'next/router'
 import Link from 'next/link'
 import {Loader} from '../components/ResponseHandlers'
 
-const login = ({setAuthenticated, setCurrentUser})=>{
+const Login = ({setAuthenticated, setCurrentUser})=>{
 
     const router = useRouter()
     const [email, setEmail]=useState('')
@@ -83,4 +83,4 @@ const login = ({setAuthenticated, setCurrentUser})=>{
 }
 
 
-export default login
+export default Login
