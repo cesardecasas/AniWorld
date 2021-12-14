@@ -41,7 +41,7 @@ const MangaSearchCard =(props)=>{
                 <p className="card-text" style={{height:'90px', overflow:'hidden'}}> {manga?.attributes?.description.en}</p>
                 <p className="card-text"><small className="text-muted"> {manga?.attributes?.publicationDemographic}</small></p>
                 <Link href={`/manga/${id}`} passHref>
-                    <a  className="btn btn-primary" style={{position:'revert'}}>Details</a>
+                    <a  className="btn btn-dark" style={{position:'revert'}}>Details</a>
                 </Link>
             </div>
             </div>

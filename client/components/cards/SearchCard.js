@@ -18,7 +18,7 @@ const SearchCard =(props)=>{
                 <p className="card-text"> {synopsis}</p>
                 <p className="card-text"><small className="text-muted">Rated: {rated}</small></p>
                 <Link href={`/anime/${id}`} passHref>
-                    <a  className="btn btn-primary" style={{position:'revert'}}>Details</a>
+                    <a  className="btn btn-dark" style={{position:'revert'}}>Details</a>
                 </Link>
             </div>
             </div>
