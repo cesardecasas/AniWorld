@@ -8,7 +8,7 @@ const SongCard = (props)=>{
             <p style={{marginLeft:'10%', fontWeight:'bold'}}> {title}</p>
             <p>Album: {album}</p>
             <p>Artist: {artist}</p>
-            <p>Listen the full song <a href={spotify}>here</a></p>
+            <p>Listen the full song <a href={spotify} target='_blank' rel='noopener noreferrer'>here</a></p>
             {url ? <ReactPlayer data-testid="videoPlayer" url={url} controls={true} height='-30px' width='60%' style={{marginLeft:'20%'}}/> : <p style={{fontWeight:'bold'}}>No Preview Available</p>}
         </div>
     )

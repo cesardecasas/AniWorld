@@ -22,7 +22,6 @@ function MyApp({ Component, pageProps }) {
       try {
         const session = await client.get('api/user/session', config)
         setAuthenticated(true)
-        console.log(session)
         setCurrentUser({userName:session?.data?.user?.userName, id:session?.data?.user?.id})
         localStorage.setItem('user',JSON.stringify(session?.data?.user?.userName));
         

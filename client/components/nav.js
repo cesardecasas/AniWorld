@@ -41,6 +41,7 @@ const Nav = ({darkMode, setDarkMode, authenticated, currentUser, setCurrentUser,
 
             router.push(`search/anime=${cleanQuery}&page=1`)
         }
+        console.log(1)
     }
 
 
