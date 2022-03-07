@@ -68,6 +68,9 @@ const Nav = ({darkMode, setDarkMode, authenticated, currentUser, setCurrentUser,
                 <Link href={`/list/${currentUser?.id}`}  passHref>
                     <NavDropdown.Item >My List</NavDropdown.Item>
                 </Link>
+                <Link href={`/settings/${currentUser?.id}`}  passHref>
+                    <NavDropdown.Item >Settings</NavDropdown.Item>
+                </Link>
                 <NavDropdown.Item onClick={()=> logOut()}>Log Out</NavDropdown.Item>
             </NavDropdown> : 
             <Link href='/Login' passHref>
