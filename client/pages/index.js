@@ -19,10 +19,10 @@ const Home=(props)=> {
   const [color, setColor] = useState('black')
  
   const populate =()=>{
-    setAnimes(props.animees.top)
-    setSeasonAnimes(props.season.anime)
+    setAnimes(props.animes)
+    setSeasonAnimes(props.season)
     setManga(props.manga)
-    setCarousel(props.animees.top.slice(0,3))
+    setCarousel(props.animes.slice(0,3))
   }
 
   useEffect(()=>{
@@ -60,12 +60,20 @@ const Home=(props)=> {
             <ImgCarousel carousel={carousel}/>
             <div style={{gridColumn:'1', gridRow:'1',marginLeft:'5%', width:'90%'}}>
             <h4 style={{color:color}}>Season Animes</h4>
-            {seasonAnimes.slice(3,11).map((anime,i )=> <AnimeCard key={i} darkMode={props.darkMode} name={anime.title} image={anime.image_url} id={anime.mal_id} date={anime.airing_start} />)}
+            {seasonAnimes.slice(3,11).map((anime,i )=> {
+              let destructureDate = anime.aired.prop.from
+              let date = `${destructureDate.month}/${destructureDate.day}/${destructureDate.year}`
+              return <AnimeCard key={i} darkMode={props.darkMode} name={anime.title} image={anime.images.jpg.image_url} id={anime.mal_id} date={date} />
+              })}
           </div>
           </Col>
           <Col style={{marginBottom:'10%', marginTop:'4%'}}>
-              <h4 style={{color:color}}>Top upcoming</h4>
-              {animes.slice(4, 9).map((anime, i)=> <AnimeCard key={i} darkMode={props.darkMode} name={anime.title} image={anime.image_url} date={anime.start_date} id={anime.mal_id}/>)}
+              <h4 style={{color:color}}>Top Recommended</h4>
+              {animes.slice(4, 9).map((anime, i)=>{
+              let destructureDate = anime.aired.prop.from
+              let date = `${destructureDate.month}/${destructureDate.day}/${destructureDate.year}`
+              return <AnimeCard key={i} darkMode={props.darkMode} name={anime.title} image={anime.images.jpg.image_url} id={anime.mal_id} date={date} />
+              })}
               <h4 style={{marginTop:'4%', color:color}}>Top Manga</h4>
               {manga?.map((man, i)=><MangaIndexCard key={i} att={man.attributes} id={man.id} relationships={man.relationships} />)}
           </Col>
@@ -87,10 +95,10 @@ export const getStaticProps =async()=>{
 
   
 
-  const res = await fetch('https://api.jikan.moe/v3/top/anime/1/upcoming')
+  const res = await fetch('https://api.jikan.moe/v4/top/anime')
   const mangaRes = await client.get('manga?limit=4&includes[]=cover_art&originalLanguage[]=en&availableTranslatedLanguage[]=en')
   const Quote = await fetch('https://animechan.vercel.app/api/random')
-  const seasonAnimes = await fetch(`https://api.jikan.moe/v3/season/${date.getFullYear()}/${season}`) 
+  const seasonAnimes = await fetch(`https://api.jikan.moe/v4/seasons/${date.getFullYear()}/${season}`) 
 
   const quoteJson = await Quote.json()
   const seasonJson = await seasonAnimes.json()
@@ -99,10 +107,10 @@ export const getStaticProps =async()=>{
 
   return{
     props:{
-      animees:data,
+      animes:data.data,
       manga:mangaRes.data.data,
       quote:quoteJson,
-      season:seasonJson
+      season:seasonJson.data
     },
     revalidate:3600
   }
