@@ -36,7 +36,7 @@ const ImgCarousel =({carousel})=>{
                   <Link href={`/anime/${item.mal_id}`}>
               <Image
                 className="d-block w-100 imgCarousel"
-                src={item.images.jpg.image_url}
+                src={item.images.jpg.large_image_url}
                 alt="First slide"
                 height={imgHeight}
                 width={imgWidth}

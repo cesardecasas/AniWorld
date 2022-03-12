@@ -2,7 +2,7 @@
 
 import Axios from 'axios'
 
-const JikanClient = Axios.create({baseURL:'https://api.jikan.moe/v3/'})
+const JikanClient = Axios.create({baseURL:'https://api.jikan.moe/v4/'})
 
 const AniClient = Axios.create({baseURL:'https://api.aniapi.com/v1/'})
 
@@ -58,7 +58,7 @@ export const getSong =async(id)=>{
 export const getAnimeSearch =async(query)=>{
   try {
   //  await JikanClient.get(`/search/anime?${query}`).then(r=>{return r.data})
-    const res = await JikanClient.get(`/search/anime?${query}`)
+    const res = await JikanClient.get(`anime?${query}`)
     return res.data
   } catch (error) {
     console.log(error)

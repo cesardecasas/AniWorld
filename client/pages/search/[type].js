@@ -57,7 +57,7 @@ const SearchDetails =({results, resultsManga})=>{
             <h3 style={{textAlign:'center',gridColumn:'2'}}>Search Results</h3>
             <div style={{gridColumn:'2'}}>
                 {showManga ? manga?.map((man, i)=><MangaSearchCard man={man} key={i} />) : <></>}
-                {showManga ? <></> : searchResults[0] ? searchResults.map((result, i)=><SearchCard score={result.score} synopsis={result.synopsis} key={i} id={result.mal_id} name={result.title} image={result.image_url} rated={result.rated} episodes={result.episodes} />)  : <Loader/>}
+                {showManga ? <></> : searchResults[0] ? searchResults.map((result, i)=><SearchCard score={result.score} synopsis={result.synopsis} key={i} id={result.mal_id} name={result.title} image={result.images.jpg.image_url} rated={result.rated} episodes={result.episodes} />)  : <Loader/>}
             </div>
              {router.query.type ? <Pagination/> : <Loader/>}
         </section>
@@ -75,11 +75,11 @@ export const getServerSideProps = async(context)=>{
     let page = context.query.type.split('page=')[1]
     const skip = (page*12)-12
     const resManga = await getManga(query, skip)
-    console.log(query, skip)
+
 
     return{
         props:{
-            results:resResults.results,
+            results:resResults.data,
             resultsManga:resManga
         }
     }

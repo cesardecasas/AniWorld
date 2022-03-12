@@ -15,7 +15,6 @@ import Link from 'next/link'
 
 const AnimeDetails = ({data, authenticated, currentUser, ep, pics})=>{
     const route = useRouter()
-    
 
     const[details, setDetails] = useState({})
     const[aniDetails, setAniDetails] = useState({})
@@ -85,7 +84,7 @@ const AnimeDetails = ({data, authenticated, currentUser, ep, pics})=>{
                     <Row xs={1} sm={1} md={2}>
                         <Col  md={4} lg={4}>
                             <div height='100%' width='30px'>
-                                {details.image_url ? <Image  src={details.image_url} alt='Anime Poster'  width='100%' height='100%' quality={100} layout='responsive'  /> : <></>}
+                                {details?.images?.jpg?.image_url ? <Image  src={details.images.jpg.image_url} alt='Anime Poster'  width='100%' height='100%' quality={100} layout='responsive'  /> : <></>}
                             </div>
                             {authenticated ? userList?.anime_id?.includes(`${data.mal_id}`) ? <Button style={{marginTop:'3%'}} variant='dark' onClick={()=>removeAnime()}>Remove from List</Button>  : <Button style={{marginTop:'3%'}} variant='dark' onClick={()=>addAnime()}>Add to List</Button> : <></>}
                         </Col>
@@ -139,11 +138,11 @@ const AnimeDetails = ({data, authenticated, currentUser, ep, pics})=>{
             </div> : <></>
             }
             
-            {ep?.episodes[0]?.video_url ? 
+            {ep ? 
             <section style={{marginTop:'2%'}}>
                  <h3>Episodes</h3>
                  <Row xs={1} sm={1} md={2}>
-                     {ep ? ep?.episodes.map((el,i)=><Col key={i} className='chapters'><a href={el.video_url} target='_blank' rel='noopener noreferrer' ><p style={{border:'2px solid black', borderRadius:'1.5rem', color:'black', textDecorationColor:'black', backgroundColor:'white', textAlign:'center'}}>{el.episode_id}.-{el.title}</p></a></Col>) : <></>}
+                     {ep?.map((el,i)=><Col key={i} className='chapters'><a href={el.url} target='_blank' rel='noopener noreferrer' ><p style={{border:'2px solid black', borderRadius:'1.5rem', color:'black', textDecorationColor:'black', backgroundColor:'white', textAlign:'center'}}>{el.mal_id}.-{el.title}</p></a></Col>)}
                  </Row>
              </section> :   
             <></>
@@ -168,14 +167,14 @@ export default AnimeDetails
 
 export const getServerSideProps = async(context)=>{
         const id = context.query.id
-        const JikanClient = axios.create({baseURL:'https://api.jikan.moe/v3/'})
+        const JikanClient = axios.create({baseURL:'https://api.jikan.moe/v4/'})
         const res = await JikanClient.get(`anime/${id}`)
         const episodes = await JikanClient.get(`anime/${id}/episodes`)
         const pictures = await JikanClient.get(`anime/${id}/pictures`)
     return{
         props:{
-            data:res.data,
-            ep:episodes.data, 
+            data:res.data.data,
+            ep:episodes.data.data, 
             pics:pictures.data
         }
     }
