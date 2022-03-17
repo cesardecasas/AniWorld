@@ -65,7 +65,7 @@ export const getStaticProps =async()=>{
     let year = d.getFullYear()
 
     const res = await client.get('manga?limit=4&includes[]=cover_art&originalLanguage[]=en&availableTranslatedLanguage[]=en')
-    const nRes = await client.get(`manga?limit=4&offset=8&year=${year}&includes[]=cover_art&originalLanguage[]=en&availableTranslatedLanguage[]=en`)
+    const nRes = await client.get(`manga?limit=4&offset=0&year=${year}&includes[]=cover_art&originalLanguage[]=en&availableTranslatedLanguage[]=en`)
 
 
     return {
