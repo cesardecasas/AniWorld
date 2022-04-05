@@ -15,7 +15,7 @@ const Manga = ({manga, recent})=>{
 
     const getRandomManga = async()=>{
         try {
-            const manga = await client.get('manga/random?includes[]=cover_art&originalLanguage[]=en&availableTranslatedLanguage[]=en')
+            const manga = await client.get('manga/random?includes[]=cover_art')
             setRandom(manga.data.data)
         } catch (error) {
             console.log(error)

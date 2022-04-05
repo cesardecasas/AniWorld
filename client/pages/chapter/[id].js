@@ -3,7 +3,7 @@ import Image from 'next/image'
 import { useRouter } from 'next/router'
 import { useEffect, useState } from 'react'
 
-const Chapter =({baseURL, chapter,chapters})=>{
+const Chapter =({baseURL, chapter,chapters, chapterHash})=>{
     const router = useRouter()
 
     const[chapterIds, setChapters] = useState([])
@@ -37,7 +37,7 @@ const Chapter =({baseURL, chapter,chapters})=>{
         <div   style={{display:'flex', flexDirection:'column', width:'80%', marginLeft:'10%'}}>
             <h3 style={{margin:'3%'}}>The images take a little time to load, please be patient</h3>
             <section className='chapter'>
-            {chapter?.attributes?.data?.map((page,i)=><Image width='200%' height='200%' layout='responsive' key={i} src={`${baseURL}/data/${chapter.attributes.hash}/${page}`} />)}
+                {chapterHash?.data?.map((page,i)=><Image width='200%' height='200%' layout='responsive' key={i} src={`${baseURL}/data/${chapterHash.hash}/${page}`} />)}
             </section>
             <nav aria-label="Page navigation example" style={{gridColumn:'2', marginTop:'5%'}}>
                 <ul className="pagination justify-content-center">
@@ -71,12 +71,12 @@ export const getServerSideProps = async(context)=>{
 
     const chapters = await client.get(`manga/${mangaId}/feed`)
 
-
 return{
     props:{
         baseURL:server.data.baseUrl,
         chapter:chapter.data.data,
-        chapters:chapters.data.data
+        chapters:chapters.data.data, 
+        chapterHash: server.data.chapter
     }
 }
 
