@@ -12,8 +12,9 @@ import Col from 'react-bootstrap/Col'
 import Row from 'react-bootstrap/Row'
 import Button from "react-bootstrap/Button"
 import Link from 'next/link'
+import { animeDetails, handleGQL } from '../../queries'
 
-const AnimeDetails = ({data, authenticated, currentUser, ep, pics})=>{
+const AnimeDetails = ({data, authenticated, currentUser, ep, pics, AniList})=>{
     const route = useRouter()
 
     const[details, setDetails] = useState({})
@@ -121,14 +122,14 @@ const AnimeDetails = ({data, authenticated, currentUser, ep, pics})=>{
             </section>
             <section>
                 <h4>Trailer</h4>
-                {details.trailer_url ? <iframe className='trailer' width="75%" height="315" src={details.trailer_url} title="YouTube video player" frameBorder="0" allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen></iframe> : <p>No trailer Available</p>}
+                {details?.trailer?.url ? <iframe className='trailer' width="75%" height="315" src={details.trailer.embed_url} title="YouTube video player" frameBorder="0" allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen></iframe> : <p>No trailer Available</p>}
             </section>
             <h4>Related</h4>
 
             {aniDetails?.id ?
             <div>
-            {songList.data ? <p>Here are the songs preview found</p> :  error ? <></> : <p>Look for songs</p>}
-            {songList.data ?  
+            {songList?.data ? <p>Here are the songs preview found</p> :  error ? <></> : <p>Look for songs</p>}
+            {songList?.data ?  
                                 <Row xs={1} sm={1} md={2}>
                                 {songList.data.documents.map((song, i)=><Col key={i}><SongCard spotify={song.open_spotify_url} title={song.title} url={song.preview_url} id={i} album={song.album} artist={song.artist} /></Col>)}
                                 </Row>
@@ -171,12 +172,53 @@ export const getServerSideProps = async(context)=>{
         const res = await JikanClient.get(`anime/${id}`)
         const episodes = await JikanClient.get(`anime/${id}/episodes`)
         const pictures = await JikanClient.get(`anime/${id}/pictures`)
+
+        const variables = {
+            id: id
+        }
+        const url = 'https://graphql.anilist.co'
+
+        const options = {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+            },
+            body: JSON.stringify({
+                query: animeDetails,
+                variables: variables
+            })
+        };
+
+        let nData
+
+        await fetch(url, options).then(handleResponse)
+        .then(handleData)
+        .then(data => nData = data)
+        .catch(handleError);
+
+        
     return{
         props:{
             data:res.data.data,
             ep:episodes.data.data, 
-            pics:pictures.data
+            pics:pictures.data,
+            AniList:nData.data
         }
     }
 
+}
+
+const handleResponse =(response)=> {
+    return response.json().then(function (json) {
+        return response.ok ? json : Promise.reject(json);
+    });
+}
+
+const handleData = (data)=> {
+    return data
+}
+
+const handleError =(error) => {
+    console.error(error);
 }
