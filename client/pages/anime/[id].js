@@ -13,6 +13,7 @@ import Row from 'react-bootstrap/Row'
 import Button from "react-bootstrap/Button"
 import Link from 'next/link'
 import { animeDetails, handleGQL } from '../../queries'
+import { AiFillHeart, AiOutlineHeart } from 'react-icons/ai'
 
 const AnimeDetails = ({data, authenticated, currentUser, ep, pics, AniList})=>{
     const route = useRouter()
@@ -79,46 +80,24 @@ const AnimeDetails = ({data, authenticated, currentUser, ep, pics, AniList})=>{
 
     return(
         <div className='detailsBody' >
-            <section style={{marginTop:'3%'}}>
-                <h1>{details.title}</h1>
-                <Container>
-                    <Row xs={1} sm={1} md={2}>
+            {/* {AniList?.Media?.bannerImage ? <Image  src={AniList?.Media?.bannerImage} alt='Anime Banner' quality={100} layout='fill'  /> : <></>} */}
+            <section style={{marginTop:'8%'}}>
+                    <Row xs={1} md={2}>
                         <Col  md={4} lg={4}>
                             <div height='100%' width='30px'>
                                 {details?.images?.jpg?.image_url ? <Image  src={details.images.jpg.image_url} alt='Anime Poster'  width='100%' height='100%' quality={100} layout='responsive'  /> : <></>}
                             </div>
-                            {authenticated ? userList?.anime_id?.includes(`${data.mal_id}`) ? <Button style={{marginTop:'3%'}} variant='dark' onClick={()=>removeAnime()}>Remove from List</Button>  : <Button style={{marginTop:'3%'}} variant='dark' onClick={()=>addAnime()}>Add to List</Button> : <></>}
+                            {authenticated ? userList?.anime_id?.includes(`${data.mal_id}`) ? <Button style={{marginTop:'3%'}} variant='dark' onClick={()=>removeAnime()}><AiFillHeart style={{color:'white'}}/></Button>  : <Button style={{marginTop:'3%'}} variant='dark' onClick={()=>addAnime()}><AiOutlineHeart style={{color:'white'}}/></Button> : <></>}
                         </Col>
-                        <Col md={7} lg={7}>
-                            <Row>
-                                <aside style={{display:'grid', gridTemplateColumns:'1fr 1fr 1fr', height:'30%', borderRadius:'1.5rem', gridColumn:'2', gridRow:'1', marginTop:'3%'}}>
-                                    <div className='rating desc'>
-                                        {details.rating === 'None' ? <p className='desc'>Rating: To Be Confirmed</p> : <p className='desc'>{details.rating}</p>}
-                                    </div>
-                                    <div className='premiered desc'>
-                                        {details.premiered ?  <p className='desc'>Premiered on: {details.premiered}</p> :<p className='desc'>Premiered on: To Be Confirmed</p>}
-                                    </div>
-                                    <div className='status desc'>                        
-                                        {details.airing ? <p className='desc'>On emission</p> : details.status === 'Not yet aired' ? <p className='desc'>Upcoming Realease</p> : <p className='desc'>Finished</p>}
-                                    </div>
-                                </aside>
-                            </Row>
-                            <Row>
-                                <aside style={{gridColumn:'2',marginLeft:'2%', gridRow:'1', marginTop:'20%'}}>
-                                    <p>Rating Ranked: {details.rank}</p>
-                                    <p>Popularity Ranked: #{details.popularity}</p>
-                                </aside>
-                            </Row>
+                        <Col md={7} lg={7} style={{marginTop:'13%'}}>
+                            <h1>{details.title}</h1>
+                            <p>{details.synopsis}</p>
                         </Col>
                     </Row>
-                </Container>
-                
             </section>
             <section style={{marginTop:'3%'}}>
                 {details?.background ? <h4>Background</h4> : <></>}
-                <p>{details.background}</p>
-                <h4>Synopsis</h4>
-                <p>{details.synopsis}</p>
+                <p>{details.background}</p>                
             </section>
             <section>
                 <h4>Trailer</h4>
