@@ -8,6 +8,8 @@ import Container from 'react-bootstrap/Container'
 import Row from 'react-bootstrap/Row'
 import Col from 'react-bootstrap/Col'
 import MangaIndexCard from '../components/cards/MangaIndexCard'
+import { animeBySeason } from '../queries'
+import PreviewCard from '../components/PreviewCard/PreviewCard'
 
 
 const Home=(props)=> {
@@ -20,7 +22,7 @@ const Home=(props)=> {
  
   const populate =()=>{
     setAnimes(props.animes)
-    setSeasonAnimes(props.season)
+    setSeasonAnimes(props.seasonQL)
     setManga(props.manga)
     setCarousel(props.animes.slice(0,3))
   }
@@ -55,16 +57,19 @@ const Home=(props)=> {
             <p style={{fontStyle:'italic', color:color}}>-{props.quote.character}</p>
           </section>
         </Row>        
+        <h4 style={{color:color}}>Season Animes</h4>
+        <Row>
+        
+            {seasonAnimes.map((anime,i )=> {
+              return <PreviewCard key={anime.id} id={anime.idMal} name={anime.title.userPreferred} image={anime.img.large} status={anime.status} description={anime.description} />
+              })}
+        </Row>
         <Row  xs={1} sm={1} md={2} >
           <Col style={{marginBottom:'5%', marginTop:'4%'}}>
             <ImgCarousel carousel={carousel}/>
             <div style={{gridColumn:'1', gridRow:'1',marginLeft:'5%', width:'90%'}}>
-            <h4 style={{color:color}}>Season Animes</h4>
-            {seasonAnimes.slice(3,11).map((anime,i )=> {
-              let destructureDate = anime.aired.prop.from
-              let date = `${destructureDate.month}/${destructureDate.day}/${destructureDate.year}`
-              return <AnimeCard key={i} darkMode={props.darkMode} name={anime.title} image={anime.images.jpg.image_url} id={anime.mal_id} date={date} />
-              })}
+            <h4 style={{marginTop:'4%', color:color}}>Top Manga</h4>
+              {manga?.map((man, i)=><MangaIndexCard key={i} att={man.attributes} id={man.id} relationships={man.relationships} />)}
           </div>
           </Col>
           <Col style={{marginBottom:'10%', marginTop:'4%'}}>
@@ -74,8 +79,7 @@ const Home=(props)=> {
               let date = `${destructureDate.month}/${destructureDate.day}/${destructureDate.year}`
               return <AnimeCard key={i} darkMode={props.darkMode} name={anime.title} image={anime.images.jpg.image_url} id={anime.mal_id} date={date} />
               })}
-              <h4 style={{marginTop:'4%', color:color}}>Top Manga</h4>
-              {manga?.map((man, i)=><MangaIndexCard key={i} att={man.attributes} id={man.id} relationships={man.relationships} />)}
+              
           </Col>
         </Row>        
       </Container>
@@ -92,17 +96,38 @@ export const getStaticProps =async()=>{
 
   const client = axios.create({baseURL:'https://api.mangadex.org/'})
 
-
-  
-
   const res = await fetch('https://api.jikan.moe/v4/top/anime')
-  const mangaRes = await client.get('manga?limit=4&includes[]=cover_art&originalLanguage[]=en&availableTranslatedLanguage[]=en')
+  const mangaRes = await client.get('manga?limit=3&includes[]=cover_art&originalLanguage[]=en&availableTranslatedLanguage[]=en')
   const Quote = await fetch('https://animechan.vercel.app/api/random')
-  const seasonAnimes = await fetch(`https://api.jikan.moe/v4/seasons/${date.getFullYear()}/${season}`) 
 
   const quoteJson = await Quote.json()
-  const seasonJson = await seasonAnimes.json()
   const data = await res.json()
+
+  const variables = {
+    season: season,
+    seasonYear: date.getFullYear()
+}
+const url = 'https://graphql.anilist.co'
+
+const options = {
+    method: 'POST',
+    headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+    },
+    body: JSON.stringify({
+        query: animeBySeason,
+        variables: variables
+    })
+};
+
+let seasonQL
+
+
+await fetch(url, options).then(handleResponse)
+.then(handleData)
+.then(data => seasonQL = data)
+.catch(handleError);
 
 
   return{
@@ -110,7 +135,7 @@ export const getStaticProps =async()=>{
       animes:data.data,
       manga:mangaRes.data.data,
       quote:quoteJson,
-      season:seasonJson.data
+      seasonQL:seasonQL.data.Page.media
     },
     revalidate:3600
   }
@@ -119,12 +144,26 @@ export const getStaticProps =async()=>{
 const getSeason =(month) => {
 
   if (month <= 2  && month <= 4) {
-      return 'spring';
+      return 'SPRING';
   } else if (month <= 5 && month <= 7) {
-      return 'summer';
+      return 'SUMMER';
   }else if (month <= 8 && month <= 10) {
-      return 'fall';
+      return 'FALL';
   }
   // Months 11, 0, 1
-  return 'winter';
+  return 'WINTER';
+}
+
+const handleResponse =(response)=> {
+  return response.json().then(function (json) {
+      return response.ok ? json : Promise.reject(json);
+  });
+}
+
+const handleData = (data)=> {
+  return data
+}
+
+const handleError =(error) => {
+  console.error(error);
 }
