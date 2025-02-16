@@ -176,7 +176,6 @@ export const getServerSideProps = async(context)=>{
         .then(data => nData = data)
         .catch(handleError);
 
-        
     return{
         props:{
             data:res.data.data,
