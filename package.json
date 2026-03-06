@@ -8,6 +8,9 @@
     "start": "cd client && npm i && npm run build && npm run export",
     "server": "node server.js"
   },
+  "devDependencies": {
+    "next": "^13.4.10"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/cesardecasas/AniWorld.git"

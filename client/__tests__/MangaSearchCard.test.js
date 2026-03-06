@@ -1,20 +1,20 @@
-import React from "react";
-import MangaSearchCard from "../components/cards/MangaSearchCard";
-import testData from './testData.json'
-import { render, screen } from '@testing-library/react'
+const React = require('react')
+const { render, screen } = require('@testing-library/react')
+const MangaSearchCardMod = require('../components/cards/MangaSearchCard')
+const MangaSearchCard = MangaSearchCardMod.default || MangaSearchCardMod
 
+describe('MangaSearchCard', () => {
+    it('renders the component correctly', () => {
+        const mockMan = {
+            id: '1',
+            relationships: [],
+            attributes: { title: { en: 'Test' }, description: { en: '' }, publicationDemographic: '' }
+        }
 
-describe('SearchCard',()=>{
-
-
-    it('renders the component correctly',()=>{
-
-        render(<MangaSearchCard man={testData.mangaSearchCard}/>)
-
-        
+        render(React.createElement(MangaSearchCard, { man: mockMan }))
 
         const title = screen.getByTestId('title')
 
-        expect(title).toBeInTheDocument
+        expect(title).toBeTruthy()
     })
 })
