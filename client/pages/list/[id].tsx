@@ -58,7 +58,7 @@ const MyList = ({ list, currentUser, manga }: MyListProps) => {
             id={el.mal_id}
             name={el.title}
             image={el.image_url}
-            rated={el.rated}
+            rating={el.rating}
             episodes={el.episodes}
           />
         ))}
