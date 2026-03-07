@@ -1,0 +1,451 @@
+/* ── Hero ──────────────────────────────────────── */
+.hero {
+  position: relative;
+  width: 100%;
+  min-height: 420px;
+  overflow: hidden;
+}
+
+.heroBg {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center 20%;
+  filter: blur(24px) brightness(0.3);
+  transform: scale(1.08);
+}
+
+.heroContent {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  gap: 2.5rem;
+  padding: 3.5rem 5% 3rem;
+  align-items: flex-end;
+}
+
+.coverWrap {
+  flex: 0 0 200px;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 24px 56px rgba(0, 0, 0, 0.65);
+}
+
+.heroInfo {
+  flex: 1;
+  min-width: 0;
+}
+
+.title {
+  font-size: clamp(1.6rem, 3vw, 2.6rem);
+  font-weight: 800;
+  color: #fff;
+  margin: 0 0 0.85rem 0;
+  line-height: 1.15;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+}
+
+.badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 1.25rem;
+}
+
+.badge {
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  color: #fff;
+  padding: 4px 14px;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  backdrop-filter: blur(4px);
+}
+
+.badgeScore {
+  background: rgba(244, 117, 33, 0.85);
+  border-color: #f47521;
+}
+
+.heroSynopsis {
+  color: rgba(255, 255, 255, 0.78);
+  font-size: 0.92rem;
+  line-height: 1.65;
+  margin-bottom: 1.4rem;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  max-width: 620px;
+}
+
+.heroActions {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+}
+
+.addBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: #f47521;
+  color: #fff;
+  border: none;
+  padding: 0.65rem 1.6rem;
+  border-radius: 6px;
+  font-weight: 700;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.15s ease;
+}
+
+.addBtn:hover {
+  background: #d9621a;
+  transform: translateY(-2px);
+}
+
+.removeBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(255, 255, 255, 0.12);
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  padding: 0.65rem 1.6rem;
+  border-radius: 6px;
+  font-weight: 700;
+  font-size: 0.9rem;
+  cursor: pointer;
+  backdrop-filter: blur(4px);
+  transition: background 0.2s ease;
+}
+
+.removeBtn:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+/* ── Genre tags (in hero) ──────────────────────── */
+.genreTags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 1.25rem;
+}
+
+.genreTag {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: rgba(255, 255, 255, 0.85);
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+/* ── Content area ──────────────────────────────── */
+.content {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 2.5rem 5% 4rem;
+}
+
+.section {
+  margin-bottom: 2.5rem;
+}
+
+.sectionTitle {
+  color: var(--text-primary);
+  font-size: 1.1rem;
+  font-weight: 700;
+  margin: 0 0 0.85rem 0;
+  padding-bottom: 0.4rem;
+  border-bottom: 2px solid var(--accent-color);
+  display: inline-block;
+}
+
+.bodyText {
+  color: var(--text-secondary);
+  line-height: 1.8;
+  font-size: 0.95rem;
+  margin: 0;
+}
+
+/* ── Stats row ─────────────────────────────────── */
+.statsGrid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 0;
+}
+
+.statCard {
+  background: var(--card-bg-color);
+  border: 1px solid rgba(123, 97, 255, 0.08);
+  border-radius: 10px;
+  padding: 0.85rem 1.25rem;
+  flex: 1 1 120px;
+  text-align: center;
+}
+
+.statValue {
+  display: block;
+  font-size: 1.3rem;
+  font-weight: 800;
+  color: var(--accent-color);
+  line-height: 1.1;
+  margin-bottom: 4px;
+}
+
+.statLabel {
+  display: block;
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* ── Info grid (studios, source, etc.) ─────────── */
+.infoGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 10px;
+}
+
+.infoItem {
+  background: var(--card-bg-color);
+  border: 1px solid rgba(123, 97, 255, 0.08);
+  border-radius: 8px;
+  padding: 0.7rem 1rem;
+}
+
+.infoLabel {
+  display: block;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 4px;
+}
+
+.infoValue {
+  color: var(--text-primary);
+  font-size: 0.88rem;
+  font-weight: 600;
+  margin: 0;
+}
+
+/* ── Content genre tags ────────────────────────── */
+.contentTags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.contentTag {
+  background: var(--card-surface);
+  border: 1px solid rgba(123, 97, 255, 0.12);
+  color: var(--text-primary);
+  padding: 4px 12px;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  transition: border-color 0.15s ease;
+}
+
+.contentTag:hover {
+  border-color: var(--accent-color);
+}
+
+/* ── Trailer ───────────────────────────────────── */
+.trailerWrap {
+  position: relative;
+  width: 100%;
+  max-width: 720px;
+  aspect-ratio: 16 / 9;
+  border-radius: 10px;
+  overflow: hidden;
+  background: var(--card-bg-color);
+}
+
+.trailerWrap iframe {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: none;
+}
+
+.noTrailer {
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  margin: 0;
+}
+
+/* ── Episodes ──────────────────────────────────── */
+.episodeGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 8px;
+}
+
+.episodeItem {
+  background: var(--card-bg-color);
+  border-radius: 8px;
+  border: 1px solid rgba(123, 97, 255, 0.08);
+  transition: background 0.15s ease, transform 0.15s ease, border-color 0.15s ease;
+}
+
+.episodeItem:hover {
+  background: var(--card-surface);
+  transform: translateX(4px);
+  border-color: rgba(123, 97, 255, 0.2);
+}
+
+.episodeLink {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  padding: 0.7rem 1rem;
+  text-decoration: none;
+}
+
+.episodeNum {
+  color: var(--accent-color);
+  font-weight: 700;
+  font-size: 0.8rem;
+  min-width: 44px;
+  flex-shrink: 0;
+}
+
+.episodeTitle {
+  color: var(--text-primary);
+  font-size: 0.88rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ── Songs ─────────────────────────────────────── */
+.songsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 12px;
+}
+
+.songsPrompt {
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  margin-bottom: 1rem;
+}
+
+.searchBtn {
+  background: var(--accent-color);
+  color: #fff;
+  border: none;
+  padding: 0.6rem 1.5rem;
+  border-radius: 6px;
+  font-weight: 700;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: opacity 0.2s ease;
+}
+
+.searchBtn:hover {
+  opacity: 0.85;
+}
+
+/* ── Related ───────────────────────────────────── */
+.relatedRow {
+  display: flex;
+  gap: 10px;
+  overflow-x: auto;
+  padding-bottom: 8px;
+  scrollbar-width: none;
+}
+
+.relatedRow::-webkit-scrollbar {
+  display: none;
+}
+
+/* ── Review box ────────────────────────────────── */
+.reviewBox {
+  background: var(--card-bg-color);
+  border-radius: 10px;
+  border: 1px solid rgba(123, 97, 255, 0.08);
+  padding: 1.25rem 1.5rem;
+}
+
+.reviewLabel {
+  color: var(--text-primary);
+  font-weight: 600;
+  font-size: 0.9rem;
+  margin-bottom: 0.6rem;
+  display: block;
+}
+
+.reviewTextarea {
+  width: 100%;
+  background: var(--surface);
+  border: 1px solid rgba(123, 97, 255, 0.15);
+  border-radius: 8px;
+  color: var(--text-primary);
+  padding: 0.75rem 1rem;
+  font-size: 0.9rem;
+  resize: vertical;
+  min-height: 90px;
+  outline: none;
+  font-family: inherit;
+  transition: border-color 0.15s ease;
+}
+
+.reviewTextarea:focus {
+  border-color: var(--accent-color);
+}
+
+.reviewSubmit {
+  margin-top: 0.75rem;
+  background: var(--accent-color);
+  color: #fff;
+  border: none;
+  padding: 0.55rem 1.4rem;
+  border-radius: 6px;
+  font-weight: 700;
+  font-size: 0.88rem;
+  cursor: pointer;
+  transition: opacity 0.2s ease;
+}
+
+.reviewSubmit:hover {
+  opacity: 0.85;
+}
+
+/* ── Responsive ────────────────────────────────── */
+@media (max-width: 600px) {
+  .heroContent {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: 2rem 5%;
+  }
+
+  .coverWrap {
+    flex: 0 0 auto;
+    width: 150px;
+  }
+
+  .badges {
+    justify-content: center;
+  }
+
+  .heroSynopsis {
+    display: none;
+  }
+
+  .episodeGrid {
+    grid-template-columns: 1fr;
+  }
+}

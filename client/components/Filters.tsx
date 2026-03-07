@@ -18,19 +18,15 @@ const Filters = () => {
   const [filters, setFilters] = useState(false);
 
   const onApply = () => {
-    if (genreCode && rate) {
-      router.push(`${router.asPath}&rated=${rate}&genre=${genreCode}`);
-    }
-    if (genreCode && !rate) {
-      router.push(`${router.asPath}&genre=${genreCode}`);
-    }
-    if (!genreCode && rate) {
-      router.push(`${router.asPath}&rated=${rate}`);
-    }
-    if (router.asPath.includes("rated")) {
-      const n = router.asPath.split("page=1")[0];
-      router.push(`${n}page=1&rated=${rate}`);
-    }
+    if (!rate && !genreCode) return;
+    // Strip any existing filter params to avoid accumulation
+    let base = router.asPath
+      .replace(/&?rated=[^&]*/g, "")
+      .replace(/&?genre=[^&]*/g, "");
+    const params: string[] = [];
+    if (rate) params.push(`rated=${rate}`);
+    if (genreCode) params.push(`genre=${genreCode}`);
+    router.push(`${base}&${params.join("&")}`);
   };
 
   const setGenreFilter = (gen: GenreItem) => {
@@ -46,12 +42,13 @@ const Filters = () => {
 
   return (
     <div>
-      <h4>Rates</h4>
+      <p className="filters-section-title">Rating</p>
       {(EnumInfo as any).rated.map((rate: { name: string }, i: number) => {
         const n = rate.name.toUpperCase();
         return <CheckBox setfFilter={setRate} key={i} name={n} />;
       })}
-      <h4>Genres</h4>
+
+      <p className="filters-section-title">Genre</p>
       <DropdownButton id="dropdown-basic-button" title={genre}>
         {(EnumInfo as any).genres.map((genre: GenreItem, i: number) => (
           <Dropdown.Item onClick={() => setGenreFilter(genre)} key={i}>
@@ -59,15 +56,11 @@ const Filters = () => {
           </Dropdown.Item>
         ))}
       </DropdownButton>
-      <br />
-      <button className="btn btn-dark btn-lg" onClick={onApply}>
-        {" "}
-        Apply
-      </button>
-      <button className="btn btn-dark btn-lg" style={{ margin: "4%" }} onClick={onClear}>
-        {" "}
-        Clear
-      </button>
+
+      <div className="filters-actions">
+        <button className="filters-apply-btn" onClick={onApply}>Apply</button>
+        <button className="filters-clear-btn" onClick={onClear}>Clear</button>
+      </div>
     </div>
   );
 };

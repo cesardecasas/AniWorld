@@ -3,13 +3,17 @@ import { useRouter } from "next/router";
 import { getCover } from "../../pages/api/mangadex";
 import Axios from "axios";
 import Link from "next/link";
-import Row from "react-bootstrap/Row";
-import Col from "react-bootstrap/Col";
 import Image from "next/image";
-import Button from "react-bootstrap/Button";
 import Dropdown from "react-bootstrap/Dropdown";
+import styles from "../../styles/MangaDetail.module.css";
 import type { GetServerSideProps } from "next";
-import type { MangadexManga, MangadexChapter, MangadexRelationship, User, UserList } from "../../types";
+import type {
+  MangadexManga,
+  MangadexChapter,
+  MangadexRelationship,
+  User,
+  UserList,
+} from "../../types";
 
 interface ChapterDisplay {
   chap: MangadexChapter;
@@ -18,7 +22,7 @@ interface ChapterDisplay {
 
 function computeChapterDisplay(
   chapters: MangadexChapter[] = [],
-  missingLabel = "Chapter #"
+  missingLabel = "Chapter #",
 ): ChapterDisplay[] {
   const arr = (chapters || []).slice().sort((a, b) => {
     const an = parseFloat(a.attributes.chapter) || 0;
@@ -67,8 +71,20 @@ const AnimeDetails = ({
   currentUser,
   authenticated,
 }: MangaDetailsProps) => {
-  const { year, description, title, status, publicationDemographic } =
-    details.attributes;
+  const {
+    year,
+    description,
+    title,
+    status,
+    publicationDemographic,
+    contentRating,
+    originalLanguage,
+    lastChapter,
+    lastVolume,
+    updatedAt,
+    tags,
+    links,
+  } = details.attributes;
 
   const route = useRouter();
 
@@ -85,7 +101,9 @@ const AnimeDetails = ({
 
   const populate = async () => {
     const file = cover?.attributes?.fileName;
-    setImage(`https://uploads.mangadex.org/covers/${details.id}/${file}.512.jpg`);
+    setImage(
+      `https://uploads.mangadex.org/covers/${details.id}/${file}.512.jpg`,
+    );
     const arr: string[] = [];
     chapters.forEach((e, i) => {
       if (!lang.includes(e.attributes.translatedLanguage)) {
@@ -96,7 +114,7 @@ const AnimeDetails = ({
       }
     });
     const n = chapters.filter(
-      (el) => el.attributes.translatedLanguage === currentLang
+      (el) => el.attributes.translatedLanguage === currentLang,
     );
     setChapterArr(n);
   };
@@ -128,92 +146,210 @@ const AnimeDetails = ({
   }, [route.query.id, currentLang, currentUser]);
 
   return (
-    <div className="page-container">
-      <div className="detailsBody">
-        <section style={{ marginTop: "1rem" }}>
-          <h1>{title.en}</h1>
-          <Row className="g-3">
-            <Col md={4} xs={12}>
-              <div>
-                {image ? (
-                  <div
-                    style={{ width: "100%", borderRadius: 8, overflow: "hidden" }}
-                  >
-                    <Image
-                      src={image}
-                      width={400}
-                      height={560}
-                      alt={`${title.en} cover`}
-                      className="manga-cover"
-                      style={{ width: "100%", height: "auto", display: "block" }}
-                    />
-                  </div>
-                ) : (
-                  <div
-                    style={{
-                      width: "100%",
-                      height: 200,
-                      background: "#eee",
-                      borderRadius: 8,
-                    }}
-                  />
-                )}
-              </div>
-
-              {authenticated && (
-                <div style={{ marginTop: "1rem" }}>
-                  {userList?.manga_id?.includes(`${details.id}`) ? (
-                    <Button variant="dark" onClick={() => removeManga()}>
-                      Remove from List
-                    </Button>
-                  ) : (
-                    <Button variant="dark" onClick={() => addManga()}>
-                      Add to List
-                    </Button>
-                  )}
-                </div>
-              )}
-            </Col>
-
-            <Col md={8} xs={12}>
-              <aside
-                className="d-flex flex-wrap align-items-center gap-2"
-                style={{ marginTop: "0.5rem" }}
-              >
-                <span className="badge info-badge bg-white text-dark">
-                  Status: {status}
+    <div>
+      {/* ── Hero ── */}
+      <section className={styles.hero}>
+        {image && (
+          <div
+            className={styles.heroBg}
+            style={{ backgroundImage: `url(${image})` }}
+          />
+        )}
+        <div className={styles.heroContent}>
+          {image && (
+            <div className={styles.coverWrap}>
+              <Image
+                src={image}
+                width={180}
+                height={256}
+                alt={`${title.en} cover`}
+                style={{ width: "100%", height: "auto", display: "block" }}
+              />
+            </div>
+          )}
+          <div className={styles.heroInfo}>
+            <h1 className={styles.title}>{title.en ?? Object.values(title)[0]}</h1>
+            <div className={styles.badges}>
+              {status && (
+                <span className={`${styles.badge} ${styles.badgeAccent}`}>
+                  {status}
                 </span>
-                <span className="badge info-badge bg-white text-dark">
-                  Genre:{" "}
+              )}
+              {year && <span className={styles.badge}>{year}</span>}
+              {publicationDemographic && (
+                <span className={styles.badge}>
                   {Array.isArray(publicationDemographic)
                     ? publicationDemographic.join(", ")
                     : publicationDemographic}
                 </span>
-                <span className="badge info-badge bg-white text-dark">
-                  Release: {year}
+              )}
+              {contentRating && (
+                <span className={styles.badge}>{contentRating}</span>
+              )}
+              {originalLanguage && (
+                <span className={styles.badge}>{originalLanguage.toUpperCase()}</span>
+              )}
+            </div>
+            {tags && tags.filter((t) => t.attributes.group === "genre").length > 0 && (
+              <div className={styles.genreTags}>
+                {tags
+                  .filter((t) => t.attributes.group === "genre")
+                  .map((t) => (
+                    <span key={t.id} className={styles.genreTag}>
+                      {t.attributes.name.en ?? Object.values(t.attributes.name)[0]}
+                    </span>
+                  ))}
+              </div>
+            )}
+            {description.en && (
+              <p className={styles.heroSynopsis}>{description.en}</p>
+            )}
+            {authenticated &&
+              (userList?.manga_id?.includes(`${details.id}`) ? (
+                <button className={styles.removeBtn} onClick={removeManga}>
+                  − Remove from List
+                </button>
+              ) : (
+                <button className={styles.addBtn} onClick={addManga}>
+                  + Add to List
+                </button>
+              ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ── Content ── */}
+      <div className={styles.content}>
+        {description.en && (
+          <section className={styles.section}>
+            <h2 className={styles.sectionTitle}>Synopsis</h2>
+            <p className={styles.synopsisText}>{description.en}</p>
+          </section>
+        )}
+
+        <section className={styles.section}>
+          <h2 className={styles.sectionTitle}>Details</h2>
+          <div className={styles.infoGrid}>
+            {status && (
+              <div className={styles.infoItem}>
+                <span className={styles.infoLabel}>Status</span>
+                <p className={styles.infoValue}>{status}</p>
+              </div>
+            )}
+            {year && (
+              <div className={styles.infoItem}>
+                <span className={styles.infoLabel}>Year</span>
+                <p className={styles.infoValue}>{year}</p>
+              </div>
+            )}
+            {originalLanguage && (
+              <div className={styles.infoItem}>
+                <span className={styles.infoLabel}>Original Language</span>
+                <p className={styles.infoValue}>{originalLanguage.toUpperCase()}</p>
+              </div>
+            )}
+            {contentRating && (
+              <div className={styles.infoItem}>
+                <span className={styles.infoLabel}>Content Rating</span>
+                <p className={styles.infoValue}>{contentRating}</p>
+              </div>
+            )}
+            {lastChapter && (
+              <div className={styles.infoItem}>
+                <span className={styles.infoLabel}>Last Chapter</span>
+                <p className={styles.infoValue}>{lastChapter}</p>
+              </div>
+            )}
+            {lastVolume && (
+              <div className={styles.infoItem}>
+                <span className={styles.infoLabel}>Last Volume</span>
+                <p className={styles.infoValue}>{lastVolume}</p>
+              </div>
+            )}
+            {updatedAt && (
+              <div className={styles.infoItem}>
+                <span className={styles.infoLabel}>Last Updated</span>
+                <p className={styles.infoValue}>
+                  {new Date(updatedAt).toLocaleDateString()}
+                </p>
+              </div>
+            )}
+          </div>
+        </section>
+
+        {tags && tags.length > 0 && (
+          <section className={styles.section}>
+            <h2 className={styles.sectionTitle}>Genres & Themes</h2>
+            <div className={styles.contentTags}>
+              {tags.map((t) => (
+                <span key={t.id} className={styles.contentTag}>
+                  {t.attributes.name.en ?? Object.values(t.attributes.name)[0]}
                 </span>
-              </aside>
-            </Col>
-          </Row>
-        </section>
+              ))}
+            </div>
+          </section>
+        )}
 
-        <section style={{ marginTop: "1.5rem" }}>
-          <h3>Synopsis</h3>
-          <p className="lead">{description.en}</p>
-        </section>
+        {links && Object.keys(links).length > 0 && (
+          <section className={styles.section}>
+            <h2 className={styles.sectionTitle}>External Links</h2>
+            <div className={styles.externalLinks}>
+              {links.mal && (
+                <a
+                  href={`https://myanimelist.net/manga/${links.mal}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={styles.externalLink}
+                >
+                  MyAnimeList
+                </a>
+              )}
+              {links.al && (
+                <a
+                  href={`https://anilist.co/manga/${links.al}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={styles.externalLink}
+                >
+                  AniList
+                </a>
+              )}
+              {links.mu && (
+                <a
+                  href={`https://www.mangaupdates.com/series.html?id=${links.mu}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={styles.externalLink}
+                >
+                  MangaUpdates
+                </a>
+              )}
+              {links.raw && (
+                <a
+                  href={links.raw}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={styles.externalLink}
+                >
+                  Raw
+                </a>
+              )}
+            </div>
+          </section>
+        )}
 
-        <section style={{ marginTop: "1rem" }}>
-          <div className="d-flex align-items-center justify-content-between">
-            <h3>Chapter List</h3>
+        <section className={styles.section}>
+          <div className={styles.chapterHeader}>
+            <h2 className={styles.sectionTitle}>Chapters</h2>
             {lang.length > 1 && (
               <Dropdown>
-                <Dropdown.Toggle variant="dark" id="dropdown-basic">
-                  Language: {currentLang}
+                <Dropdown.Toggle variant="dark" id="dropdown-basic" size="sm">
+                  {currentLang.toUpperCase()}
                 </Dropdown.Toggle>
                 <Dropdown.Menu>
                   {lang.map((el, i) => (
                     <Dropdown.Item key={i} onClick={() => setCurrentLang(el)}>
-                      {el}
+                      {el.toUpperCase()}
                     </Dropdown.Item>
                   ))}
                 </Dropdown.Menu>
@@ -221,15 +357,19 @@ const AnimeDetails = ({
             )}
           </div>
 
-          <ul className="list-group chapter-list" style={{ marginTop: "0.75rem" }}>
+          <ul className={styles.chapterList}>
             {computeChapterDisplay(chapterArr, missing).map((item, i) => (
-              <li key={i} className="list-group-item chapter-item">
+              <li key={i} className={styles.chapterItem}>
                 <Link
                   href={`/chapter/${item.chap.id}`}
-                  className="chapter-link d-block"
+                  className={styles.chapterLink}
                 >
-                  <strong>{item.chap.attributes.chapter}.-</strong>{" "}
-                  {item.displayTitle}
+                  <span className={styles.chapterNum}>
+                    Ch. {item.chap.attributes.chapter}
+                  </span>
+                  <span className={styles.chapterTitle}>
+                    {item.displayTitle}
+                  </span>
                 </Link>
               </li>
             ))}

@@ -11,38 +11,33 @@ interface SongCardProps {
 
 const SongCard = ({ url, title, id, album, artist, spotify }: SongCardProps) => {
   return (
-    <div
-      key={id}
-      style={{
-        border: "2px solid black",
-        width: "70%",
-        marginTop: "3%",
-        borderRadius: "1.5rem",
-        backgroundColor: "white",
-        boxShadow: "12px 12px 2px 1px rgba(0, 0, 255, .2)",
-      }}
-    >
-      <p style={{ marginLeft: "10%", fontWeight: "bold" }}> {title}</p>
-      <p>Album: {album}</p>
-      <p>Artist: {artist}</p>
-      <p>
-        Listen the full song{" "}
-        <a href={spotify} target="_blank" rel="noopener noreferrer">
-          here
-        </a>
+    <div key={id} className="songCard">
+      <p className="songTitle">{title}</p>
+      <p className="songMeta">
+        <span>{artist}</span>
+        <span className="songDot">·</span>
+        <span>{album}</span>
       </p>
       {url ? (
         <ReactPlayer
           data-testid="videoPlayer"
           url={url}
           controls={true}
-          height="-30px"
-          width="60%"
-          style={{ marginLeft: "20%" }}
+          height="48px"
+          width="100%"
+          style={{ marginTop: "0.5rem" }}
         />
       ) : (
-        <p style={{ fontWeight: "bold" }}>No Preview Available</p>
+        <p className="songNoPreview">No preview available</p>
       )}
+      <a
+        className="songSpotify"
+        href={spotify}
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        Open in Spotify →
+      </a>
     </div>
   );
 };

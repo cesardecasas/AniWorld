@@ -6,18 +6,13 @@ interface RelatedCardProps {
   type?: string;
 }
 
-const RelatedCard = ({ card }: RelatedCardProps) => {
+const RelatedCard = ({ card, type }: RelatedCardProps) => {
   return (
-    <Link href={`/${card.type}/${card.mal_id}`}>
-      <section
-        style={{
-          backgroundColor: "white",
-          boxShadow: "12px 12px 2px 1px rgba(0, 0, 255, .2)",
-        }}
-        className="refCard"
-      >
-        <p style={{ textAlign: "center" }}>{card.name}</p>
-      </section>
+    <Link href={`/${card.type}/${card.mal_id}`} style={{ textDecoration: "none" }}>
+      <div className="relatedCard">
+        {type && <span className="relatedCardType">{type}</span>}
+        <p className="relatedCardName">{card.name}</p>
+      </div>
     </Link>
   );
 };

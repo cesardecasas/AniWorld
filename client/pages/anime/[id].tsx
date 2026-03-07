@@ -4,18 +4,12 @@ import { useRouter } from "next/router";
 import { Loader, ErrorCard } from "../../components/ResponseHandlers";
 import SongCard from "../../components/cards/SongCard";
 import RelatedCard from "../../components/cards/RelatedCard";
-import CommentBox from "../../components/CommentBox";
 import Image from "next/image";
 import axios from "axios";
-import Container from "react-bootstrap/Container";
-import Col from "react-bootstrap/Col";
-import Row from "react-bootstrap/Row";
-import Button from "react-bootstrap/Button";
-import Link from "next/link";
-import { animeDetails, handleGQL } from "../../queries";
-import { AiFillHeart, AiOutlineHeart } from "react-icons/ai";
+import { animeDetails } from "../../queries";
+import styles from "../../styles/AnimeDetail.module.css";
 import type { GetServerSideProps } from "next";
-import type { JikanAnime, JikanEpisode, User, UserList, SongData, RelatedAnime, AniApiSongResponse } from "../../types";
+import type { JikanAnime, JikanEpisode, User, UserList, AniApiSongResponse } from "../../types";
 
 interface AniApiAnimeDoc {
   id: number;
@@ -107,90 +101,241 @@ const AnimeDetails = ({
     init();
   }, [route.query.id, currentUser, data, aniapi]);
 
+  const heroImage = data?.images?.jpg?.large_image_url;
+  const hasRelated =
+    (details?.related?.Sequel?.length ?? 0) > 0 ||
+    (details?.related?.Prequel?.length ?? 0) > 0;
+
   return (
-    <div className="detailsBody">
-      <section style={{ marginTop: "8%" }}>
-        <Row xs={1} md={2}>
-          <Col md={4} lg={4}>
-            <div style={{ height: "100%", width: "30px" }}>
-              {details?.images?.jpg?.image_url ? (
-                <Image
-                  src={details.images.jpg.image_url}
-                  alt="Anime Poster"
-                  width={300}
-                  height={450}
-                  quality={100}
-                  layout="responsive"
-                />
-              ) : (
-                <></>
+    <div>
+      {/* ── Hero ── */}
+      <section className={styles.hero}>
+        {heroImage && (
+          <div
+            className={styles.heroBg}
+            style={{ backgroundImage: `url(${heroImage})` }}
+          />
+        )}
+        <div className={styles.heroContent}>
+          {data?.images?.jpg?.image_url && (
+            <div className={styles.coverWrap}>
+              <Image
+                src={data.images.jpg.image_url}
+                alt={data.title}
+                width={200}
+                height={300}
+                style={{ width: "100%", height: "auto", display: "block" }}
+              />
+            </div>
+          )}
+          <div className={styles.heroInfo}>
+            <h1 className={styles.title}>{data.title}</h1>
+            <div className={styles.badges}>
+              {data.score > 0 && (
+                <span className={`${styles.badge} ${styles.badgeScore}`}>
+                  ★ {data.score.toFixed(1)}
+                </span>
+              )}
+              {data.type && (
+                <span className={styles.badge}>{data.type}</span>
+              )}
+              {data.status && (
+                <span className={styles.badge}>{data.status}</span>
+              )}
+              {data.episodes && (
+                <span className={styles.badge}>{data.episodes} eps</span>
+              )}
+              {data.duration && (
+                <span className={styles.badge}>{data.duration}</span>
+              )}
+              {data.rating && (
+                <span className={styles.badge}>{data.rating}</span>
+              )}
+              {(data.year ?? data.aired?.prop?.from?.year) && (
+                <span className={styles.badge}>
+                  {data.year ?? data.aired.prop.from.year}
+                </span>
               )}
             </div>
-            {authenticated ? (
-              userList?.anime_id?.includes(`${data.mal_id}`) ? (
-                <Button
-                  style={{ marginTop: "3%" }}
-                  variant="dark"
-                  onClick={() => removeAnime()}
-                >
-                  <AiFillHeart style={{ color: "white" }} />
-                </Button>
-              ) : (
-                <Button
-                  style={{ marginTop: "3%" }}
-                  variant="dark"
-                  onClick={() => addAnime()}
-                >
-                  <AiOutlineHeart style={{ color: "white" }} />
-                </Button>
-              )
-            ) : (
-              <></>
+            {data.genres?.length > 0 && (
+              <div className={styles.genreTags}>
+                {data.genres.map((g) => (
+                  <span key={g.mal_id} className={styles.genreTag}>
+                    {g.name}
+                  </span>
+                ))}
+              </div>
             )}
-          </Col>
-          <Col md={7} lg={7} style={{ marginTop: "13%" }}>
-            <h1>{details.title}</h1>
-            <p>{details.synopsis}</p>
-          </Col>
-        </Row>
+            {data.synopsis && (
+              <p className={styles.heroSynopsis}>{data.synopsis}</p>
+            )}
+            {authenticated && (
+              <div className={styles.heroActions}>
+                {userList?.anime_id?.includes(`${data.mal_id}`) ? (
+                  <button className={styles.removeBtn} onClick={removeAnime}>
+                    ♥ Remove from List
+                  </button>
+                ) : (
+                  <button className={styles.addBtn} onClick={addAnime}>
+                    ♡ Add to List
+                  </button>
+                )}
+              </div>
+            )}
+          </div>
+        </div>
       </section>
-      <section style={{ marginTop: "3%" }}>
-        {details?.background ? <h4>Background</h4> : <></>}
-        <p>{details.background}</p>
-      </section>
-      <section>
-        <h4>Trailer</h4>
-        {details?.trailer?.url ? (
-          <iframe
-            className="trailer"
-            width="75%"
-            height="315"
-            src={details.trailer.embed_url ?? ""}
-            title="YouTube video player"
-            frameBorder="0"
-            allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-            allowFullScreen
-          ></iframe>
-        ) : (
-          <p>No trailer Available</p>
-        )}
-      </section>
-      <h4>Related</h4>
 
-      {aniDetails?.id ? (
-        <div>
-          {songList?.data ? (
-            <p>Here are the songs preview found</p>
-          ) : error ? (
-            <></>
+      {/* ── Content ── */}
+      <div className={styles.content}>
+
+        {/* Synopsis */}
+        {data.synopsis && (
+          <section className={styles.section}>
+            <h2 className={styles.sectionTitle}>Synopsis</h2>
+            <p className={styles.bodyText}>{data.synopsis}</p>
+          </section>
+        )}
+
+        {/* Stats */}
+        {(data.rank || data.popularity || data.scored_by || data.members) && (
+          <section className={styles.section}>
+            <h2 className={styles.sectionTitle}>Stats</h2>
+            <div className={styles.statsGrid}>
+              {data.score > 0 && (
+                <div className={styles.statCard}>
+                  <span className={styles.statValue}>
+                    {data.score.toFixed(2)}
+                  </span>
+                  <span className={styles.statLabel}>
+                    Score{data.scored_by ? ` · ${data.scored_by.toLocaleString()} users` : ""}
+                  </span>
+                </div>
+              )}
+              {data.rank && (
+                <div className={styles.statCard}>
+                  <span className={styles.statValue}>#{data.rank.toLocaleString()}</span>
+                  <span className={styles.statLabel}>Ranked</span>
+                </div>
+              )}
+              {data.popularity && (
+                <div className={styles.statCard}>
+                  <span className={styles.statValue}>#{data.popularity.toLocaleString()}</span>
+                  <span className={styles.statLabel}>Popularity</span>
+                </div>
+              )}
+              {data.members && (
+                <div className={styles.statCard}>
+                  <span className={styles.statValue}>{data.members.toLocaleString()}</span>
+                  <span className={styles.statLabel}>Members</span>
+                </div>
+              )}
+              {data.favorites && (
+                <div className={styles.statCard}>
+                  <span className={styles.statValue}>{data.favorites.toLocaleString()}</span>
+                  <span className={styles.statLabel}>Favorites</span>
+                </div>
+              )}
+            </div>
+          </section>
+        )}
+
+        {/* Info grid */}
+        <section className={styles.section}>
+          <h2 className={styles.sectionTitle}>Details</h2>
+          <div className={styles.infoGrid}>
+            {data.studios?.length > 0 && (
+              <div className={styles.infoItem}>
+                <span className={styles.infoLabel}>Studio</span>
+                <p className={styles.infoValue}>
+                  {data.studios.map((s) => s.name).join(", ")}
+                </p>
+              </div>
+            )}
+            {data.producers?.length > 0 && (
+              <div className={styles.infoItem}>
+                <span className={styles.infoLabel}>Producers</span>
+                <p className={styles.infoValue}>
+                  {data.producers.map((p) => p.name).join(", ")}
+                </p>
+              </div>
+            )}
+            {data.source && (
+              <div className={styles.infoItem}>
+                <span className={styles.infoLabel}>Source</span>
+                <p className={styles.infoValue}>{data.source}</p>
+              </div>
+            )}
+            {data.aired?.string && (
+              <div className={styles.infoItem}>
+                <span className={styles.infoLabel}>Aired</span>
+                <p className={styles.infoValue}>{data.aired.string}</p>
+              </div>
+            )}
+            {data.season && data.year && (
+              <div className={styles.infoItem}>
+                <span className={styles.infoLabel}>Season</span>
+                <p className={styles.infoValue}>
+                  {data.season.charAt(0).toUpperCase() + data.season.slice(1)}{" "}
+                  {data.year}
+                </p>
+              </div>
+            )}
+            {data.broadcast?.string && (
+              <div className={styles.infoItem}>
+                <span className={styles.infoLabel}>Broadcast</span>
+                <p className={styles.infoValue}>{data.broadcast.string}</p>
+              </div>
+            )}
+          </div>
+        </section>
+
+        {/* Genres & themes */}
+        {[...( data.genres ?? []), ...(data.themes ?? []), ...(data.demographics ?? [])].length > 0 && (
+          <section className={styles.section}>
+            <h2 className={styles.sectionTitle}>Genres & Themes</h2>
+            <div className={styles.contentTags}>
+              {[...(data.genres ?? []), ...(data.themes ?? []), ...(data.demographics ?? [])].map((g) => (
+                <span key={g.mal_id} className={styles.contentTag}>{g.name}</span>
+              ))}
+            </div>
+          </section>
+        )}
+
+        {/* Background */}
+        {details.background && (
+          <section className={styles.section}>
+            <h2 className={styles.sectionTitle}>Background</h2>
+            <p className={styles.bodyText}>{details.background}</p>
+          </section>
+        )}
+
+        {/* Trailer */}
+        <section className={styles.section}>
+          <h2 className={styles.sectionTitle}>Trailer</h2>
+          {details?.trailer?.embed_url ? (
+            <div className={styles.trailerWrap}>
+              <iframe
+                src={details.trailer.embed_url}
+                title={`${data.title} trailer`}
+                allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+              />
+            </div>
           ) : (
-            <p>Look for songs</p>
+            <p className={styles.noTrailer}>No trailer available</p>
           )}
-          {songList?.data ? (
-            <Row xs={1} sm={1} md={2}>
-              {songList.data.documents.map((song, i) => (
-                <Col key={i}>
+        </section>
+
+        {/* Songs */}
+        {aniDetails?.id && (
+          <section className={styles.section}>
+            <h2 className={styles.sectionTitle}>Soundtrack</h2>
+            {songList?.data ? (
+              <div className={styles.songsGrid}>
+                {songList.data.documents.map((song, i) => (
                   <SongCard
+                    key={i}
                     spotify={song.open_spotify_url}
                     title={song.title}
                     url={song.preview_url}
@@ -198,69 +343,78 @@ const AnimeDetails = ({
                     album={song.album}
                     artist={song.artist}
                   />
-                </Col>
-              ))}
-            </Row>
-          ) : load ? (
-            <Loader />
-          ) : error ? (
-            <ErrorCard msg="Songs" />
-          ) : (
-            <button className="btn btn-dark btn-lg" id="search" onClick={fetchSongs}>
-              Search
-            </button>
-          )}
-        </div>
-      ) : (
-        <></>
-      )}
+                ))}
+              </div>
+            ) : load ? (
+              <Loader />
+            ) : error ? (
+              <ErrorCard msg="Songs" />
+            ) : (
+              <>
+                <p className={styles.songsPrompt}>
+                  Search for soundtrack previews for this anime.
+                </p>
+                <button className={styles.searchBtn} onClick={fetchSongs}>
+                  Find Soundtrack
+                </button>
+              </>
+            )}
+          </section>
+        )}
 
-      {ep ? (
-        <section style={{ marginTop: "2%" }}>
-          <h3>Episodes</h3>
-          <Row xs={1} sm={1} md={2}>
-            {ep?.map((el, i) => (
-              <Col key={i} className="chapters">
-                <a href={el.url} target="_blank" rel="noopener noreferrer">
-                  <p
-                    style={{
-                      border: "2px solid black",
-                      borderRadius: "1.5rem",
-                      color: "black",
-                      textDecorationColor: "black",
-                      backgroundColor: "white",
-                      textAlign: "center",
-                    }}
+        {/* Episodes */}
+        {ep && ep.length > 0 && (
+          <section className={styles.section}>
+            <h2 className={styles.sectionTitle}>
+              Episodes{" "}
+              <span style={{ fontSize: "0.8rem", fontWeight: 400, color: "var(--text-secondary)" }}>
+                ({ep.length})
+              </span>
+            </h2>
+            <div className={styles.episodeGrid}>
+              {ep.map((el, i) => (
+                <div key={i} className={styles.episodeItem}>
+                  <a
+                    href={el.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className={styles.episodeLink}
                   >
-                    {el.mal_id}.-{el.title}
-                  </p>
-                </a>
-              </Col>
-            ))}
-          </Row>
-        </section>
-      ) : (
-        <></>
-      )}
+                    <span className={styles.episodeNum}>Ep. {el.mal_id}</span>
+                    <span className={styles.episodeTitle}>{el.title}</span>
+                  </a>
+                </div>
+              ))}
+            </div>
+          </section>
+        )}
 
-      <br />
-      <h4>Related Search</h4>
-      <Row xs={2} sm={2} md={4}>
-        {details?.related?.Sequel?.map((card, i) => (
-          <Col key={i}>
-            <RelatedCard card={card} type="Sequel" />
-          </Col>
-        ))}
-        {details?.related?.Prequel?.map((card, i) => (
-          <Col key={i}>
-            <RelatedCard card={card} type="Prequel" />
-          </Col>
-        ))}
-      </Row>
-      <br />
-      <section>
-        <CommentBox />
-      </section>
+        {/* Related */}
+        {hasRelated && (
+          <section className={styles.section}>
+            <h2 className={styles.sectionTitle}>Related</h2>
+            <div className={styles.relatedRow}>
+              {details?.related?.Sequel?.map((card, i) => (
+                <RelatedCard key={`sq-${i}`} card={card} type="Sequel" />
+              ))}
+              {details?.related?.Prequel?.map((card, i) => (
+                <RelatedCard key={`pr-${i}`} card={card} type="Prequel" />
+              ))}
+            </div>
+          </section>
+        )}
+
+        {/* Reviews */}
+        <section className={styles.section}>
+          <h2 className={styles.sectionTitle}>Reviews</h2>
+          <div className={styles.reviewBox}>
+            <label className={styles.reviewLabel}>Leave a review</label>
+            <textarea className={styles.reviewTextarea} rows={3} placeholder="Share your thoughts..." />
+            <button className={styles.reviewSubmit}>Submit</button>
+          </div>
+        </section>
+
+      </div>
     </div>
   );
 };

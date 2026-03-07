@@ -15,32 +15,92 @@ export interface JikanAiredProp {
   year: number | null;
 }
 
+/** A named MAL entity — genre, studio, producer, theme, demographic, etc. */
+export interface JikanEntity {
+  mal_id: number;
+  type: string;
+  name: string;
+  url: string;
+}
+
 export interface JikanAnime {
   mal_id: number;
+  url: string;
+
+  // Titles
   title: string;
+  title_english: string | null;
+  title_japanese: string | null;
+  title_synonyms: string[];
+  titles: Array<{ type: string; title: string }>;
+
+  // Media
   images: {
     jpg: JikanAnimeImage;
     webp: JikanAnimeImage;
   };
+  trailer: {
+    youtube_id: string | null;
+    url: string | null;
+    embed_url: string | null;
+  };
+
+  // Classification
+  type: string;          // "TV" | "OVA" | "Movie" | "Special" | etc.
+  source: string;        // "Manga" | "Original" | "Light novel" | etc.
+  episodes: number;
+  status: string;        // "Finished Airing" | "Currently Airing" | etc.
+  airing: boolean;
+  duration: string;      // e.g. "24 min per ep"
+  rating: string;        // e.g. "PG-13 - Teens 13 or older"
+
+  // Airing info
   aired: {
+    from: string | null;
+    to: string | null;
     prop: {
       from: JikanAiredProp;
       to: JikanAiredProp;
     };
+    string: string;
   };
+  season: string | null;
+  year: number | null;
+  broadcast: {
+    day: string | null;
+    time: string | null;
+    timezone: string | null;
+    string: string | null;
+  };
+
+  // Scores & stats
+  score: number;
+  scored_by: number;
+  rank: number;
+  popularity: number;
+  members: number;
+  favorites: number;
+
+  // Text
   synopsis: string;
   background: string | null;
-  trailer: {
-    url: string | null;
-    embed_url: string | null;
-  };
+
+  // Production
+  producers: JikanEntity[];
+  licensors: JikanEntity[];
+  studios: JikanEntity[];
+
+  // Genres / tags
+  genres: JikanEntity[];
+  explicit_genres: JikanEntity[];
+  themes: JikanEntity[];
+  demographics: JikanEntity[];
+
+  // Relations (legacy structure used by detail pages)
   related: {
     Sequel?: RelatedAnime[];
     Prequel?: RelatedAnime[];
   };
-  score: number;
-  episodes: number;
-  rated: string;
 }
 
 export interface RelatedAnime {
@@ -69,6 +129,17 @@ export interface Quote {
   };
 }
 
+export interface MangadexTag {
+  id: string;
+  type: string;
+  attributes: {
+    name: Record<string, string>;
+    description: Record<string, string>;
+    group: string; // "genre" | "theme" | "format" | "content"
+    version: number;
+  };
+}
+
 export interface MangadexRelationship {
   id: string;
   type: string;
@@ -80,10 +151,26 @@ export interface MangadexRelationship {
 
 export interface MangadexMangaAttributes {
   title: Record<string, string>;
+  altTitles: Record<string, string>[];
   description: Record<string, string>;
+  isLocked: boolean;
+  links: Record<string, string> | null;
+  officialLinks: Record<string, string> | null;
+  originalLanguage: string;
+  lastVolume: string | null;
+  lastChapter: string | null;
+  publicationDemographic: string | string[] | null;
   status: string;
   year: number | null;
-  publicationDemographic: string | string[] | null;
+  contentRating: string;
+  tags: MangadexTag[];
+  state: string;
+  chapterNumbersResetOnNewVolume: boolean;
+  createdAt: string;
+  updatedAt: string;
+  version: number;
+  availableTranslatedLanguages: string[];
+  latestUploadedChapter: string | null;
 }
 
 export interface MangadexManga {

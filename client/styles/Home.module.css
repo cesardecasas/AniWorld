@@ -1,43 +1,193 @@
-/* 
-$desktop:1200px;
-$laptop:1024px;
-$tablet:768px;
-$phone:480px; */
-
-
 .container {
-  padding: 1.25rem 0.5rem 3rem 0.5rem;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-  align-items: center;
-  max-width: 1200px;
+  width: 100%;
+  max-width: 1600px;
   margin: 0 auto;
-  width: 100%;
-  background-color: transparent;
+  padding-bottom: 3rem;
 }
 
-.main {
-  padding: 3rem 0 2rem 0;
-  flex: 1;
+/* ── Hero ──────────────────────────────────────── */
+.hero {
+  position: relative;
+  width: 100%;
+  height: 65vh;
+  min-height: 420px;
+  background-size: cover;
+  background-position: center 20%;
+  overflow: hidden;
+}
+
+.heroOverlay {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(to right, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.5) 55%, transparent 100%),
+    linear-gradient(to top, rgba(0,0,0,0.75) 0%, transparent 50%);
   display: flex;
-  flex-direction: column;
-  justify-content: center;
+  align-items: flex-end;
+  padding: 3rem 4%;
+}
+
+.heroContent {
+  max-width: 540px;
+}
+
+.heroBadges {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 0.85rem;
+}
+
+.heroBadge {
+  background: rgba(255,255,255,0.15);
+  color: #fff;
+  border: 1px solid rgba(255,255,255,0.3);
+  padding: 3px 10px;
+  border-radius: 4px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  backdrop-filter: blur(4px);
+}
+
+.heroScore {
+  background: #f47521;
+  border-color: #f47521;
+}
+
+.heroTitle {
+  font-size: clamp(1.6rem, 3vw, 2.6rem);
+  font-weight: 800;
+  color: #fff;
+  margin: 0 0 0.75rem 0;
+  line-height: 1.15;
+  text-shadow: 0 2px 10px rgba(0,0,0,0.5);
+}
+
+.heroSynopsis {
+  font-size: 0.95rem;
+  color: rgba(255,255,255,0.82);
+  margin-bottom: 1.4rem;
+  line-height: 1.6;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.heroBtn {
+  display: inline-flex;
   align-items: center;
+  gap: 8px;
+  background: #f47521;
+  color: #fff;
+  border: none;
+  padding: 0.7rem 1.9rem;
+  border-radius: 6px;
+  font-weight: 700;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.15s ease;
+  text-decoration: none;
 }
 
-
-.holder{
-  width:100%;
-  margin: 1.5rem 0;
-  display:grid; 
-  grid-template-columns: 60% 40%;
-  gap: 1.5rem;
+.heroBtn:hover {
+  background: #d9621a;
+  transform: translateY(-2px);
+  color: #fff;
+  text-decoration: none;
 }
 
-.quote {
+/* ── Sections wrapper ──────────────────────────── */
+.sections {
+  padding: 0 4%;
+  margin-top: 2rem;
+}
+
+.section {
+  margin-top: 2.5rem;
+}
+
+.sectionHeader {
+  display: flex;
+  align-items: baseline;
+  gap: 1rem;
+  margin-bottom: 0.9rem;
+}
+
+.sectionHeading {
+  color: var(--text-primary);
+  font-weight: 700;
+  font-size: 1.15rem;
+  margin: 0;
+}
+
+/* ── Horizontal scroll row ─────────────────────── */
+.scrollRow {
+  display: flex;
+  gap: 10px;
+  overflow-x: auto;
+  padding-bottom: 10px;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.scrollRow::-webkit-scrollbar {
+  display: none;
+}
+
+/* ── Poster card ───────────────────────────────── */
+.posterLink {
+  flex: 0 0 148px;
+  max-width: 148px;
+  min-width: 0;
+  overflow: hidden;
+  text-decoration: none;
+  color: inherit;
+  display: block;
+}
+
+.posterCard {
+  border-radius: 8px;
+  overflow: hidden;
+  background: var(--card-bg-color);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.posterLink:hover .posterCard {
+  transform: scale(1.06);
+  box-shadow: 0 14px 32px rgba(0,0,0,0.4);
+}
+
+.posterImgWrap {
+  position: relative;
   width: 100%;
-  margin: 1rem 0;
+  height: 210px;
+  overflow: hidden;
+  background: var(--card-surface);
+}
+
+.posterInfo {
+  padding: 7px 9px 9px;
+}
+
+.posterTitle {
+  color: var(--text-primary);
+  font-size: 0.82rem;
+  font-weight: 600;
+  margin: 0 0 3px 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.posterMeta {
+  color: var(--text-secondary);
+  font-size: 0.73rem;
+  margin: 0;
+}
+
+/* ── Quote ─────────────────────────────────────── */
+.quote {
+  margin: 2.5rem 0 0;
   text-align: center;
   background: var(--quote-bg);
   padding: 1.5rem 2rem;
@@ -47,21 +197,42 @@ $phone:480px; */
   transition: background 0.25s ease;
 }
 
-.sectionHeading {
-  color: var(--section-heading-color);
+.quoteAnime {
+  font-size: 0.8rem;
   font-weight: 700;
-  font-size: 1.15rem;
-  letter-spacing: 0.3px;
-  padding-bottom: 0.4rem;
-  border-bottom: 2px solid var(--accent-color);
-  display: inline-block;
-  margin-bottom: 0.5rem;
+  color: #f47521;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  margin: 0 0 0.5rem 0;
 }
 
-@media (max-width: 480px) {
-  .holder{
-    width:100%;
-    margin-left:0;
-    margin-top:1rem; 
+.quoteText {
+  font-style: italic;
+  color: var(--text-primary);
+  margin: 0 0 0.4rem 0;
+  font-size: 0.95rem;
+  line-height: 1.6;
+}
+
+.quoteChar {
+  font-size: 0.82rem;
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+/* ── Responsive ────────────────────────────────── */
+@media (max-width: 600px) {
+  .heroOverlay {
+    padding: 1.5rem;
+  }
+  .hero {
+    height: 55vh;
+  }
+  .sections {
+    padding: 0 3%;
+  }
+  .posterLink {
+    flex: 0 0 118px;
+    max-width: 118px;
   }
 }

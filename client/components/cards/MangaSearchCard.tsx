@@ -2,72 +2,49 @@ import Link from "next/link";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import type { MangadexManga } from "../../types";
-import { Loader } from "../ResponseHandlers";
+import styles from "../../styles/Search.module.css";
 
 interface MangaSearchCardProps {
   man: MangadexManga;
 }
 
 const MangaSearchCard = ({ man }: MangaSearchCardProps) => {
-  const { id, relationships } = man;
-
-  const [manga, setManga] = useState<MangadexManga | null>(null);
+  const { id, relationships, attributes } = man;
   const [image, setImage] = useState("");
 
-  const populate = async (id: string, att: typeof relationships) => {
-    let file: string | undefined;
-    att.forEach((e) => {
-      if (e.attributes) {
-        file = e.attributes.fileName as string;
-      }
-    });
-
-    setImage(`https://uploads.mangadex.org/covers/${id}/${file}.512.jpg`);
-  };
-
   useEffect(() => {
-    setManga(man);
-    populate(id, relationships);
+    const coverRel = relationships.find((r) => r.type === "cover_art");
+    const fileName = coverRel?.attributes?.fileName as string | undefined;
+    if (fileName) {
+      setImage(`https://uploads.mangadex.org/covers/${id}/${fileName}.512.jpg`);
+    }
   }, [id]);
 
+  const title =
+    attributes.title.en || Object.values(attributes.title)[0] || "";
+
   return (
-    <div className="manga-search-card card mb-3">
-      <div className="manga-search-inner">
-        <div className="manga-cover-col">
-          {image ? (
-            <Image
-              data-testid="img"
-              src={image}
-              layout="responsive"
-              width={300}
-              height={450}
-              className="card-img-top manga-search-cover"
-              alt="Manga poster"
-            />
-          ) : (
-            <Loader />
-          )}
-        </div>
-        <div className="manga-info-col">
-          <div className="card-body">
-            <h5 className="card-title" data-testid="title">
-              {manga?.attributes?.title?.en || String(manga?.attributes?.title ?? "")}
-            </h5>
-            <p className="card-text manga-description">
-              {manga?.attributes?.description?.en || ""}
-            </p>
-            <p className="card-text">
-              <small className="text-muted">
-                {manga?.attributes?.publicationDemographic || ""}
-              </small>
-            </p>
-            <Link href={`/manga/${id}`} className="btn details-btn">
-              Details
-            </Link>
-          </div>
-        </div>
+    <Link href={`/manga/${id}`} className={styles.card}>
+      <div className={styles.imgWrap}>
+        {image && (
+          <Image
+            data-testid="img"
+            src={image}
+            alt={title}
+            fill
+            style={{ objectFit: "cover" }}
+          />
+        )}
       </div>
-    </div>
+      <div className={styles.cardInfo}>
+        <p className={styles.cardTitle} data-testid="title">
+          {title}
+        </p>
+        {attributes.status && (
+          <p className={styles.cardMeta}>{attributes.status}</p>
+        )}
+      </div>
+    </Link>
   );
 };
 

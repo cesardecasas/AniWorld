@@ -1,80 +1,178 @@
 import axios from "axios";
-import MangaCard from "../components/cards/MangaCard";
-import Container from "react-bootstrap/Container";
-import Col from "react-bootstrap/Col";
-import Row from "react-bootstrap/Row";
-import Button from "react-bootstrap/Button";
+import Link from "next/link";
+import Image from "next/image";
 import { useState } from "react";
 import MangaSearchCard from "../components/cards/MangaSearchCard";
+import styles from "../styles/Manga.module.css";
 import type { GetStaticProps } from "next";
 import type { MangadexManga } from "../types";
 
-interface MangaPageData {
-  data: MangadexManga[];
+function getCoverUrl(manga: MangadexManga): string {
+  const rel = manga.relationships.find((r) => r.type === "cover_art");
+  const fileName = rel?.attributes?.fileName;
+  return fileName
+    ? `https://uploads.mangadex.org/covers/${manga.id}/${fileName}.512.jpg`
+    : "";
 }
+
+function getTitle(manga: MangadexManga): string {
+  return (
+    manga.attributes.title.en ??
+    Object.values(manga.attributes.title)[0] ??
+    "Unknown"
+  );
+}
+
+const PosterCard = ({ manga }: { manga: MangadexManga }) => {
+  const cover = getCoverUrl(manga);
+  const title = getTitle(manga);
+  return (
+    <Link href={`/manga/${manga.id}`} className={styles.posterLink}>
+      <div className={styles.posterCard}>
+        <div className={styles.posterImgWrap}>
+          {cover && (
+            <Image
+              src={cover}
+              alt={title}
+              fill
+              style={{ objectFit: "cover" }}
+              sizes="148px"
+            />
+          )}
+        </div>
+        <p className={styles.posterTitle}>{title}</p>
+      </div>
+    </Link>
+  );
+};
 
 interface MangaProps {
-  manga: MangaPageData;
-  recent: MangaPageData;
+  popular: MangadexManga[];
+  recentlyUpdated: MangadexManga[];
+  newThisYear: MangadexManga[];
 }
 
-const Manga = ({ manga, recent }: MangaProps) => {
+const Manga = ({ popular, recentlyUpdated, newThisYear }: MangaProps) => {
   const [random, setRandom] = useState<MangadexManga | null>(null);
-  const client = axios.create({ baseURL: "https://api.mangadex.org/" });
+  const [loadingRandom, setLoadingRandom] = useState(false);
 
   const getRandomManga = async () => {
+    setLoadingRandom(true);
     try {
-      const res = await client.get("manga/random?includes[]=cover_art");
+      const res = await axios.get(
+        "https://api.mangadex.org/manga/random?includes[]=cover_art"
+      );
       setRandom(res.data.data);
     } catch (error) {
       console.log(error);
     }
+    setLoadingRandom(false);
   };
 
-  return (
-    <div>
-      <Container className="page-container">
-        <Row xs={1} sm={1} md={2}>
-          <Col>
-            <h2 style={{ textAlign: "center" }}>Most Popular Manga</h2>
-            <Row xs={2} sm={2} md={2}>
-              {manga?.data?.map((m, i) => (
-                <Col key={i}>
-                  <MangaCard
-                    name={m.attributes.title.en}
-                    id={m.id}
-                    att={m.relationships}
-                  />
-                </Col>
-              ))}
-            </Row>
-          </Col>
-          <Col>
-            <h2 style={{ textAlign: "center" }}>This Year Released</h2>
-            <Row xs={2} sm={2} md={2}>
-              {recent?.data?.map((el, i) => (
-                <Col key={i}>
-                  <MangaCard
-                    name={el.attributes.title.en}
-                    id={el.id}
-                    att={el.relationships}
-                  />
-                </Col>
-              ))}
-            </Row>
-          </Col>
-        </Row>
+  const featured = popular[0];
+  const featuredCover = featured ? getCoverUrl(featured) : "";
+  const featuredTitle = featured ? getTitle(featured) : "";
+  const featuredDesc = featured?.attributes.description?.en ?? "";
 
-        <p>Unsure what to read? find a random manga</p>
-        <Button
-          variant="dark"
-          style={{ marginBottom: "3%" }}
-          onClick={() => getRandomManga()}
-        >
-          Find!
-        </Button>
-        {random?.attributes ? <MangaSearchCard man={random} /> : <></>}
-      </Container>
+  return (
+    <div className={styles.page}>
+      {/* ── Hero ── */}
+      {featured && (
+        <section className={styles.hero}>
+          {featuredCover && (
+            <div
+              className={styles.heroBg}
+              style={{ backgroundImage: `url(${featuredCover})` }}
+            />
+          )}
+          <div className={styles.heroContent}>
+            {featuredCover && (
+              <div className={styles.heroCover}>
+                <Image
+                  src={featuredCover}
+                  alt={featuredTitle}
+                  fill
+                  style={{ objectFit: "cover" }}
+                  priority
+                />
+              </div>
+            )}
+            <div className={styles.heroInfo}>
+              <div className={styles.heroEyebrow}>Featured Manga</div>
+              <h1 className={styles.heroTitle}>{featuredTitle}</h1>
+              {featured.attributes.status && (
+                <span className={styles.heroBadge}>
+                  {featured.attributes.status}
+                </span>
+              )}
+              {featuredDesc && (
+                <p className={styles.heroSynopsis}>{featuredDesc}</p>
+              )}
+              <Link href={`/manga/${featured.id}`} className={styles.heroBtn}>
+                Read Now →
+              </Link>
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* ── Sections ── */}
+      <div className={styles.sections}>
+        <section className={styles.section}>
+          <div className={styles.sectionHeader}>
+            <h2 className={styles.sectionHeading}>Most Popular</h2>
+          </div>
+          <div className={styles.scrollRow}>
+            {popular.map((m) => (
+              <PosterCard key={m.id} manga={m} />
+            ))}
+          </div>
+        </section>
+
+        <section className={styles.section}>
+          <div className={styles.sectionHeader}>
+            <h2 className={styles.sectionHeading}>Recently Updated</h2>
+          </div>
+          <div className={styles.scrollRow}>
+            {recentlyUpdated.map((m) => (
+              <PosterCard key={m.id} manga={m} />
+            ))}
+          </div>
+        </section>
+
+        <section className={styles.section}>
+          <div className={styles.sectionHeader}>
+            <h2 className={styles.sectionHeading}>New This Year</h2>
+          </div>
+          <div className={styles.scrollRow}>
+            {newThisYear.map((m) => (
+              <PosterCard key={m.id} manga={m} />
+            ))}
+          </div>
+        </section>
+
+        {/* ── Random ── */}
+        <section className={styles.randomSection}>
+          <div className={styles.randomHeader}>
+            <div>
+              <h2 className={styles.sectionHeading}>Feeling Lucky?</h2>
+              <p className={styles.randomSub}>Discover a random manga</p>
+            </div>
+            <button
+              className={styles.randomBtn}
+              onClick={getRandomManga}
+              disabled={loadingRandom}
+            >
+              {loadingRandom ? "Finding…" : "Random Manga"}
+            </button>
+          </div>
+          {random && (
+            <div className={styles.randomResult}>
+              <MangaSearchCard man={random} />
+            </div>
+          )}
+        </section>
+      </div>
     </div>
   );
 };
@@ -83,20 +181,20 @@ export default Manga;
 
 export const getStaticProps: GetStaticProps = async () => {
   const client = axios.create({ baseURL: "https://api.mangadex.org/" });
-  const d = new Date();
-  const year = d.getFullYear();
+  const year = new Date().getFullYear();
+  const base = "includes[]=cover_art&availableTranslatedLanguage[]=en";
 
-  const res = await client.get(
-    "manga?limit=4&includes[]=cover_art&originalLanguage[]=en&availableTranslatedLanguage[]=en"
-  );
-  const nRes = await client.get(
-    `manga?limit=4&offset=0&year=${year}&includes[]=cover_art&originalLanguage[]=en&availableTranslatedLanguage[]=en`
-  );
+  const [popularRes, recentRes, yearRes] = await Promise.all([
+    client.get(`manga?limit=12&order[followedCount]=desc&${base}`),
+    client.get(`manga?limit=12&order[latestUploadedChapter]=desc&${base}`),
+    client.get(`manga?limit=12&year=${year}&order[followedCount]=desc&${base}`),
+  ]);
 
   return {
     props: {
-      manga: res.data,
-      recent: nRes.data,
+      popular: popularRes.data.data,
+      recentlyUpdated: recentRes.data.data,
+      newThisYear: yearRes.data.data,
     },
     revalidate: 3600,
   };

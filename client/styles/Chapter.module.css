@@ -1,0 +1,171 @@
+/* ── Reader bar (sticky top) ────────────────────── */
+.readerBar {
+  position: sticky;
+  top: var(--nav-height, 56px);
+  z-index: 100;
+  background: rgba(15, 23, 42, 0.92);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.readerBarInner {
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 0.6rem 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.backBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: rgba(255, 255, 255, 0.65);
+  font-size: 0.82rem;
+  font-weight: 600;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: color 0.15s ease;
+  flex-shrink: 0;
+}
+
+.backBtn:hover {
+  color: #fff;
+  text-decoration: none;
+}
+
+.chapterInfo {
+  flex: 1;
+  min-width: 0;
+  text-align: center;
+}
+
+.chapterNum {
+  color: var(--accent-color, #f47521);
+  font-weight: 700;
+  font-size: 0.85rem;
+}
+
+.chapterTitle {
+  color: rgba(255, 255, 255, 0.55);
+  font-size: 0.78rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-top: 1px;
+}
+
+.navBtns {
+  display: flex;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.navBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  color: #fff;
+  padding: 5px 12px;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: none;
+  transition: background 0.15s ease;
+  white-space: nowrap;
+}
+
+.navBtn:hover {
+  background: rgba(255, 255, 255, 0.16);
+  color: #fff;
+  text-decoration: none;
+}
+
+.navBtn:disabled,
+.navBtn[aria-disabled="true"] {
+  opacity: 0.3;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+/* ── Quality toggle ─────────────────────────────── */
+.qualityToggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.6);
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+  flex-shrink: 0;
+}
+
+.qualityToggle:hover {
+  background: rgba(255, 255, 255, 0.12);
+  color: #fff;
+}
+
+.qualityToggleActive {
+  background: rgba(244, 117, 33, 0.18);
+  border-color: rgba(244, 117, 33, 0.4);
+  color: #f47521;
+}
+
+/* ── Reader ─────────────────────────────────────── */
+.reader {
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 1rem 0 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.pageImg {
+  display: block;
+  width: 100%;
+  height: auto;
+  /* Remove gap between pages */
+  margin: 0;
+  padding: 0;
+  /* Prevent layout shift by reserving approx space */
+  min-height: 100px;
+  background: rgba(255, 255, 255, 0.03);
+}
+
+/* ── Bottom nav ─────────────────────────────────── */
+.bottomNav {
+  max-width: 860px;
+  margin: 2rem auto 3rem;
+  padding: 0 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.pageCount {
+  color: rgba(255, 255, 255, 0.45);
+  font-size: 0.82rem;
+}
+
+.bottomNavBtns {
+  display: flex;
+  gap: 8px;
+}
+
+/* ── Empty state ────────────────────────────────── */
+.empty {
+  text-align: center;
+  padding: 4rem 1rem;
+  color: rgba(255, 255, 255, 0.45);
+  font-size: 0.9rem;
+}

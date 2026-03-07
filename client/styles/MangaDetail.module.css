@@ -1,0 +1,323 @@
+/* ── Hero ──────────────────────────────────────── */
+.hero {
+  position: relative;
+  width: 100%;
+  min-height: 360px;
+  overflow: hidden;
+}
+
+.heroBg {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+  filter: blur(24px) brightness(0.35);
+  transform: scale(1.08);
+}
+
+.heroContent {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  gap: 2.5rem;
+  padding: 3rem 5% 2.5rem;
+  align-items: flex-end;
+}
+
+.coverWrap {
+  flex: 0 0 180px;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 24px 56px rgba(0, 0, 0, 0.6);
+}
+
+.heroInfo {
+  flex: 1;
+  min-width: 0;
+}
+
+.title {
+  font-size: clamp(1.5rem, 3vw, 2.4rem);
+  font-weight: 800;
+  color: #fff;
+  margin: 0 0 0.85rem 0;
+  line-height: 1.15;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+}
+
+.badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 1.25rem;
+}
+
+.badge {
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  color: #fff;
+  padding: 4px 14px;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  backdrop-filter: blur(4px);
+}
+
+.badgeAccent {
+  background: rgba(244, 117, 33, 0.85);
+  border-color: #f47521;
+}
+
+.heroSynopsis {
+  color: rgba(255, 255, 255, 0.78);
+  font-size: 0.92rem;
+  line-height: 1.65;
+  margin-bottom: 1.4rem;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  max-width: 600px;
+}
+
+.addBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: #f47521;
+  color: #fff;
+  border: none;
+  padding: 0.65rem 1.6rem;
+  border-radius: 6px;
+  font-weight: 700;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.15s ease;
+}
+
+.addBtn:hover {
+  background: #d9621a;
+  transform: translateY(-2px);
+}
+
+.removeBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(255, 255, 255, 0.12);
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  padding: 0.65rem 1.6rem;
+  border-radius: 6px;
+  font-weight: 700;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: background 0.2s ease;
+  backdrop-filter: blur(4px);
+}
+
+.removeBtn:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+/* ── Genre tags (hero) ─────────────────────────── */
+.genreTags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 1.25rem;
+}
+
+.genreTag {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: rgba(255, 255, 255, 0.85);
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+/* ── Main content ──────────────────────────────── */
+.content {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 2.5rem 5% 4rem;
+}
+
+.section {
+  margin-bottom: 2.5rem;
+}
+
+.sectionTitle {
+  color: var(--text-primary);
+  font-size: 1.1rem;
+  font-weight: 700;
+  margin: 0 0 0.75rem 0;
+  padding-bottom: 0.4rem;
+  border-bottom: 2px solid var(--accent-color);
+  display: inline-block;
+}
+
+.synopsisText {
+  color: var(--text-secondary);
+  line-height: 1.8;
+  font-size: 0.95rem;
+  margin: 0;
+}
+
+/* ── Info grid ─────────────────────────────────── */
+.infoGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 10px;
+}
+
+.infoItem {
+  background: var(--card-bg-color);
+  border: 1px solid rgba(123, 97, 255, 0.08);
+  border-radius: 8px;
+  padding: 0.7rem 1rem;
+}
+
+.infoLabel {
+  display: block;
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 4px;
+}
+
+.infoValue {
+  color: var(--text-primary);
+  font-size: 0.88rem;
+  font-weight: 600;
+  margin: 0;
+}
+
+/* ── Content tags (genres in body) ─────────────── */
+.contentTags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.contentTag {
+  background: var(--card-surface);
+  border: 1px solid rgba(123, 97, 255, 0.12);
+  color: var(--text-primary);
+  padding: 4px 12px;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  transition: border-color 0.15s ease;
+}
+
+.contentTag:hover {
+  border-color: var(--accent-color);
+}
+
+/* ── External link button ──────────────────────── */
+.externalLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: transparent;
+  border: 1px solid rgba(123, 97, 255, 0.2);
+  color: var(--accent-color);
+  padding: 6px 14px;
+  border-radius: 8px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+
+.externalLink:hover {
+  background: var(--card-surface);
+  border-color: var(--accent-color);
+  color: var(--accent-color);
+  text-decoration: none;
+}
+
+.externalLinks {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+/* ── Chapter list ──────────────────────────────── */
+.chapterHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+}
+
+.chapterList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.chapterItem {
+  background: var(--card-bg-color);
+  border-radius: 8px;
+  border: 1px solid rgba(123, 97, 255, 0.08);
+  transition: background 0.15s ease, transform 0.15s ease, border-color 0.15s ease;
+}
+
+.chapterItem:hover {
+  background: var(--card-surface);
+  transform: translateX(5px);
+  border-color: rgba(123, 97, 255, 0.2);
+}
+
+.chapterLink {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.8rem 1rem;
+  text-decoration: none;
+}
+
+.chapterNum {
+  color: var(--accent-color);
+  font-weight: 700;
+  font-size: 0.82rem;
+  min-width: 56px;
+  flex-shrink: 0;
+}
+
+.chapterTitle {
+  color: var(--text-primary);
+  font-size: 0.9rem;
+}
+
+/* ── Responsive ────────────────────────────────── */
+@media (max-width: 600px) {
+  .heroContent {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: 2rem 5%;
+  }
+
+  .coverWrap {
+    flex: 0 0 auto;
+    width: 140px;
+  }
+
+  .badges {
+    justify-content: center;
+  }
+
+  .heroSynopsis {
+    display: none;
+  }
+}

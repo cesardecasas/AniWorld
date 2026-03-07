@@ -31,7 +31,6 @@ const MangaIndexCard = ({ id, relationships, att }: MangaIndexCardProps) => {
     <Link href={`/manga/${id}`} passHref>
       <div
         id={id}
-        style={{ backgroundColor: "white" }}
         data-testid="container"
         className="animeCard"
       >

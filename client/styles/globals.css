@@ -7,6 +7,7 @@ body {
 }
 
 :root {
+  --nav-height: 56px;
   --main-color: rgb(39, 39, 39);
   --accent-color: #7b61ff;
   --card-bg-color: #ffffff;
@@ -25,6 +26,7 @@ body {
   --quote-border: rgba(123, 97, 255, 0.4);
   --card-title-color: #1c1728;
   --card-text-color: #4a4656;
+  --footer-bg: #111213;
 }
 
 [data-theme="dark"] {
@@ -207,9 +209,12 @@ a {
 }
 
 footer {
-  background-color: var(--main-color);
-  color: white;
+  background: var(--footer-bg);
+  color: rgba(255, 255, 255, 0.7);
   text-align: center;
+  padding: 2rem 1rem 1.5rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  margin-top: 2rem;
 }
 
 .mangaCard {
@@ -276,9 +281,12 @@ a {
 }
 
 footer {
-  background-color: var(--main-color);
-  color: white;
+  background: var(--footer-bg);
+  color: rgba(255, 255, 255, 0.7);
   text-align: center;
+  padding: 2rem 1rem 1.5rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  margin-top: 2rem;
 }
 
 .premiered {
@@ -311,9 +319,14 @@ footer {
 }
 
 .icon {
-  color: white;
-  margin: 1%;
-  font-size: 2rem;
+  color: rgba(255, 255, 255, 0.6);
+  margin: 0 0.6rem;
+  font-size: 1.5rem;
+  transition: color 0.15s ease;
+  display: inline-flex;
+}
+.icon:hover {
+  color: #fff;
 }
 
 .refCard :hover {
@@ -569,6 +582,79 @@ footer {
   }
 }
 
+/* Song Card */
+.songCard {
+  background: var(--card-bg-color);
+  border: 1px solid rgba(123, 97, 255, 0.1);
+  border-radius: 10px;
+  padding: 1rem 1.25rem;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+.songCard:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.15);
+}
+.songTitle {
+  color: var(--text-primary);
+  font-weight: 700;
+  font-size: 0.95rem;
+  margin: 0 0 4px 0;
+}
+.songMeta {
+  color: var(--text-secondary);
+  font-size: 0.82rem;
+  margin: 0 0 0.5rem 0;
+}
+.songDot {
+  margin: 0 6px;
+}
+.songNoPreview {
+  color: var(--text-secondary);
+  font-size: 0.82rem;
+  margin: 0.5rem 0;
+}
+.songSpotify {
+  display: inline-block;
+  margin-top: 0.6rem;
+  color: #1db954;
+  font-size: 0.82rem;
+  font-weight: 600;
+  text-decoration: none;
+}
+.songSpotify:hover {
+  text-decoration: underline;
+}
+
+/* Related Card */
+.relatedCard {
+  background: var(--card-bg-color);
+  border: 1px solid rgba(123, 97, 255, 0.1);
+  border-radius: 8px;
+  padding: 0.75rem 1rem;
+  min-width: 160px;
+  text-align: center;
+  transition: background 0.15s ease, transform 0.15s ease;
+}
+.relatedCard:hover {
+  background: var(--card-surface);
+  transform: translateY(-3px);
+}
+.relatedCardType {
+  display: block;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #f47521;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 4px;
+}
+.relatedCardName {
+  color: var(--text-primary);
+  font-size: 0.88rem;
+  font-weight: 600;
+  margin: 0;
+}
+
 /* Navigation / Navbar improvements */
 .site-nav {
   background: linear-gradient(90deg, #111213 0%, #151618 100%);
@@ -588,15 +674,69 @@ footer {
   letter-spacing: 0.4px;
   font-size: 20px;
 }
-.site-nav .navbar-collapse {
-  display: flex !important;
-  align-items: center;
-  gap: 0.8rem;
+/* Desktop: collapse fills space, items in a row */
+@media (min-width: 576px) {
+  .site-nav .navbar-collapse {
+    display: flex !important;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  .nav-search {
+    margin-left: auto;
+  }
 }
-.site-nav form.d-flex {
-  margin-left: auto;
+
+/* Mobile expanded state */
+.site-nav .navbar-collapse.show {
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 0.5rem 0 0.75rem;
+  flex-direction: column;
+  align-items: stretch;
+}
+.site-nav .navbar-collapse.show .nav-link {
+  padding: 0.55rem 0.5rem;
+  border-radius: 6px;
+}
+.site-nav .navbar-collapse.show .nav-link:hover {
+  background: rgba(255, 255, 255, 0.06);
+}
+.site-nav .navbar-collapse.show .nav-search {
+  margin-left: 0;
+  margin-top: 0.5rem;
+  width: 100%;
+}
+.site-nav .navbar-collapse.show .nav-search .form-control {
+  flex: 1;
+  width: auto;
+  border-radius: 20px 0 0 20px;
+}
+
+/* Always-visible actions (dark toggle + hamburger) */
+.nav-actions {
   display: flex;
   align-items: center;
+  gap: 8px;
+  margin-left: auto;
+  margin-right: 4%;
+}
+
+/* Dark mode toggle button — true circle */
+.nav-dark-toggle {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  background: rgba(255, 255, 255, 0.08);
+  color: #fff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 0.15s ease;
+  flex-shrink: 0;
+}
+.nav-dark-toggle:hover {
+  background: rgba(255, 255, 255, 0.16);
 }
 .site-nav .form-control {
   width: 220px;
@@ -633,4 +773,141 @@ footer {
   .site-nav form.d-flex {
     margin-left: 0;
   }
+}
+
+/* ── Offcanvas (filters sidebar) ────────────────── */
+.offcanvas {
+  --bs-offcanvas-bg: var(--card-bg-color);
+  --bs-offcanvas-color: var(--text-primary);
+  background-color: var(--card-bg-color) !important;
+  color: var(--text-primary);
+}
+
+.offcanvas-header {
+  border-bottom: 1px solid rgba(123, 97, 255, 0.12);
+}
+
+.offcanvas-title {
+  color: var(--text-primary);
+  font-weight: 700;
+}
+
+.offcanvas .btn-close {
+  filter: var(--btn-close-filter, none);
+}
+
+[data-theme="dark"] .offcanvas .btn-close {
+  filter: invert(1) grayscale(1) brightness(1.5);
+}
+
+/* Filters content */
+.filters-section-title {
+  color: var(--text-secondary);
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  margin: 1.25rem 0 0.6rem;
+}
+
+.filters-section-title:first-child {
+  margin-top: 0;
+}
+
+.filters-apply-btn {
+  display: inline-flex;
+  align-items: center;
+  background: #f47521;
+  color: #fff;
+  border: none;
+  padding: 0.5rem 1.4rem;
+  border-radius: 6px;
+  font-weight: 700;
+  font-size: 0.88rem;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.filters-apply-btn:hover {
+  background: #d9621a;
+}
+
+.filters-clear-btn {
+  display: inline-flex;
+  align-items: center;
+  background: transparent;
+  color: var(--text-secondary);
+  border: 1px solid rgba(123, 97, 255, 0.2);
+  padding: 0.5rem 1.4rem;
+  border-radius: 6px;
+  font-weight: 700;
+  font-size: 0.88rem;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+  margin-left: 8px;
+}
+
+.filters-clear-btn:hover {
+  background: var(--card-surface);
+  color: var(--text-primary);
+}
+
+.filters-actions {
+  display: flex;
+  margin-top: 1.5rem;
+}
+
+/* Dropdown inside offcanvas */
+.offcanvas .dropdown-toggle {
+  background: var(--card-surface) !important;
+  border: 1px solid rgba(123, 97, 255, 0.2) !important;
+  color: var(--text-primary) !important;
+  border-radius: 6px !important;
+  font-size: 0.88rem;
+  font-weight: 600;
+  padding: 0.45rem 1rem !important;
+  box-shadow: none !important;
+}
+
+.offcanvas .dropdown-toggle:hover,
+.offcanvas .dropdown-toggle:focus {
+  border-color: var(--accent-color) !important;
+  box-shadow: none !important;
+}
+
+.offcanvas .dropdown-menu {
+  background-color: var(--card-bg-color);
+  border: 1px solid rgba(123, 97, 255, 0.15);
+  border-radius: 8px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
+  max-height: 260px;
+  overflow-y: auto;
+}
+
+.offcanvas .dropdown-item {
+  color: var(--text-primary);
+  font-size: 0.85rem;
+  padding: 0.45rem 1rem;
+}
+
+.offcanvas .dropdown-item:hover,
+.offcanvas .dropdown-item:focus {
+  background-color: var(--card-surface);
+  color: var(--accent-color);
+}
+
+/* Form-check (radio buttons) */
+.offcanvas .form-check-label {
+  color: var(--text-primary);
+  font-size: 0.88rem;
+}
+
+.offcanvas .form-check-input {
+  border-color: rgba(123, 97, 255, 0.3);
+  background-color: var(--card-surface);
+}
+
+.offcanvas .form-check-input:checked {
+  background-color: var(--accent-color);
+  border-color: var(--accent-color);
 }
