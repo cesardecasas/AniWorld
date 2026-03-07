@@ -66,8 +66,8 @@ const Home = ({ animes, manga, quote, season }: HomeProps) => {
                     ★ {hero.score.toFixed(1)}
                   </span>
                 )}
-                {hero.rated && (
-                  <span className={styles.heroBadge}>{hero.rated}</span>
+                {hero.rating && (
+                  <span className={styles.heroBadge}>{hero.rating}</span>
                 )}
                 {hero.episodes && (
                   <span className={styles.heroBadge}>{hero.episodes} eps</span>
@@ -224,11 +224,11 @@ export const getStaticProps: GetStaticProps = async () => {
 
   const res = await fetch("https://api.jikan.moe/v4/top/anime");
   const mangaRes = await client.get(
-    "manga?limit=8&includes[]=cover_art&originalLanguage[]=en&availableTranslatedLanguage[]=en"
+    "manga?limit=8&includes[]=cover_art&originalLanguage[]=en&availableTranslatedLanguage[]=en",
   );
   const Quote = await fetch("https://api.animechan.io/v1/quotes/random");
   const seasonAnimes = await fetch(
-    `https://api.jikan.moe/v4/seasons/${date.getFullYear()}/${season}`
+    `https://api.jikan.moe/v4/seasons/${date.getFullYear()}/${season}`,
   );
 
   const quoteJson = await Quote?.json();
