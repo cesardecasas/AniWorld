@@ -25,7 +25,7 @@ function MyApp({ Component, pageProps }: AppProps) {
   const [authenticated, setAuthenticated] = useState(false);
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   const client = axios.create({
-    baseURL: "https://aniworld-api.herokuapp.com/",
+    baseURL: process.env.NEXT_PUBLIC_API_URL,
   });
 
   const checkSession = async () => {

@@ -1,12 +1,10 @@
-import Form from "react-bootstrap/Form";
-import Button from "react-bootstrap/Button";
 import { useState } from "react";
-import { ErrorCard } from "../components/ResponseHandlers";
-import axios from "axios";
 import { useRouter } from "next/router";
 import Link from "next/link";
+import axios from "axios";
 import { Loader } from "../components/ResponseHandlers";
 import type { User } from "../types";
+import styles from "../styles/Auth.module.css";
 
 interface LoginProps {
   setAuthenticated: (value: boolean) => void;
@@ -17,30 +15,22 @@ const Login = ({ setAuthenticated, setCurrentUser }: LoginProps) => {
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [validated, setValidated] = useState(false);
   const [error, setError] = useState(false);
   const [load, setLoad] = useState(false);
+
   const client = axios.create({
-    baseURL: "https://aniworld-api.herokuapp.com/",
+    baseURL: process.env.NEXT_PUBLIC_API_URL,
   });
 
-  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-    const form = event.currentTarget;
-    setLoad(true);
-    event.preventDefault();
-    if (form.checkValidity() === false) {
-      event.preventDefault();
-      event.stopPropagation();
-      setLoad(false);
-      setValidated(true);
-      return;
-    }
-    setValidated(true);
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (!email || !password) return;
 
-    const body = { email, password };
+    setLoad(true);
+    setError(false);
 
     try {
-      const login = await client.post("/api/user/login", body);
+      const login = await client.post("/api/user/login", { email, password });
       if (login.data?.token) {
         localStorage.setItem("token", login.data.token);
         setCurrentUser({
@@ -61,54 +51,77 @@ const Login = ({ setAuthenticated, setCurrentUser }: LoginProps) => {
   };
 
   return (
-    <div>
-      <section
-        style={{
-          width: "50%",
-          marginLeft: "25%",
-          border: "2px solid black",
-          borderRadius: "1.5rem",
-          marginTop: "13%",
-          marginBottom: "11.5%",
-          padding: "3%",
-          boxShadow: "12px 12px 2px 1px rgba(0, 0, 255, .2)",
-        }}
-      >
-        <h3>Login</h3>
-        {error ? <ErrorCard /> : <p></p>}
-        <Form noValidate validated={validated} onSubmit={handleSubmit}>
-          <Form.Group className="mb-3" controlId="formBasicEmail">
-            <Form.Label>Email address</Form.Label>
-            <Form.Control
-              required
-              onChange={(e) => setEmail(e.target.value)}
+    <div className={styles.page}>
+      <div className={styles.card}>
+        {/* Brand */}
+        <div className={styles.brand}>
+          <span className={styles.brandName}>
+            Ani<span className={styles.brandAccent}>World</span>
+          </span>
+        </div>
+
+        <h1 className={styles.title}>Welcome back</h1>
+        <p className={styles.subtitle}>Sign in to your account</p>
+
+        {error && (
+          <div className={styles.errorBox}>
+            Invalid email or password. Please try again.
+          </div>
+        )}
+
+        <form onSubmit={handleSubmit}>
+          <div className={styles.field}>
+            <label htmlFor="email" className={styles.label}>
+              Email
+            </label>
+            <input
+              id="email"
               type="email"
-              placeholder="Enter email"
-            />
-          </Form.Group>
-          <Form.Group className="mb-3" controlId="formBasicPassword">
-            <Form.Label>Password</Form.Label>
-            <Form.Control
               required
-              onChange={(e) => setPassword(e.target.value)}
-              type="password"
-              placeholder="Password"
+              className={styles.input}
+              placeholder="you@example.com"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
             />
-          </Form.Group>
-          <Form.Group>
-            <Form.Text className="text-muted">
-              Don&apos;t have an account? <Link href="/signup">Click here</Link>
-            </Form.Text>
-          </Form.Group>
+          </div>
+
+          <div className={styles.field}>
+            <label htmlFor="password" className={styles.label}>
+              Password
+            </label>
+            <input
+              id="password"
+              type="password"
+              required
+              className={styles.input}
+              placeholder="••••••••"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
+          </div>
+
           {load ? (
-            <Loader />
+            <div className={styles.loaderWrap}>
+              <Loader />
+            </div>
           ) : (
-            <Button style={{ marginTop: "2%" }} variant="dark" type="submit">
-              Submit
-            </Button>
+            <button
+              type="submit"
+              className={styles.submitBtn}
+              disabled={!email || !password}
+            >
+              Sign in
+            </button>
           )}
-        </Form>
-      </section>
+        </form>
+
+        <p className={styles.footer}>
+          Don&apos;t have an account?{" "}
+          <Link href="/signup" className={styles.footerLink}>
+            Sign up
+          </Link>
+        </p>
+      </div>
     </div>
   );
 };

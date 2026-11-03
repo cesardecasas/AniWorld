@@ -1,88 +1,126 @@
-import Form from "react-bootstrap/Form";
-import Button from "react-bootstrap/Button";
 import { useState } from "react";
-import { ErrorCard } from "../components/ResponseHandlers";
-import axios from "axios";
 import { useRouter } from "next/router";
+import Link from "next/link";
+import axios from "axios";
+import styles from "../styles/Auth.module.css";
 
 const Signup = () => {
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [validated, setValidated] = useState(false);
-  const [Username, setUsername] = useState("");
+  const [username, setUsername] = useState("");
   const [error, setError] = useState(false);
+  const [load, setLoad] = useState(false);
 
   const client = axios.create({
-    baseURL: "https://aniworld-api.herokuapp.com/",
+    baseURL: process.env.NEXT_PUBLIC_API_URL,
   });
 
-  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    const form = event.currentTarget;
-    if (form.checkValidity() === false) {
-      event.preventDefault();
-      event.stopPropagation();
-    }
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (!email || !password || !username) return;
 
-    setValidated(true);
+    setLoad(true);
+    setError(false);
 
-    const inf = { email, password, userName: Username };
-    const registration = await client.post("api/user/register", inf);
-    if (registration) {
-      router.push("/login");
+    try {
+      const registration = await client.post("api/user/register", {
+        email,
+        password,
+        userName: username,
+      });
+      if (registration) {
+        router.push("/login");
+      }
+    } catch (err) {
+      console.error("Signup error:", err);
+      setError(true);
+    } finally {
+      setLoad(false);
     }
   };
 
   return (
-    <div>
-      <section
-        style={{
-          width: "50%",
-          marginLeft: "25%",
-          border: "2px solid black",
-          borderRadius: "1.5rem",
-          marginTop: "13%",
-          marginBottom: "11.5%",
-          padding: "3%",
-          boxShadow: "12px 12px 2px 1px rgba(0, 0, 255, .2)",
-        }}
-      >
-        <h3>Sign Up</h3>
-        {error ? <ErrorCard /> : <p></p>}
-        <Form noValidate validated={validated} onSubmit={handleSubmit}>
-          <Form.Group className="mb-3" controlId="formBasicUser">
-            <Form.Label>Username</Form.Label>
-            <Form.Control
-              required
-              onChange={(e) => setUsername(e.target.value)}
+    <div className={styles.page}>
+      <div className={styles.card}>
+        {/* Brand */}
+        <div className={styles.brand}>
+          <span className={styles.brandName}>
+            Ani<span className={styles.brandAccent}>World</span>
+          </span>
+        </div>
+
+        <h1 className={styles.title}>Create account</h1>
+        <p className={styles.subtitle}>Join the community</p>
+
+        {error && (
+          <div className={styles.errorBox}>
+            Something went wrong. Please check your details and try again.
+          </div>
+        )}
+
+        <form onSubmit={handleSubmit}>
+          <div className={styles.field}>
+            <label htmlFor="username" className={styles.label}>
+              Username
+            </label>
+            <input
+              id="username"
               type="text"
-              placeholder="Enter Username"
-            />
-          </Form.Group>
-          <Form.Group className="mb-3" controlId="formBasicEmail">
-            <Form.Label>Email address</Form.Label>
-            <Form.Control
               required
-              onChange={(e) => setEmail(e.target.value)}
+              className={styles.input}
+              placeholder="Choose a username"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+            />
+          </div>
+
+          <div className={styles.field}>
+            <label htmlFor="email" className={styles.label}>
+              Email
+            </label>
+            <input
+              id="email"
               type="email"
-              placeholder="Enter Email"
-            />
-          </Form.Group>
-          <Form.Group className="mb-3" controlId="formBasicPassword">
-            <Form.Label>Password</Form.Label>
-            <Form.Control
               required
-              onChange={(e) => setPassword(e.target.value)}
-              type="password"
-              placeholder="Enter Password"
+              className={styles.input}
+              placeholder="you@example.com"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
             />
-          </Form.Group>
-          <Button variant="dark" type="submit">
-            Submit
-          </Button>
-        </Form>
-      </section>
+          </div>
+
+          <div className={styles.field}>
+            <label htmlFor="password" className={styles.label}>
+              Password
+            </label>
+            <input
+              id="password"
+              type="password"
+              required
+              className={styles.input}
+              placeholder="••••••••"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
+          </div>
+
+          <button
+            type="submit"
+            className={styles.submitBtn}
+            disabled={!email || !password || !username || load}
+          >
+            {load ? "Creating account…" : "Create account"}
+          </button>
+        </form>
+
+        <p className={styles.footer}>
+          Already have an account?{" "}
+          <Link href="/login" className={styles.footerLink}>
+            Sign in
+          </Link>
+        </p>
+      </div>
     </div>
   );
 };

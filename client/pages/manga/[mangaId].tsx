@@ -12,8 +12,18 @@ import type {
   MangadexChapter,
   MangadexRelationship,
   User,
-  UserList,
+  ListEntry,
+  EntryStatus,
+  AppComment,
 } from "../../types";
+
+const STATUS_LABELS: Record<EntryStatus, string> = {
+  in_progress: "Reading",
+  completed: "Completed",
+  dropped: "Dropped",
+  on_hold: "On Hold",
+  planned: "Plan to Read",
+};
 
 interface ChapterDisplay {
   chap: MangadexChapter;
@@ -89,14 +99,16 @@ const AnimeDetails = ({
   const route = useRouter();
 
   const [image, setImage] = useState("");
-  const [load, setLoad] = useState(false);
-  const [userList, setList] = useState<Partial<UserList>>({});
+  const [entry, setEntry] = useState<ListEntry | null>(null);
   const [lang, setLang] = useState<string[]>([]);
   const [chapterArr, setChapterArr] = useState<MangadexChapter[]>([]);
   const [currentLang, setCurrentLang] = useState("en");
+  const [comments, setComments] = useState<AppComment[]>([]);
+  const [commentText, setCommentText] = useState("");
+  const [submitting, setSubmitting] = useState(false);
 
   const aniapi = Axios.create({
-    baseURL: "https://aniworld-api.herokuapp.com",
+    baseURL: process.env.NEXT_PUBLIC_API_URL,
   });
 
   const populate = async () => {
@@ -104,42 +116,100 @@ const AnimeDetails = ({
     setImage(
       `https://uploads.mangadex.org/covers/${details.id}/${file}.512.jpg`,
     );
-    const arr: string[] = [];
-    chapters.forEach((e, i) => {
-      if (!lang.includes(e.attributes.translatedLanguage)) {
-        arr.push(e.attributes.translatedLanguage);
-        if (i === chapters.length - 1) {
-          setLang(Array.from(new Set(arr)));
-        }
-      }
-    });
-    const n = chapters.filter(
-      (el) => el.attributes.translatedLanguage === currentLang,
+    const allLangs = Array.from(
+      new Set(chapters.map((c) => c.attributes.translatedLanguage)),
     );
-    setChapterArr(n);
+    setLang(allLangs);
+    setChapterArr(chapters.filter((el) => el.attributes.translatedLanguage === currentLang));
   };
 
   const missing = "Chapter #";
 
-  const addManga = async () => {
-    const body = { type: "manga", newItem: `${details.id}` };
-    const item = await aniapi.put(`/api/list/update/${currentUser?.id}`, body);
-    setList(item.data);
+  const addToList = async (status: EntryStatus = "planned") => {
+    if (!currentUser?.id) return;
+    try {
+      const res = await aniapi.post("/api/entries/upsert", {
+        user_id: currentUser.id,
+        content_id: details.id,
+        content_type: "manga",
+        status,
+      });
+      setEntry(res.data);
+    } catch (err) {
+      console.error(err);
+    }
   };
 
-  const removeManga = async () => {
-    const arr = userList.anime_id?.splice(1, details.id as any);
-    const body = { type: "manga", arr };
-    const item = await aniapi.put(`/api/list/remove/${currentUser?.id}`, body);
-    setList(item.data[1][0]);
+  const updateEntryStatus = async (status: EntryStatus) => {
+    if (!entry) return;
+    try {
+      const res = await aniapi.put(`/api/entries/${entry.id}`, { status });
+      setEntry(res.data);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const removeFromList = async () => {
+    if (!entry) return;
+    try {
+      await aniapi.delete(`/api/entries/${entry.id}`);
+      setEntry(null);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const fetchComments = async () => {
+    try {
+      const res = await aniapi.get(`/api/comment/getall/${details.id}`);
+      setComments(res.data);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const submitComment = async () => {
+    if (!commentText.trim() || !currentUser?.id) return;
+    setSubmitting(true);
+    try {
+      const res = await aniapi.post("/api/comment/create", {
+        user_id: currentUser.id,
+        owner_id: details.id,
+        type: "manga",
+        content: commentText.trim(),
+      });
+      setComments((prev) => [res.data, ...prev]);
+      setCommentText("");
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const deleteComment = async (commentId: number) => {
+    try {
+      await aniapi.delete(`/api/comment/delete/${commentId}`);
+      setComments((prev) => prev.filter((c) => c.id !== commentId));
+    } catch (err) {
+      console.error(err);
+    }
   };
 
   useEffect(() => {
     const fetchData = async () => {
       await populate();
+      fetchComments();
       if (currentUser?.id) {
-        const userList = await aniapi.get(`/api/list/get/${currentUser.id}`);
-        setList(userList.data);
+        try {
+          const res = await aniapi.get(
+            `/api/entries/check/${currentUser.id}/manga/${details.id}`
+          );
+          setEntry(res.data);
+        } catch {
+          setEntry(null);
+        }
       }
     };
     fetchData();
@@ -204,16 +274,35 @@ const AnimeDetails = ({
             {description.en && (
               <p className={styles.heroSynopsis}>{description.en}</p>
             )}
-            {authenticated &&
-              (userList?.manga_id?.includes(`${details.id}`) ? (
-                <button className={styles.removeBtn} onClick={removeManga}>
-                  − Remove from List
-                </button>
-              ) : (
-                <button className={styles.addBtn} onClick={addManga}>
-                  + Add to List
-                </button>
-              ))}
+            {authenticated && (
+              <div className={styles.heroActions}>
+                {entry ? (
+                  <>
+                    <select
+                      className={styles.statusSelect}
+                      value={entry.status}
+                      onChange={(e) => updateEntryStatus(e.target.value as EntryStatus)}
+                    >
+                      {(Object.keys(STATUS_LABELS) as EntryStatus[]).map((s) => (
+                        <option key={s} value={s}>{STATUS_LABELS[s]}</option>
+                      ))}
+                    </select>
+                    <button className={styles.removeBtn} onClick={removeFromList}>
+                      ✕ Remove from List
+                    </button>
+                  </>
+                ) : (
+                  <>
+                    <button className={styles.addBtn} onClick={() => addToList("planned")}>
+                      ♡ Plan to Read
+                    </button>
+                    <button className={styles.addBtn} onClick={() => addToList("in_progress")}>
+                      ▶ Start Reading
+                    </button>
+                  </>
+                )}
+              </div>
+            )}
           </div>
         </div>
       </section>
@@ -337,6 +426,57 @@ const AnimeDetails = ({
             </div>
           </section>
         )}
+
+        {/* Reviews */}
+        <section className={styles.section}>
+          <h2 className={styles.sectionTitle}>Reviews</h2>
+          {authenticated && (
+            <div style={{ marginBottom: "1.5rem", display: "flex", flexDirection: "column", gap: "0.5rem" }}>
+              <textarea
+                rows={3}
+                placeholder="Share your thoughts..."
+                value={commentText}
+                onChange={(e) => setCommentText(e.target.value)}
+                style={{ width: "100%", padding: "0.6rem", borderRadius: "6px", border: "1px solid var(--bs-border-color)", resize: "vertical" }}
+              />
+              <button
+                onClick={submitComment}
+                disabled={submitting || !commentText.trim()}
+                style={{ alignSelf: "flex-start", padding: "0.4rem 1rem" }}
+              >
+                {submitting ? "Posting..." : "Submit"}
+              </button>
+            </div>
+          )}
+          {comments.length === 0 ? (
+            <p style={{ color: "gray" }}>No reviews yet. Be the first!</p>
+          ) : (
+            <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
+              {comments.map((c) => (
+                <div
+                  key={c.id}
+                  style={{ border: "1px solid var(--bs-border-color)", borderRadius: "8px", padding: "1rem" }}
+                >
+                  <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "0.4rem" }}>
+                    <strong>{c.User?.userName ?? "User"}</strong>
+                    <span style={{ fontSize: "0.8rem", color: "gray" }}>
+                      {new Date(c.createdAt).toLocaleDateString()}
+                    </span>
+                  </div>
+                  <p style={{ margin: 0 }}>{c.content}</p>
+                  {currentUser && Number(currentUser.id) === c.user_id && (
+                    <button
+                      onClick={() => deleteComment(c.id)}
+                      style={{ marginTop: "0.5rem", fontSize: "0.8rem", color: "red", background: "none", border: "none", cursor: "pointer", padding: 0 }}
+                    >
+                      Delete
+                    </button>
+                  )}
+                </div>
+              ))}
+            </div>
+          )}
+        </section>
 
         <section className={styles.section}>
           <div className={styles.chapterHeader}>

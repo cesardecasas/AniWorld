@@ -197,6 +197,48 @@ export interface UserList {
   manga_id: string[];
 }
 
+export type EntryStatus = 'in_progress' | 'completed' | 'dropped' | 'on_hold' | 'planned'
+export type ContentType = 'anime' | 'manga'
+
+export interface ListEntry {
+  id: number
+  user_id: number
+  content_id: string
+  content_type: ContentType
+  status: EntryStatus
+  progress: number
+  rating: number | null
+  notes: string | null
+  createdAt: string
+  updatedAt: string
+}
+
+export interface AppComment {
+  id: number
+  user_id: number
+  owner_id: string
+  type: 'anime' | 'manga' | 'comment'
+  content: string
+  createdAt: string
+  updatedAt: string
+  User?: { id: number; userName: string }
+}
+
+export interface UserStats {
+  anime: { total: number; in_progress: number; completed: number; dropped: number; on_hold: number; planned: number }
+  manga: { total: number; in_progress: number; completed: number; dropped: number; on_hold: number; planned: number }
+  totalEntries: number
+  avgRating: number | null
+}
+
+export interface ReadingProgress {
+  id: number
+  user_id: number
+  manga_id: string
+  chapter_id: string
+  chapter_number: string
+}
+
 export interface SongData {
   title: string;
   preview_url: string | null;

@@ -4,7 +4,7 @@ import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import styles from "../../styles/Chapter.module.css";
 import type { GetServerSideProps } from "next";
-import type { MangadexChapter, MangadexRelationship } from "../../types";
+import type { MangadexChapter, MangadexRelationship, User } from "../../types";
 
 interface ChapterHash {
   hash: string;
@@ -18,6 +18,7 @@ interface ChapterProps {
   chapters: MangadexChapter[];
   chapterHash: ChapterHash;
   mangaId: string | null;
+  currentUser: User | null;
 }
 
 const Chapter = ({
@@ -26,11 +27,14 @@ const Chapter = ({
   chapters,
   chapterHash,
   mangaId,
+  currentUser,
 }: ChapterProps) => {
   const router = useRouter();
 
   const [sortedChapters, setSortedChapters] = useState<MangadexChapter[]>([]);
   const [dataSaver, setDataSaver] = useState(true);
+
+  const aniapi = Axios.create({ baseURL: process.env.NEXT_PUBLIC_API_URL });
 
   useEffect(() => {
     const sameLang = chapters.filter(
@@ -44,7 +48,19 @@ const Chapter = ({
           parseFloat(a.attributes.chapter) - parseFloat(b.attributes.chapter),
       ),
     );
-  }, [router.asPath, chapters, chapter]);
+
+    // Save reading progress
+    if (currentUser?.id && mangaId && chapter.attributes.chapter) {
+      aniapi
+        .put("/api/progress", {
+          user_id: currentUser.id,
+          manga_id: mangaId,
+          chapter_id: chapter.id,
+          chapter_number: chapter.attributes.chapter,
+        })
+        .catch(console.error);
+    }
+  }, [router.asPath, chapters, chapter, currentUser, mangaId]);
 
   const currentIdx = sortedChapters.findIndex((c) => c.id === chapter.id);
   const prevChapter = currentIdx > 0 ? sortedChapters[currentIdx - 1] : null;
