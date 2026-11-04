@@ -320,7 +320,14 @@ export const getAnimeSummaries = async (routeIds: string[]): Promise<Record<stri
     p.Page.media.forEach((m) => {
       const card = toCard(m);
       // Index under both ids so entries saved with either form resolve
-      const summary = { id: card.id, title: card.title, coverImage: card.coverImage };
+      const summary: AnimeSummary = {
+        id: card.id,
+        title: card.title,
+        coverImage: card.coverImage,
+        format: card.format,
+        year: card.year,
+        episodes: card.episodes,
+      };
       byId[card.id] = summary;
       byId[`al-${m.id}`] = summary;
     })

@@ -23,6 +23,10 @@
   --color-gold: #d4b06a;
   --color-on-crimson: #f3ede2;
 
+  /* Ledger status colours */
+  --color-sky: #7fb3e0;
+  --color-amber: #e8a065;
+
   --font-display: var(--font-cormorant), "Cormorant Garamond", Georgia, serif;
   --font-sans: var(--font-manrope), "Manrope", system-ui, sans-serif;
 

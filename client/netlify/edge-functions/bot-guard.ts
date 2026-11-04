@@ -2,7 +2,7 @@
 // function or the AniWorld API. The rules live in lib/botGuard.ts (unit tested with Jest).
 import { ALWAYS_ALLOWED_PATHS, classifyUserAgent } from "../../lib/botGuard.ts";
 
-export default async (request: Request) => {
+const botGuard = async (request: Request) => {
   const { pathname } = new URL(request.url);
   if (ALWAYS_ALLOWED_PATHS.includes(pathname)) return;
 
@@ -15,6 +15,8 @@ export default async (request: Request) => {
     headers: { "content-type": "text/plain; charset=utf-8", "cache-control": "no-store" },
   });
 };
+
+export default botGuard;
 
 export const config = {
   path: "/*",

@@ -37,4 +37,4 @@ export function classifyUserAgent(userAgent: string | null | undefined): BotVerd
 }
 
 /** Paths every client may fetch, so polite crawlers can still read the rules */
-export const ALWAYS_ALLOWED_PATHS = ["/robots.txt", "/favicon.ico"];
+export const ALWAYS_ALLOWED_PATHS = ["/robots.txt", "/icon.svg", "/manifest.webmanifest"];

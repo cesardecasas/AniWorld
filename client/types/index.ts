@@ -1,6 +1,6 @@
 export interface User {
   userName: string;
-  id: string;
+  id: number;
 }
 
 /**
@@ -70,11 +70,14 @@ export interface AnimeThemes {
   endings: string[];
 }
 
-/** Lightweight shape for list pages that only need a title and cover */
+/** Lightweight shape for list pages */
 export interface AnimeSummary {
   id: string;
   title: string;
   coverImage: string | null;
+  format: string | null;
+  year: number | null;
+  episodes: number | null;
 }
 
 export interface Quote {
@@ -141,21 +144,18 @@ export interface MangadexManga {
 }
 
 export interface MangadexChapterAttributes {
-  chapter: string;
+  chapter: string | null;
+  volume: string | null;
   title: string | null;
   translatedLanguage: string;
   pages: number;
+  publishAt: string;
 }
 
 export interface MangadexChapter {
   id: string;
   attributes: MangadexChapterAttributes;
   relationships: MangadexRelationship[];
-}
-
-export interface UserList {
-  anime_id: string[];
-  manga_id: string[];
 }
 
 export type EntryStatus = 'in_progress' | 'completed' | 'dropped' | 'on_hold' | 'planned'
@@ -201,8 +201,9 @@ export interface ReadingProgress {
 }
 
 export interface UserInfo {
-  id: string;
-  email: string;
+  id: number;
   userName: string;
-  profilePic?: string;
+  /** Only present when viewing your own account */
+  email?: string;
+  profilePic: string | null;
 }

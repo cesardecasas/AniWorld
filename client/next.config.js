@@ -6,9 +6,16 @@ module.exports = {
       { protocol: "https", hostname: "uploads.mangadex.org" },
     ],
   },
+  async redirects() {
+    // URLs from the old pages-router site, so existing links and bookmarks keep working
+    return [
+      { source: "/settings/:id", destination: "/settings", permanent: true },
+      { source: "/search/:type(anime|manga)", destination: "/search?type=:type", permanent: true },
+    ];
+  },
   async headers() {
     // Private and per-user pages stay out of search results even if a crawler ignores robots.txt
-    const noindex = ["/Login", "/signup", "/settings/:path*", "/list/:path*", "/chapter/:path*", "/api/:path*"].map(
+    const noindex = ["/login", "/signup", "/settings", "/list/:path*", "/chapter/:path*", "/api/:path*", "/manga/random"].map(
       (source) => ({ source, headers: [{ key: "X-Robots-Tag", value: "noindex, nofollow" }] }),
     );
     return [
@@ -29,7 +36,6 @@ module.exports = {
               "style-src 'self' 'unsafe-inline'",
               // Chapter pages are served from rotating MangaDex@Home nodes, hence the wildcard
               "img-src 'self' data: https://s4.anilist.co https://uploads.mangadex.org https://*.mangadex.network",
-              // MangaDex blocks cross-origin browser calls, so it is reached via /api/manga instead
               // The AniWorld API is reached through this site's own /api/v1 routes
               "connect-src 'self' https://graphql.anilist.co",
               "frame-src https://www.youtube-nocookie.com https://www.dailymotion.com https://challenges.cloudflare.com",
