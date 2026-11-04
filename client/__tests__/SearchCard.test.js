@@ -6,20 +6,15 @@ import { render, screen } from '@testing-library/react'
 
 describe('SearchCard',()=>{
 
-    const {id, name, image, score, synopsis, episodes, rated} = testData.searchCard
+    const {id, name, image, score, episodes, format} = testData.searchCard
 
     it('renders the component correctly',()=>{
 
-        render(<SearchCard id={id} name={name} image={image} score={score} synopsis={synopsis} episodes={episodes} rated={rated} />)
+        render(<SearchCard id={id} name={name} image={image} score={score} episodes={episodes} format={format} />)
 
-        const title = screen.getByText(/Fate/)
-        const ep = screen.getByText(/13/)
-        const rating = screen.getByText(/Rated: R/)
-        const img = screen.getByAltText(/Anime poster/)
-
-        expect(title).toBeInTheDocument
-        expect(ep).toBeInTheDocument
-        expect(rating).toBeInTheDocument
-        expect(img).toBeInTheDocument
+        expect(screen.getByText(/Fate/)).toBeInTheDocument()
+        expect(screen.getByText(/TV · 13 eps/)).toBeInTheDocument()
+        expect(screen.getByText(/8\.3/)).toBeInTheDocument()
+        expect(screen.getByAltText(/Fate\/Zero/)).toBeInTheDocument()
     })
 })

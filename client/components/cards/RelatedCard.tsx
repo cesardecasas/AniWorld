@@ -1,17 +1,22 @@
 import Link from "next/link";
-import type { RelatedAnime } from "../../types";
+import type { AnimeRelation } from "../../types";
 
 interface RelatedCardProps {
-  card: RelatedAnime;
-  type?: string;
+  card: AnimeRelation;
 }
 
-const RelatedCard = ({ card, type }: RelatedCardProps) => {
+const RelatedCard = ({ card }: RelatedCardProps) => {
+  // Manga pages are keyed by MangaDex ids, so related manga open a title search instead
+  const href =
+    card.type === "anime"
+      ? `/anime/${card.id}`
+      : `/search/anime=${encodeURIComponent(card.title.replace(/\s+/g, "_"))}&page=1`;
+
   return (
-    <Link href={`/${card.type}/${card.mal_id}`} style={{ textDecoration: "none" }}>
+    <Link href={href} style={{ textDecoration: "none" }}>
       <div className="relatedCard">
-        {type && <span className="relatedCardType">{type}</span>}
-        <p className="relatedCardName">{card.name}</p>
+        <span className="relatedCardType">{card.relation}</span>
+        <p className="relatedCardName">{card.title}</p>
       </div>
     </Link>
   );

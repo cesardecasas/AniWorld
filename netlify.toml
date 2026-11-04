@@ -1,0 +1,5 @@
+# Netlify runs the Next.js runtime automatically for Next apps; this pins where it builds from.
+[build]
+  base = "client"
+  command = "npm run build"
+  publish = ".next"

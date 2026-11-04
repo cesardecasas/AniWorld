@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
-import { getCover } from "../../pages/api/mangadex";
+import { getCover } from "../../lib/mangadex";
 import Axios from "axios";
 import Link from "next/link";
 import Image from "next/image";

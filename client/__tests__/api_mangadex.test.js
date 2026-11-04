@@ -1,6 +1,6 @@
-const api = require('../pages/api/mangadex')
+const api = require('../lib/mangadex')
 
-test('api/mangadex exports something', () => {
-  expect(typeof api).toBe('object')
+test('lib/mangadex exports functions', () => {
+  expect(typeof api.getManga).toBe('function')
+  expect(typeof api.getCover).toBe('function')
 })
-

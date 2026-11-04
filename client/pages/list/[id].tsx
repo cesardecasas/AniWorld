@@ -5,7 +5,8 @@ import { useRouter } from "next/router";
 import Link from "next/link";
 import Image from "next/image";
 import type { GetServerSideProps } from "next";
-import type { User, ListEntry, EntryStatus } from "../../types";
+import { getAnimeSummaries } from "../../lib/anime";
+import type { User, ListEntry, EntryStatus, MangadexManga, AnimeSummary } from "../../types";
 import styles from "../../styles/MyList.module.css";
 
 const STATUS_LABELS: Record<EntryStatus, string> = {
@@ -64,47 +65,44 @@ const MyList = ({ entries, currentUser }: MyListProps) => {
     if (currentUser === null) router.push("/");
   }, [currentUser, router]);
 
-  // Progressively enrich entries with titles and cover images
+  // Enrich entries with titles and covers: one batched request per source, not one per entry
   useEffect(() => {
     if (!entries.length) return;
 
+    const animeIds = entries.filter((e) => e.content_type === "anime").map((e) => e.content_id);
+    const mangaIds = entries.filter((e) => e.content_type === "manga").map((e) => e.content_id);
+
     const enrich = async () => {
-      for (const entry of entries) {
-        try {
-          let title: string | undefined;
-          let imageUrl: string | undefined;
+      const [anime, manga] = await Promise.allSettled([
+        animeIds.length ? getAnimeSummaries(animeIds) : Promise.resolve<Record<string, AnimeSummary>>({}),
+        mangaIds.length
+          ? axios
+              .get("/api/manga", { params: { ids: mangaIds.slice(0, 100).join(",") } }) // route caps at 100
+              .then((res) => res.data.data as MangadexManga[])
+          : Promise.resolve([] as MangadexManga[]),
+      ]);
 
-          if (entry.content_type === "anime") {
-            const res = await axios.get(
-              `https://api.jikan.moe/v4/anime/${entry.content_id}`
-            );
-            title = res.data.data.title;
-            imageUrl = res.data.data.images?.jpg?.image_url;
-            // Respect Jikan rate limit (3 req/s)
-            await new Promise((r) => setTimeout(r, 340));
-          } else {
-            const res = await axios.get(
-              `https://api.mangadex.org/manga/${entry.content_id}?includes[]=cover_art`
-            );
-            const manga = res.data.data;
-            const titleObj = manga.attributes?.title as Record<string, string>;
-            title = titleObj?.en ?? Object.values(titleObj ?? {})[0];
-            const coverRel = manga.relationships?.find(
-              (r: { type: string; attributes?: { fileName?: string } }) =>
-                r.type === "cover_art"
-            );
-            if (coverRel?.attributes?.fileName) {
-              imageUrl = `https://uploads.mangadex.org/covers/${entry.content_id}/${coverRel.attributes.fileName}.256.jpg`;
-            }
-          }
+      const details: Record<string, { title?: string; imageUrl?: string }> = {};
 
-          setLocalEntries((prev) =>
-            prev.map((e) => (e.id === entry.id ? { ...e, title, imageUrl } : e))
-          );
-        } catch {
-          // leave entry as-is on error
-        }
+      if (anime.status === "fulfilled") {
+        Object.entries(anime.value).forEach(([id, a]) => {
+          details[`anime:${id}`] = { title: a.title, imageUrl: a.coverImage ?? undefined };
+        });
       }
+      if (manga.status === "fulfilled") {
+        manga.value.forEach((m) => {
+          const titleObj = m.attributes?.title as Record<string, string>;
+          const fileName = m.relationships?.find((r) => r.type === "cover_art")?.attributes?.fileName;
+          details[`manga:${m.id}`] = {
+            title: titleObj?.en ?? Object.values(titleObj ?? {})[0],
+            imageUrl: fileName ? `https://uploads.mangadex.org/covers/${m.id}/${fileName}.256.jpg` : undefined,
+          };
+        });
+      }
+
+      setLocalEntries((prev) =>
+        prev.map((e) => ({ ...e, ...details[`${e.content_type}:${e.content_id}`] }))
+      );
     };
 
     enrich();

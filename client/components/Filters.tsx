@@ -5,54 +5,41 @@ import { useRouter } from "next/router";
 import DropdownButton from "react-bootstrap/DropdownButton";
 import Dropdown from "react-bootstrap/Dropdown";
 
-interface GenreItem {
-  code: number;
-  name: string;
-}
-
+// Values match AniList's MediaFormat enum and genre names
 const Filters = () => {
   const router = useRouter();
-  const [rate, setRate] = useState("");
-  const [genre, setGenre] = useState("Genre");
-  const [genreCode, setCode] = useState<number | null>(null);
-  const [filters, setFilters] = useState(false);
+  const [format, setFormat] = useState("");
+  const [genre, setGenre] = useState("");
+
+  const stripFilters = (path: string) =>
+    path.replace(/&?format=[^&]*/g, "").replace(/&?genre=[^&]*/g, "").replace(/page=\d+/, "page=1");
 
   const onApply = () => {
-    if (!rate && !genreCode) return;
-    // Strip any existing filter params to avoid accumulation
-    let base = router.asPath
-      .replace(/&?rated=[^&]*/g, "")
-      .replace(/&?genre=[^&]*/g, "");
+    if (!format && !genre) return;
     const params: string[] = [];
-    if (rate) params.push(`rated=${rate}`);
-    if (genreCode) params.push(`genre=${genreCode}`);
-    router.push(`${base}&${params.join("&")}`);
-  };
-
-  const setGenreFilter = (gen: GenreItem) => {
-    setCode(gen.code);
-    setGenre(gen.name);
+    if (format) params.push(`format=${format}`);
+    if (genre) params.push(`genre=${encodeURIComponent(genre.replace(/\s+/g, "_"))}`);
+    router.push(`${stripFilters(router.asPath)}&${params.join("&")}`);
   };
 
   const onClear = () => {
-    const n = router.asPath.split("page=1")[0];
-    setGenre("Genre");
-    router.push(`${n}page=1`);
+    setFormat("");
+    setGenre("");
+    router.push(stripFilters(router.asPath));
   };
 
   return (
     <div>
-      <p className="filters-section-title">Rating</p>
-      {(EnumInfo as any).rated.map((rate: { name: string }, i: number) => {
-        const n = rate.name.toUpperCase();
-        return <CheckBox setfFilter={setRate} key={i} name={n} />;
-      })}
+      <p className="filters-section-title">Format</p>
+      {EnumInfo.formats.map((f) => (
+        <CheckBox key={f.value} group="format" name={f.name} value={f.value} setfFilter={setFormat} />
+      ))}
 
       <p className="filters-section-title">Genre</p>
-      <DropdownButton id="dropdown-basic-button" title={genre}>
-        {(EnumInfo as any).genres.map((genre: GenreItem, i: number) => (
-          <Dropdown.Item onClick={() => setGenreFilter(genre)} key={i}>
-            {genre.name}
+      <DropdownButton id="dropdown-basic-button" title={genre || "Genre"}>
+        {EnumInfo.genres.map((g) => (
+          <Dropdown.Item onClick={() => setGenre(g)} key={g}>
+            {g}
           </Dropdown.Item>
         ))}
       </DropdownButton>

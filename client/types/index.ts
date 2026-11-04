@@ -3,117 +3,78 @@ export interface User {
   id: string;
 }
 
-export interface JikanAnimeImage {
-  image_url: string;
-  small_image_url: string;
-  large_image_url: string;
-}
+/**
+ * Provider-neutral anime record. Pages only use this shape; lib/anime maps
+ * AniList (and optional Jikan extras) into it, so a provider swap stays in one place.
+ */
+export interface Anime {
+  /** Route and list key: the MAL id when known (keeps existing list entries valid), else "al-<anilistId>" */
+  id: string;
+  anilistId: number;
+  malId: number | null;
 
-export interface JikanAiredProp {
-  day: number | null;
-  month: number | null;
-  year: number | null;
-}
-
-/** A named MAL entity — genre, studio, producer, theme, demographic, etc. */
-export interface JikanEntity {
-  mal_id: number;
-  type: string;
-  name: string;
-  url: string;
-}
-
-export interface JikanAnime {
-  mal_id: number;
-  url: string;
-
-  // Titles
   title: string;
-  title_english: string | null;
-  title_japanese: string | null;
-  title_synonyms: string[];
-  titles: Array<{ type: string; title: string }>;
+  titleEnglish: string | null;
+  titleNative: string | null;
+  synopsis: string | null;
 
-  // Media
-  images: {
-    jpg: JikanAnimeImage;
-    webp: JikanAnimeImage;
-  };
-  trailer: {
-    youtube_id: string | null;
-    url: string | null;
-    embed_url: string | null;
-  };
+  coverImage: string | null;
+  bannerImage: string | null;
 
-  // Classification
-  type: string;          // "TV" | "OVA" | "Movie" | "Special" | etc.
-  source: string;        // "Manga" | "Original" | "Light novel" | etc.
-  episodes: number;
-  status: string;        // "Finished Airing" | "Currently Airing" | etc.
-  airing: boolean;
-  duration: string;      // e.g. "24 min per ep"
-  rating: string;        // e.g. "PG-13 - Teens 13 or older"
+  /** 0–10 scale */
+  score: number | null;
+  rank: number | null;
+  popularityRank: number | null;
+  members: number | null;
+  favourites: number | null;
 
-  // Airing info
-  aired: {
-    from: string | null;
-    to: string | null;
-    prop: {
-      from: JikanAiredProp;
-      to: JikanAiredProp;
-    };
-    string: string;
-  };
+  format: string | null;
+  status: string | null;
+  episodes: number | null;
+  /** Minutes per episode */
+  duration: number | null;
   season: string | null;
   year: number | null;
-  broadcast: {
-    day: string | null;
-    time: string | null;
-    timezone: string | null;
-    string: string | null;
-  };
+  startDate: string | null;
+  aired: string | null;
+  nextEpisode: { episode: number; airingAt: number } | null;
+  source: string | null;
+  /** Age rating — only Jikan provides it, so it is often null */
+  rating: string | null;
 
-  // Scores & stats
-  score: number;
-  scored_by: number;
-  rank: number;
-  popularity: number;
-  members: number;
-  favorites: number;
+  genres: string[];
+  tags: string[];
+  studios: string[];
+  producers: string[];
 
-  // Text
-  synopsis: string;
-  background: string | null;
-
-  // Production
-  producers: JikanEntity[];
-  licensors: JikanEntity[];
-  studios: JikanEntity[];
-
-  // Genres / tags
-  genres: JikanEntity[];
-  explicit_genres: JikanEntity[];
-  themes: JikanEntity[];
-  demographics: JikanEntity[];
-
-  // Relations (legacy structure used by detail pages)
-  related: {
-    Sequel?: RelatedAnime[];
-    Prequel?: RelatedAnime[];
-  };
+  trailerUrl: string | null;
+  relations: AnimeRelation[];
 }
 
-export interface RelatedAnime {
-  mal_id: number;
-  type: string;
-  name: string;
-  url: string;
-}
-
-export interface JikanEpisode {
-  mal_id: number;
+export interface AnimeRelation {
+  relation: string;
+  id: string;
+  type: "anime" | "manga";
   title: string;
-  url: string;
+  coverImage: string | null;
+}
+
+export interface AnimeEpisode {
+  number: number | null;
+  title: string;
+  url: string | null;
+}
+
+export interface AnimeThemes {
+  openings: string[];
+  endings: string[];
+}
+
+/** Lightweight shape for list pages that only need a title and cover */
+export interface AnimeSummary {
+  id: string;
+  title: string;
+  coverImage: string | null;
 }
 
 export interface Quote {
@@ -239,29 +200,9 @@ export interface ReadingProgress {
   chapter_number: string
 }
 
-export interface SongData {
-  title: string;
-  preview_url: string | null;
-  open_spotify_url: string;
-  album: string;
-  artist: string;
-}
-
-export interface AniApiAnime {
-  id: number;
-  mal_id: number;
-}
-
 export interface UserInfo {
   id: string;
   email: string;
   userName: string;
   profilePic?: string;
-}
-
-export interface AniApiSongResponse {
-  message?: string;
-  data?: {
-    documents: SongData[];
-  };
 }

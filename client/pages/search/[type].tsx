@@ -1,27 +1,27 @@
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
-import { getAnimeSearch } from "../api/fetch";
+import { listAnime } from "../../lib/anime";
 import SearchCard from "../../components/cards/SearchCard";
-import { Loader } from "../../components/ResponseHandlers";
-import { getManga } from "../api/mangadex";
+import { getManga } from "../../lib/mangadex";
 import MangaSearchCard from "../../components/cards/MangaSearchCard";
 import Offcanvas from "react-bootstrap/Offcanvas";
 import Filters from "../../components/Filters";
 import styles from "../../styles/Search.module.css";
 import type { GetServerSideProps } from "next";
-import type { JikanAnime, MangadexManga } from "../../types";
+import type { Anime, MangadexManga } from "../../types";
 
 interface SearchDetailsProps {
-  results: JikanAnime[];
+  results: Anime[];
+  hasNextPage: boolean;
   resultsManga: MangadexManga[];
   searchQuery: string;
 }
 
-const SearchDetails = ({ results, resultsManga, searchQuery }: SearchDetailsProps) => {
+const SearchDetails = ({ results, hasNextPage, resultsManga, searchQuery }: SearchDetailsProps) => {
   const router = useRouter();
 
-  const [searchResults, setResults] = useState<JikanAnime[]>([]);
-  const [manga, setManga] = useState<MangadexManga[]>([]);
+  const [searchResults, setResults] = useState<Anime[]>(results);
+  const [manga, setManga] = useState<MangadexManga[]>(resultsManga);
   const [showManga, setShowManga] = useState(false);
   const [show, setShow] = useState(false);
   const [page, setPage] = useState(1);
@@ -89,22 +89,19 @@ const SearchDetails = ({ results, resultsManga, searchQuery }: SearchDetailsProp
             <p className={styles.empty}>No manga results found.</p>
           )
         ) : searchResults.length > 0 ? (
-          searchResults.map((result, i) => (
+          searchResults.map((result) => (
             <SearchCard
-              key={i}
+              key={result.id}
               score={result.score}
-              synopsis={result.synopsis}
-              id={result.mal_id}
+              id={result.id}
               name={result.title}
-              image={result.images.jpg.image_url}
-              rating={result.rating}
+              image={result.coverImage}
+              format={result.format}
               episodes={result.episodes}
             />
           ))
         ) : (
-          <div className={styles.empty}>
-            <Loader />
-          </div>
+          <p className={styles.empty}>No anime results found.</p>
         )}
       </div>
 
@@ -121,6 +118,7 @@ const SearchDetails = ({ results, resultsManga, searchQuery }: SearchDetailsProp
           <span className={styles.pageNum}>{page}</span>
           <button
             className={styles.pageBtn}
+            disabled={showManga ? manga.length < 12 : !hasNextPage}
             onClick={() => changePage(true)}
           >
             Next →
@@ -140,27 +138,32 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 
   const page = parseInt(type.split("page=")[1]) || 1;
 
-  // Parse optional filter params from the URL
-  const ratedMatch = type.match(/rated=([^&]+)/);
-  const genreMatch = type.match(/genre=([^&]+)/);
-  const rated = ratedMatch?.[1] ?? null;
-  const genreId = genreMatch?.[1] ?? null;
+  // Optional filters from the URL (values are AniList genre names and format enums)
+  const genre = type.match(/genre=([^&]+)/)?.[1]?.replace(/_/g, " ");
+  const format = type.match(/format=([A-Z_]+)/)?.[1];
 
-  // Build Jikan query with filters + page
-  const acceptableQuery = rawQuery.replace("_", "/");
-  let jikanQuery = `q=${acceptableQuery}&page=${page}`;
-  if (rated) jikanQuery += `&rating=${rated}`;
-  if (genreId) jikanQuery += `&genres=${genreId}`;
-
-  const resResults = await getAnimeSearch(jikanQuery);
-
-  const mangaQuery = rawQuery.replace("_", "+").split("page=")[0];
   const skip = page * 12 - 12;
-  const resManga = await getManga(mangaQuery, skip);
+  const [anime, resManga] = await Promise.all([
+    listAnime({
+      search: searchQuery.trim() || undefined,
+      genre,
+      format,
+      page,
+      perPage: 24,
+      sort: searchQuery.trim() ? ["SEARCH_MATCH"] : ["POPULARITY_DESC"],
+    }).catch((error) => {
+      console.error("Anime search failed:", error?.message);
+      return { results: [], hasNextPage: false };
+    }),
+    getManga(searchQuery, skip),
+  ]);
+
+  context.res.setHeader("Cache-Control", "public, s-maxage=600, stale-while-revalidate=3600");
 
   return {
     props: {
-      results: resResults.data ?? [],
+      results: anime.results,
+      hasNextPage: anime.hasNextPage,
       resultsManga: resManga ?? [],
       searchQuery,
     },

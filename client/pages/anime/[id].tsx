@@ -1,36 +1,27 @@
 import { useEffect, useState, useMemo } from "react";
-import { getAnime, getSong } from "../api/fetch";
 import { useRouter } from "next/router";
-import { Loader, ErrorCard } from "../../components/ResponseHandlers";
-import SongCard from "../../components/cards/SongCard";
 import RelatedCard from "../../components/cards/RelatedCard";
 import Image from "next/image";
 import axios from "axios";
-import { animeDetails } from "../../queries";
+import { getAnimePage, isNotFound } from "../../lib/anime";
 import styles from "../../styles/AnimeDetail.module.css";
 import type { GetServerSideProps } from "next";
 import type {
-  JikanAnime,
-  JikanEpisode,
+  Anime,
+  AnimeEpisode,
+  AnimeThemes,
   User,
-  AniApiSongResponse,
   ListEntry,
   EntryStatus,
   AppComment,
 } from "../../types";
 
-interface AniApiAnimeDoc {
-  id: number;
-  mal_id: number;
-}
-
 interface AnimeDetailsProps {
-  data: JikanAnime;
+  data: Anime | null;
   authenticated: boolean;
   currentUser: User | null;
-  ep: JikanEpisode[];
-  pics: unknown;
-  AniList: unknown;
+  ep: AnimeEpisode[];
+  themes: AnimeThemes;
 }
 
 const STATUS_LABELS: Record<EntryStatus, string> = {
@@ -46,15 +37,10 @@ const AnimeDetails = ({
   authenticated,
   currentUser,
   ep,
-  pics,
-  AniList,
+  themes,
 }: AnimeDetailsProps) => {
   const route = useRouter();
 
-  const [aniDetails, setAniDetails] = useState<Partial<AniApiAnimeDoc>>({});
-  const [songList, setSongList] = useState<AniApiSongResponse>({});
-  const [error, setError] = useState(false);
-  const [load, setLoad] = useState(false);
   const [entry, setEntry] = useState<ListEntry | null>(null);
   const [comments, setComments] = useState<AppComment[]>([]);
   const [commentText, setCommentText] = useState("");
@@ -66,10 +52,10 @@ const AnimeDetails = ({
   );
 
   const fetchEntry = async () => {
-    if (!currentUser?.id) return;
+    if (!currentUser?.id || !data) return;
     try {
       const res = await aniapi.get(
-        `/api/entries/check/${currentUser.id}/anime/${data.mal_id}`
+        `/api/entries/check/${currentUser.id}/anime/${data.id}`
       );
       setEntry(res.data);
     } catch {
@@ -82,7 +68,7 @@ const AnimeDetails = ({
     try {
       const res = await aniapi.post("/api/entries/upsert", {
         user_id: currentUser.id,
-        content_id: String(data.mal_id),
+        content_id: data.id,
         content_type: "anime",
         status,
       });
@@ -113,8 +99,9 @@ const AnimeDetails = ({
   };
 
   const fetchComments = async () => {
+    if (!data) return;
     try {
-      const res = await aniapi.get(`/api/comment/getall/${data.mal_id}`);
+      const res = await aniapi.get(`/api/comment/getall/${data.id}`);
       setComments(res.data);
     } catch (err) {
       console.error(err);
@@ -127,7 +114,7 @@ const AnimeDetails = ({
     try {
       const res = await aniapi.post("/api/comment/create", {
         user_id: currentUser.id,
-        owner_id: String(data.mal_id),
+        owner_id: data.id,
         type: "anime",
         content: commentText.trim(),
       });
@@ -149,42 +136,32 @@ const AnimeDetails = ({
     }
   };
 
-  const fetchSongs = async () => {
-    setLoad(true);
-    const res = await getSong(aniDetails.id!);
-    if (res.message === "Zero songs found") setError(true);
-    setLoad(false);
-    setSongList(res);
-  };
-
   useEffect(() => {
-    const init = async () => {
-      try {
-        if (data) {
-          const aniRes = await getAnime(data.mal_id);
-          if (
-            aniRes?.data?.documents &&
-            Array.isArray(aniRes.data.documents) &&
-            aniRes.data.documents.length > 0
-          ) {
-            setAniDetails(aniRes.data.documents[0]);
-          }
-        }
-      } catch (err) {
-        console.error("fetchDetails error", err);
-        setError(true);
-      }
-    };
-
-    init();
     fetchEntry();
     fetchComments();
   }, [route.query.id, currentUser, data]);
 
-  const heroImage = data?.images?.jpg?.large_image_url;
-  const hasRelated =
-    (data?.related?.Sequel?.length ?? 0) > 0 ||
-    (data?.related?.Prequel?.length ?? 0) > 0;
+  if (!data) {
+    return (
+      <div className={styles.section} style={{ textAlign: "center", padding: "4rem 1rem" }}>
+        <h1 className={styles.sectionTitle}>This page is temporarily unavailable</h1>
+        <p className={styles.bodyText}>
+          The anime database didn&apos;t respond in time. Please try again in a moment.
+        </p>
+        <button className={styles.retryBtn} onClick={() => route.replace(route.asPath)}>
+          Try again
+        </button>
+      </div>
+    );
+  }
+
+  const heroImage = data.bannerImage ?? data.coverImage;
+  const relations = data.relations;
+  const openings = themes?.openings ?? [];
+  const endings = themes?.endings ?? [];
+  const nextAiring = data.nextEpisode
+    ? `Episode ${data.nextEpisode.episode} · ${new Date(data.nextEpisode.airingAt * 1000).toUTCString().slice(5, 16)}`
+    : null;
 
   return (
     <div>
@@ -197,10 +174,10 @@ const AnimeDetails = ({
           />
         )}
         <div className={styles.heroContent}>
-          {data?.images?.jpg?.image_url && (
+          {data.coverImage && (
             <div className={styles.coverWrap}>
               <Image
-                src={data.images.jpg.image_url}
+                src={data.coverImage}
                 alt={data.title}
                 width={200}
                 height={300}
@@ -216,22 +193,18 @@ const AnimeDetails = ({
                   ★ {data.score.toFixed(1)}
                 </span>
               )}
-              {data.type && <span className={styles.badge}>{data.type}</span>}
+              {data.format && <span className={styles.badge}>{data.format}</span>}
               {data.status && <span className={styles.badge}>{data.status}</span>}
               {data.episodes && <span className={styles.badge}>{data.episodes} eps</span>}
-              {data.duration && <span className={styles.badge}>{data.duration}</span>}
+              {data.duration && <span className={styles.badge}>{data.duration} min</span>}
               {data.rating && <span className={styles.badge}>{data.rating}</span>}
-              {(data.year ?? data.aired?.prop?.from?.year) && (
-                <span className={styles.badge}>
-                  {data.year ?? data.aired.prop.from.year}
-                </span>
-              )}
+              {data.year && <span className={styles.badge}>{data.year}</span>}
             </div>
             {data.genres?.length > 0 && (
               <div className={styles.genreTags}>
                 {data.genres.map((g) => (
-                  <span key={g.mal_id} className={styles.genreTag}>
-                    {g.name}
+                  <span key={g} className={styles.genreTag}>
+                    {g}
                   </span>
                 ))}
               </div>
@@ -281,21 +254,19 @@ const AnimeDetails = ({
         {data.synopsis && (
           <section className={styles.section}>
             <h2 className={styles.sectionTitle}>Synopsis</h2>
-            <p className={styles.bodyText}>{data.synopsis}</p>
+            <p className={styles.bodyText} style={{ whiteSpace: "pre-line" }}>{data.synopsis}</p>
           </section>
         )}
 
         {/* Stats */}
-        {(data.rank || data.popularity || data.scored_by || data.members) && (
+        {(data.rank || data.popularityRank || data.members) && (
           <section className={styles.section}>
             <h2 className={styles.sectionTitle}>Stats</h2>
             <div className={styles.statsGrid}>
               {data.score > 0 && (
                 <div className={styles.statCard}>
-                  <span className={styles.statValue}>{data.score.toFixed(2)}</span>
-                  <span className={styles.statLabel}>
-                    Score{data.scored_by ? ` · ${data.scored_by.toLocaleString()} users` : ""}
-                  </span>
+                  <span className={styles.statValue}>{data.score.toFixed(1)}</span>
+                  <span className={styles.statLabel}>Score</span>
                 </div>
               )}
               {data.rank && (
@@ -304,9 +275,9 @@ const AnimeDetails = ({
                   <span className={styles.statLabel}>Ranked</span>
                 </div>
               )}
-              {data.popularity && (
+              {data.popularityRank && (
                 <div className={styles.statCard}>
-                  <span className={styles.statValue}>#{data.popularity.toLocaleString()}</span>
+                  <span className={styles.statValue}>#{data.popularityRank.toLocaleString()}</span>
                   <span className={styles.statLabel}>Popularity</span>
                 </div>
               )}
@@ -316,9 +287,9 @@ const AnimeDetails = ({
                   <span className={styles.statLabel}>Members</span>
                 </div>
               )}
-              {data.favorites && (
+              {data.favourites && (
                 <div className={styles.statCard}>
-                  <span className={styles.statValue}>{data.favorites.toLocaleString()}</span>
+                  <span className={styles.statValue}>{data.favourites.toLocaleString()}</span>
                   <span className={styles.statLabel}>Favorites</span>
                 </div>
               )}
@@ -333,13 +304,13 @@ const AnimeDetails = ({
             {data.studios?.length > 0 && (
               <div className={styles.infoItem}>
                 <span className={styles.infoLabel}>Studio</span>
-                <p className={styles.infoValue}>{data.studios.map((s) => s.name).join(", ")}</p>
+                <p className={styles.infoValue}>{data.studios.join(", ")}</p>
               </div>
             )}
             {data.producers?.length > 0 && (
               <div className={styles.infoItem}>
                 <span className={styles.infoLabel}>Producers</span>
-                <p className={styles.infoValue}>{data.producers.map((p) => p.name).join(", ")}</p>
+                <p className={styles.infoValue}>{data.producers.join(", ")}</p>
               </div>
             )}
             {data.source && (
@@ -348,56 +319,48 @@ const AnimeDetails = ({
                 <p className={styles.infoValue}>{data.source}</p>
               </div>
             )}
-            {data.aired?.string && (
+            {data.aired && (
               <div className={styles.infoItem}>
                 <span className={styles.infoLabel}>Aired</span>
-                <p className={styles.infoValue}>{data.aired.string}</p>
+                <p className={styles.infoValue}>{data.aired}</p>
               </div>
             )}
             {data.season && data.year && (
               <div className={styles.infoItem}>
                 <span className={styles.infoLabel}>Season</span>
                 <p className={styles.infoValue}>
-                  {data.season.charAt(0).toUpperCase() + data.season.slice(1)} {data.year}
+                  {data.season} {data.year}
                 </p>
               </div>
             )}
-            {data.broadcast?.string && (
+            {nextAiring && (
               <div className={styles.infoItem}>
-                <span className={styles.infoLabel}>Broadcast</span>
-                <p className={styles.infoValue}>{data.broadcast.string}</p>
+                <span className={styles.infoLabel}>Next episode</span>
+                <p className={styles.infoValue}>{nextAiring}</p>
               </div>
             )}
           </div>
         </section>
 
         {/* Genres & themes */}
-        {[...(data.genres ?? []), ...(data.themes ?? []), ...(data.demographics ?? [])].length > 0 && (
+        {data.genres.length + data.tags.length > 0 && (
           <section className={styles.section}>
             <h2 className={styles.sectionTitle}>Genres & Themes</h2>
             <div className={styles.contentTags}>
-              {[...(data.genres ?? []), ...(data.themes ?? []), ...(data.demographics ?? [])].map((g) => (
-                <span key={g.mal_id} className={styles.contentTag}>{g.name}</span>
+              {[...data.genres, ...data.tags].map((g) => (
+                <span key={g} className={styles.contentTag}>{g}</span>
               ))}
             </div>
-          </section>
-        )}
-
-        {/* Background */}
-        {data.background && (
-          <section className={styles.section}>
-            <h2 className={styles.sectionTitle}>Background</h2>
-            <p className={styles.bodyText}>{data.background}</p>
           </section>
         )}
 
         {/* Trailer */}
         <section className={styles.section}>
           <h2 className={styles.sectionTitle}>Trailer</h2>
-          {data?.trailer?.embed_url ? (
+          {data.trailerUrl ? (
             <div className={styles.trailerWrap}>
               <iframe
-                src={data.trailer.embed_url}
+                src={data.trailerUrl}
                 title={`${data.title} trailer`}
                 allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                 allowFullScreen
@@ -408,34 +371,28 @@ const AnimeDetails = ({
           )}
         </section>
 
-        {/* Songs */}
-        {aniDetails?.id && (
+        {/* Theme songs */}
+        {(openings.length > 0 || endings.length > 0) && (
           <section className={styles.section}>
-            <h2 className={styles.sectionTitle}>Soundtrack</h2>
-            {songList?.data ? (
-              <div className={styles.songsGrid}>
-                {songList.data.documents.map((song, i) => (
-                  <SongCard
-                    key={i}
-                    spotify={song.open_spotify_url}
-                    title={song.title}
-                    url={song.preview_url}
-                    id={i}
-                    album={song.album}
-                    artist={song.artist}
-                  />
-                ))}
-              </div>
-            ) : load ? (
-              <Loader />
-            ) : error ? (
-              <ErrorCard msg="Songs" />
-            ) : (
-              <>
-                <p className={styles.songsPrompt}>Search for soundtrack previews for this anime.</p>
-                <button className={styles.searchBtn} onClick={fetchSongs}>Find Soundtrack</button>
-              </>
-            )}
+            <h2 className={styles.sectionTitle}>Theme Songs</h2>
+            <div className={styles.themeGrid}>
+              {openings.length > 0 && (
+                <div>
+                  <h3 className={styles.themeHeading}>Openings</h3>
+                  <ol className={styles.themeList}>
+                    {openings.map((song, i) => <li key={i}>{song}</li>)}
+                  </ol>
+                </div>
+              )}
+              {endings.length > 0 && (
+                <div>
+                  <h3 className={styles.themeHeading}>Endings</h3>
+                  <ol className={styles.themeList}>
+                    {endings.map((song, i) => <li key={i}>{song}</li>)}
+                  </ol>
+                </div>
+              )}
+            </div>
           </section>
         )}
 
@@ -451,10 +408,17 @@ const AnimeDetails = ({
             <div className={styles.episodeGrid}>
               {ep.map((el, i) => (
                 <div key={i} className={styles.episodeItem}>
-                  <a href={el.url} target="_blank" rel="noopener noreferrer" className={styles.episodeLink}>
-                    <span className={styles.episodeNum}>Ep. {el.mal_id}</span>
-                    <span className={styles.episodeTitle}>{el.title}</span>
-                  </a>
+                  {el.url ? (
+                    <a href={el.url} target="_blank" rel="noopener noreferrer" className={styles.episodeLink}>
+                      {el.number && <span className={styles.episodeNum}>Ep. {el.number}</span>}
+                      <span className={styles.episodeTitle}>{el.title}</span>
+                    </a>
+                  ) : (
+                    <span className={styles.episodeLink}>
+                      {el.number && <span className={styles.episodeNum}>Ep. {el.number}</span>}
+                      <span className={styles.episodeTitle}>{el.title}</span>
+                    </span>
+                  )}
                 </div>
               ))}
             </div>
@@ -462,15 +426,12 @@ const AnimeDetails = ({
         )}
 
         {/* Related */}
-        {hasRelated && (
+        {relations.length > 0 && (
           <section className={styles.section}>
             <h2 className={styles.sectionTitle}>Related</h2>
             <div className={styles.relatedRow}>
-              {data?.related?.Sequel?.map((card, i) => (
-                <RelatedCard key={`sq-${i}`} card={card} type="Sequel" />
-              ))}
-              {data?.related?.Prequel?.map((card, i) => (
-                <RelatedCard key={`pr-${i}`} card={card} type="Prequel" />
+              {relations.map((r) => (
+                <RelatedCard key={`${r.relation}-${r.type}-${r.id}`} card={r} />
               ))}
             </div>
           </section>
@@ -543,37 +504,18 @@ export default AnimeDetails;
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const id = context.query.id as string;
-  const JikanClient = axios.create({ baseURL: "https://api.jikan.moe/v4/" });
-  const res = await JikanClient.get(`anime/${id}`);
-  const episodes = await JikanClient.get(`anime/${id}/episodes`);
-  const pictures = await JikanClient.get(`anime/${id}/pictures`);
 
-  const variables = { id };
-  const url = "https://graphql.anilist.co";
-  const options = {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Accept: "application/json",
-    },
-    body: JSON.stringify({ query: animeDetails, variables }),
-  };
+  try {
+    const { anime, episodes, themes } = await getAnimePage(id);
 
-  let nData: unknown;
-  const handleResponse = (response: Response) => response.json().then((json) => response.ok ? json : Promise.reject(json));
-  const handleError = (error: unknown) => console.error(error);
+    // The page holds no per-user data (lists and comments load in the browser), so the CDN
+    // can cache it. That cuts API traffic and absorbs crawler bursts.
+    context.res.setHeader("Cache-Control", "public, s-maxage=3600, stale-while-revalidate=86400");
 
-  await fetch(url, options)
-    .then(handleResponse)
-    .then((data) => (nData = data))
-    .catch(handleError);
-
-  return {
-    props: {
-      data: res.data.data,
-      ep: episodes.data.data,
-      pics: pictures.data,
-      AniList: (nData as any)?.data ?? null,
-    },
-  };
+    return { props: { data: anime, ep: episodes, themes } };
+  } catch (error) {
+    if (isNotFound(error)) return { notFound: true };
+    console.error(`Anime ${id} failed:`, (error as Error)?.message);
+    return { props: { data: null, ep: [], themes: { openings: [], endings: [] } } };
+  }
 };

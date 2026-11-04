@@ -1,12 +1,9 @@
 module.exports = {
   reactStrictMode: true,
   images: {
-    domains: [
-      "cdn.myanimelist.net",
-      "myanimelist.net",
-      "uploads.mangadex.org",
-      "s4.anilist.co",
-      "cmdxd98sb0x3yprd.mangadex.network",
+    remotePatterns: [
+      { protocol: "https", hostname: "s4.anilist.co" },
+      { protocol: "https", hostname: "uploads.mangadex.org" },
     ],
   },
   async headers() {
@@ -25,8 +22,11 @@ module.exports = {
               "default-src 'self'",
               "script-src 'self' 'unsafe-inline' 'unsafe-eval'",
               "style-src 'self' 'unsafe-inline'",
-              "img-src 'self' data: https://cdn.myanimelist.net https://myanimelist.net https://uploads.mangadex.org https://s4.anilist.co https://cmdxd98sb0x3yprd.mangadex.network",
-              "connect-src 'self' " + (process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001"),
+              // Chapter pages are served from rotating MangaDex@Home nodes, hence the wildcard
+              "img-src 'self' data: https://s4.anilist.co https://uploads.mangadex.org https://*.mangadex.network",
+              // MangaDex blocks cross-origin browser calls, so it is reached via /api/manga instead
+              "connect-src 'self' https://graphql.anilist.co " + (process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001"),
+              "frame-src https://www.youtube-nocookie.com https://www.dailymotion.com",
               "font-src 'self'",
               "frame-ancestors 'none'",
             ].join("; "),

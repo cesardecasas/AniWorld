@@ -38,19 +38,9 @@ const Nav = ({
   };
 
   const handleSubmit = () => {
-    const cleanQuery = query.replace(" ", "_");
-    if (router.pathname.includes("search")) {
-      router.push(`anime=${cleanQuery}&page=1`);
-    } else if (router.pathname.includes("anime")) {
-      router.push(`/search/anime=${cleanQuery}&page=1`);
-    } else if (
-      router.pathname.includes("manga") ||
-      router.pathname.includes("chapter")
-    ) {
-      router.push(`/search/anime=${cleanQuery}&page=1`);
-    } else {
-      router.push(`search/anime=${cleanQuery}&page=1`);
-    }
+    const cleanQuery = query.trim().replace(/\s+/g, "_");
+    if (!cleanQuery) return;
+    router.push(`/search/anime=${encodeURIComponent(cleanQuery)}&page=1`);
   };
 
   return (
@@ -107,7 +97,7 @@ const Nav = ({
             aria-label="Search"
             onChange={(e) => setQuery(e.target.value)}
           />
-          <Button variant="outline-light">
+          <Button variant="outline-light" type="submit" aria-label="Search">
             <BiSearch />
           </Button>
         </Form>

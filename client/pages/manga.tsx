@@ -59,9 +59,7 @@ const Manga = ({ popular, recentlyUpdated, newThisYear }: MangaProps) => {
   const getRandomManga = async () => {
     setLoadingRandom(true);
     try {
-      const res = await axios.get(
-        "https://api.mangadex.org/manga/random?includes[]=cover_art"
-      );
+      const res = await axios.get("/api/manga?random=1");
       setRandom(res.data.data);
     } catch (error) {
       console.log(error);

@@ -5,20 +5,21 @@ import Link from "next/link";
 import Image from "next/image";
 import axios from "axios";
 import getSeason from "../utils/getSeason";
+import { getHomeAnime } from "../lib/anime";
 import type { GetStaticProps } from "next";
-import type { JikanAnime, MangadexManga, Quote } from "../types";
+import type { Anime, MangadexManga, Quote } from "../types";
 
 interface HomeProps {
-  animes: JikanAnime[];
+  animes: Anime[];
   manga: MangadexManga[];
   quote: Quote;
-  season: JikanAnime[];
+  season: Anime[];
 }
 
 const Home = ({ animes, manga, quote, season }: HomeProps) => {
-  const [animeList, setAnimes] = useState<JikanAnime[]>([]);
+  const [animeList, setAnimes] = useState<Anime[]>([]);
   const [mangaList, setManga] = useState<MangadexManga[]>([]);
-  const [seasonAnimes, setSeasonAnimes] = useState<JikanAnime[]>([]);
+  const [seasonAnimes, setSeasonAnimes] = useState<Anime[]>([]);
 
   useEffect(() => {
     setAnimes(animes);
@@ -27,11 +28,6 @@ const Home = ({ animes, manga, quote, season }: HomeProps) => {
   }, []);
 
   const hero = animeList[0];
-
-  const formatDate = (anime: JikanAnime) => {
-    const d = anime.aired.prop.from;
-    return d.year ? `${d.month}/${d.day}/${d.year}` : "";
-  };
 
   const getMangaCover = (man: MangadexManga): string | null => {
     const rel = man.relationships.find((r) => r.type === "cover_art");
@@ -56,7 +52,7 @@ const Home = ({ animes, manga, quote, season }: HomeProps) => {
       {hero && (
         <section
           className={styles.hero}
-          style={{ backgroundImage: `url(${hero.images.jpg.large_image_url})` }}
+          style={{ backgroundImage: `url(${hero.bannerImage ?? hero.coverImage})` }}
         >
           <div className={styles.heroOverlay}>
             <div className={styles.heroContent}>
@@ -66,8 +62,8 @@ const Home = ({ animes, manga, quote, season }: HomeProps) => {
                     ★ {hero.score.toFixed(1)}
                   </span>
                 )}
-                {hero.rating && (
-                  <span className={styles.heroBadge}>{hero.rating}</span>
+                {hero.format && (
+                  <span className={styles.heroBadge}>{hero.format}</span>
                 )}
                 {hero.episodes && (
                   <span className={styles.heroBadge}>{hero.episodes} eps</span>
@@ -77,7 +73,7 @@ const Home = ({ animes, manga, quote, season }: HomeProps) => {
               {hero.synopsis && (
                 <p className={styles.heroSynopsis}>{hero.synopsis}</p>
               )}
-              <Link href={`/anime/${hero.mal_id}`} className={styles.heroBtn}>
+              <Link href={`/anime/${hero.id}`} className={styles.heroBtn}>
                 ▶ View Details
               </Link>
             </div>
@@ -94,18 +90,21 @@ const Home = ({ animes, manga, quote, season }: HomeProps) => {
           <div className={styles.scrollRow}>
             {animeList.slice(1, 25).map((anime, i) => (
               <Link
-                key={i}
-                href={`/anime/${anime.mal_id}`}
+                key={anime.id}
+                href={`/anime/${anime.id}`}
                 className={styles.posterLink}
               >
                 <div className={styles.posterCard}>
                   <div className={styles.posterImgWrap}>
-                    <Image
-                      src={anime.images.jpg.image_url}
-                      alt={anime.title}
-                      fill
-                      style={{ objectFit: "cover" }}
-                    />
+                    {anime.coverImage && (
+                      <Image
+                        src={anime.coverImage}
+                        alt={anime.title}
+                        fill
+                        sizes="160px"
+                        style={{ objectFit: "cover" }}
+                      />
+                    )}
                   </div>
                   <div className={styles.posterInfo}>
                     <p className={styles.posterTitle}>{anime.title}</p>
@@ -129,22 +128,25 @@ const Home = ({ animes, manga, quote, season }: HomeProps) => {
           <div className={styles.scrollRow}>
             {seasonAnimes.slice(0, 25).map((anime, i) => (
               <Link
-                key={i}
-                href={`/anime/${anime.mal_id}`}
+                key={anime.id}
+                href={`/anime/${anime.id}`}
                 className={styles.posterLink}
               >
                 <div className={styles.posterCard}>
                   <div className={styles.posterImgWrap}>
-                    <Image
-                      src={anime.images.jpg.image_url}
-                      alt={anime.title}
-                      fill
-                      style={{ objectFit: "cover" }}
-                    />
+                    {anime.coverImage && (
+                      <Image
+                        src={anime.coverImage}
+                        alt={anime.title}
+                        fill
+                        sizes="160px"
+                        style={{ objectFit: "cover" }}
+                      />
+                    )}
                   </div>
                   <div className={styles.posterInfo}>
                     <p className={styles.posterTitle}>{anime.title}</p>
-                    <p className={styles.posterMeta}>{formatDate(anime)}</p>
+                    <p className={styles.posterMeta}>{anime.startDate ?? anime.format}</p>
                   </div>
                 </div>
               </Link>
@@ -220,28 +222,30 @@ const defaultQuote: Quote = {
 export const getStaticProps: GetStaticProps = async () => {
   const date = new Date();
   const season = getSeason(date.getMonth());
-  const client = axios.create({ baseURL: "https://api.mangadex.org/" });
+  const client = axios.create({ baseURL: "https://api.mangadex.org/", timeout: 5000 });
 
-  const res = await fetch("https://api.jikan.moe/v4/top/anime");
-  const mangaRes = await client.get(
-    "manga?limit=8&includes[]=cover_art&originalLanguage[]=en&availableTranslatedLanguage[]=en",
-  );
-  const Quote = await fetch("https://api.animechan.io/v1/quotes/random");
-  const seasonAnimes = await fetch(
-    `https://api.jikan.moe/v4/seasons/${date.getFullYear()}/${season}`,
-  );
+  // Each source can fail on its own; a section renders empty instead of failing the page
+  const [{ top, seasonal }, manga, quote] = await Promise.all([
+    getHomeAnime(season, date.getFullYear()),
+    client
+      .get("manga?limit=8&includes[]=cover_art&order[followedCount]=desc&availableTranslatedLanguage[]=en")
+      .then((r) => ({ status: "fulfilled" as const, value: r }), (e) => ({ status: "rejected" as const, reason: e })),
+    axios
+      .get("https://api.animechan.io/v1/quotes/random", { timeout: 3000 })
+      .then((r) => ({ status: "fulfilled" as const, value: r }), (e) => ({ status: "rejected" as const, reason: e })),
+  ]);
 
-  const quoteJson = await Quote?.json();
-  const seasonJson = await seasonAnimes.json();
-  const data = await res.json();
+  const failed = [top, seasonal, manga, quote].filter((r) => r.status === "rejected");
+  failed.forEach((r) => console.error("Home data source failed:", (r as PromiseRejectedResult).reason?.message));
 
   return {
     props: {
-      animes: data.data,
-      manga: mangaRes.data.data,
-      quote: quoteJson?.data || defaultQuote,
-      season: seasonJson.data,
+      animes: top.status === "fulfilled" ? top.value.results : [],
+      manga: manga.status === "fulfilled" ? manga.value.data.data : [],
+      quote: (quote.status === "fulfilled" && quote.value.data?.data) || defaultQuote,
+      season: seasonal.status === "fulfilled" ? seasonal.value.results : [],
     },
-    revalidate: 3600,
+    // Retry sooner when something failed so a bad build doesn't stick for an hour
+    revalidate: failed.length ? 300 : 3600,
   };
 };

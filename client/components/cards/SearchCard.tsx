@@ -4,26 +4,27 @@ import styles from "../../styles/Search.module.css";
 
 interface SearchCardProps {
   name: string;
-  image: string;
-  rating: string;
-  episodes: number;
-  id: number;
-  synopsis: string;
-  score: number;
+  image: string | null;
+  format: string | null;
+  episodes: number | null;
+  id: string;
+  score: number | null;
 }
 
-const SearchCard = ({ name, image, rating, episodes, id, score }: SearchCardProps) => {
-  const meta = [episodes && `${episodes} eps`, rating].filter(Boolean).join(" · ");
+const SearchCard = ({ name, image, format, episodes, id, score }: SearchCardProps) => {
+  const meta = [format, episodes && `${episodes} eps`].filter(Boolean).join(" · ");
 
   return (
     <Link href={`/anime/${id}`} className={styles.card}>
       <div className={styles.imgWrap}>
-        <Image
-          src={image}
-          alt={name}
-          fill
-          style={{ objectFit: "cover" }}
-        />
+        {image && (
+          <Image
+            src={image}
+            alt={name}
+            fill
+            style={{ objectFit: "cover" }}
+          />
+        )}
         {score > 0 && (
           <span className={styles.scoreBadge}>★ {score.toFixed(1)}</span>
         )}
