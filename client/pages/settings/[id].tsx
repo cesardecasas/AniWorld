@@ -9,18 +9,18 @@ import {
   Figure,
   Form,
 } from "react-bootstrap";
-import axios from "axios";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
-import type { GetServerSideProps } from "next";
-import type { UserInfo, UserStats } from "../../types";
+import { api, apiError } from "../../lib/api";
+import { Loader } from "../../components/ResponseHandlers";
+import type { User, UserInfo, UserStats } from "../../types";
 
 interface SettingsProps {
   inf: UserInfo;
   stats: UserStats | null;
 }
 
-const Settings = ({ inf, stats }: SettingsProps) => {
+const SettingsView = ({ inf, stats }: SettingsProps) => {
   const [show, setShow] = useState(false);
   const [editMode, setEditMode] = useState(false);
   const [form, setForm] = useState({
@@ -33,18 +33,16 @@ const Settings = ({ inf, stats }: SettingsProps) => {
 
   const def =
     "https://t3.ftcdn.net/jpg/00/64/67/80/240_F_64678017_zUpiZFjj04cnLri7oADnyMH0XBYyQghG.jpg";
-  const AniAPi = axios.create({
-    baseURL: process.env.NEXT_PUBLIC_API_URL,
-  });
-  const router = useRouter();
 
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
 
   const deleteAccount = async () => {
     try {
-      await AniAPi.delete(`/api/user/delete/${inf.id}`);
-      router.push("/");
+      await api.delete(`/api/user/delete/${inf.id}`);
+      // Full reload so the app forgets the deleted session
+      localStorage.clear();
+      window.location.href = "/";
     } catch (error) {
       console.log(error);
     }
@@ -54,10 +52,10 @@ const Settings = ({ inf, stats }: SettingsProps) => {
     setSaving(true);
     setSaveError("");
     try {
-      await AniAPi.put(`/api/user/update/${inf.id}`, form);
+      await api.put(`/api/user/update/${inf.id}`, { ...form, profilePic: form.profilePic.trim() || null });
       setEditMode(false);
-    } catch {
-      setSaveError("Failed to save. Please try again.");
+    } catch (err) {
+      setSaveError(apiError(err, "Failed to save. Please try again."));
     } finally {
       setSaving(false);
     }
@@ -219,23 +217,41 @@ const Settings = ({ inf, stats }: SettingsProps) => {
   );
 };
 
-export default Settings;
+interface SettingsPageProps {
+  currentUser: User | null;
+}
 
-export const getServerSideProps: GetServerSideProps = async (context) => {
-  const AniAPi = axios.create({
-    baseURL: process.env.NEXT_PUBLIC_API_URL,
-  });
-  const id = context.query.id as string;
+// Account data needs the login token, which only exists in the browser, so it loads client-side
+const Settings = ({ currentUser }: SettingsPageProps) => {
+  const router = useRouter();
+  const id = router.query.id as string | undefined;
+  const [inf, setInf] = useState<UserInfo | null>(null);
+  const [stats, setStats] = useState<UserStats | null>(null);
+  const [error, setError] = useState("");
 
-  const [userRes, statsRes] = await Promise.allSettled([
-    AniAPi.get(`/api/user/getuser/${id}`),
-    AniAPi.get(`/api/user/stats/${id}`),
-  ]);
+  useEffect(() => {
+    if (!router.isReady) return;
+    if (!localStorage.getItem("token")) {
+      router.replace("/Login");
+      return;
+    }
+    if (currentUser && String(currentUser.id) !== id) {
+      router.replace(`/settings/${currentUser.id}`);
+      return;
+    }
 
-  return {
-    props: {
-      inf: userRes.status === "fulfilled" ? userRes.value.data : null,
-      stats: statsRes.status === "fulfilled" ? statsRes.value.data : null,
-    },
-  };
+    Promise.allSettled([api.get(`/api/user/getuser/${id}`), api.get(`/api/user/stats/${id}`)]).then(
+      ([userRes, statsRes]) => {
+        if (userRes.status === "fulfilled") setInf(userRes.value.data);
+        else setError(apiError(userRes.reason, "Couldn't load your account."));
+        if (statsRes.status === "fulfilled") setStats(statsRes.value.data);
+      },
+    );
+  }, [router.isReady, id, currentUser]);
+
+  if (error) return <p style={{ padding: "2rem", textAlign: "center" }}>{error}</p>;
+  if (!inf) return <Loader />;
+  return <SettingsView inf={inf} stats={stats} />;
 };
+
+export default Settings;

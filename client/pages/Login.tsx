@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { useRouter } from "next/router";
 import Link from "next/link";
-import axios from "axios";
+import { api, apiError } from "../lib/api";
+import { Turnstile, turnstileEnabled } from "../components/BotGuard";
 import { Loader } from "../components/ResponseHandlers";
 import type { User } from "../types";
 import styles from "../styles/Auth.module.css";
@@ -15,22 +16,20 @@ const Login = ({ setAuthenticated, setCurrentUser }: LoginProps) => {
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState(false);
+  const [error, setError] = useState("");
   const [load, setLoad] = useState(false);
-
-  const client = axios.create({
-    baseURL: process.env.NEXT_PUBLIC_API_URL,
-  });
+  const [turnstileToken, setTurnstileToken] = useState("");
+  const [attempt, setAttempt] = useState(0);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!email || !password) return;
 
     setLoad(true);
-    setError(false);
+    setError("");
 
     try {
-      const login = await client.post("/api/user/login", { email, password });
+      const login = await api.post("/api/user/login", { email, password, turnstileToken });
       if (login.data?.token) {
         localStorage.setItem("token", login.data.token);
         setCurrentUser({
@@ -41,10 +40,12 @@ const Login = ({ setAuthenticated, setCurrentUser }: LoginProps) => {
         router.push("/");
         return;
       }
-      setError(true);
+      setError("Invalid email or password. Please try again.");
     } catch (err) {
-      console.error("Login error:", err);
-      setError(true);
+      setError(apiError(err, "Invalid email or password. Please try again."));
+      // Turnstile tokens are single-use, so get a fresh challenge for the retry
+      setTurnstileToken("");
+      setAttempt((n) => n + 1);
     } finally {
       setLoad(false);
     }
@@ -64,9 +65,7 @@ const Login = ({ setAuthenticated, setCurrentUser }: LoginProps) => {
         <p className={styles.subtitle}>Sign in to your account</p>
 
         {error && (
-          <div className={styles.errorBox}>
-            Invalid email or password. Please try again.
-          </div>
+          <div className={styles.errorBox}>{error}</div>
         )}
 
         <form onSubmit={handleSubmit}>
@@ -100,6 +99,8 @@ const Login = ({ setAuthenticated, setCurrentUser }: LoginProps) => {
             />
           </div>
 
+          <Turnstile key={attempt} onToken={setTurnstileToken} />
+
           {load ? (
             <div className={styles.loaderWrap}>
               <Loader />
@@ -108,7 +109,7 @@ const Login = ({ setAuthenticated, setCurrentUser }: LoginProps) => {
             <button
               type="submit"
               className={styles.submitBtn}
-              disabled={!email || !password}
+              disabled={!email || !password || (turnstileEnabled && !turnstileToken)}
             >
               Sign in
             </button>

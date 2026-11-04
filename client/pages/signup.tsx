@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { useRouter } from "next/router";
 import Link from "next/link";
-import axios from "axios";
+import { api, apiError } from "../lib/api";
+import { Honeypot, Turnstile, turnstileEnabled } from "../components/BotGuard";
 import styles from "../styles/Auth.module.css";
 
 const Signup = () => {
@@ -9,32 +10,32 @@ const Signup = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [username, setUsername] = useState("");
-  const [error, setError] = useState(false);
+  const [error, setError] = useState("");
   const [load, setLoad] = useState(false);
-
-  const client = axios.create({
-    baseURL: process.env.NEXT_PUBLIC_API_URL,
-  });
+  const [website, setWebsite] = useState("");
+  const [turnstileToken, setTurnstileToken] = useState("");
+  const [attempt, setAttempt] = useState(0);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!email || !password || !username) return;
 
     setLoad(true);
-    setError(false);
+    setError("");
 
     try {
-      const registration = await client.post("api/user/register", {
+      await api.post("/api/user/register", {
         email,
         password,
         userName: username,
+        website,
+        turnstileToken,
       });
-      if (registration) {
-        router.push("/login");
-      }
+      router.push("/Login");
     } catch (err) {
-      console.error("Signup error:", err);
-      setError(true);
+      setError(apiError(err, "Something went wrong. Please check your details and try again."));
+      setTurnstileToken("");
+      setAttempt((n) => n + 1);
     } finally {
       setLoad(false);
     }
@@ -54,9 +55,7 @@ const Signup = () => {
         <p className={styles.subtitle}>Join the community</p>
 
         {error && (
-          <div className={styles.errorBox}>
-            Something went wrong. Please check your details and try again.
-          </div>
+          <div className={styles.errorBox}>{error}</div>
         )}
 
         <form onSubmit={handleSubmit}>
@@ -70,6 +69,8 @@ const Signup = () => {
               required
               className={styles.input}
               placeholder="Choose a username"
+              minLength={3}
+              maxLength={30}
               value={username}
               onChange={(e) => setUsername(e.target.value)}
             />
@@ -99,16 +100,21 @@ const Signup = () => {
               type="password"
               required
               className={styles.input}
-              placeholder="••••••••"
+              placeholder="At least 8 characters"
+              minLength={8}
+              maxLength={128}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
             />
           </div>
 
+          <Honeypot value={website} onChange={setWebsite} />
+          <Turnstile key={attempt} onToken={setTurnstileToken} />
+
           <button
             type="submit"
             className={styles.submitBtn}
-            disabled={!email || !password || !username || load}
+            disabled={!email || !password || !username || load || (turnstileEnabled && !turnstileToken)}
           >
             {load ? "Creating account…" : "Create account"}
           </button>
@@ -116,7 +122,7 @@ const Signup = () => {
 
         <p className={styles.footer}>
           Already have an account?{" "}
-          <Link href="/login" className={styles.footerLink}>
+          <Link href="/Login" className={styles.footerLink}>
             Sign in
           </Link>
         </p>

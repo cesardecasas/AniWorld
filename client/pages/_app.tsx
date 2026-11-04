@@ -2,7 +2,7 @@ import "bootstrap/dist/css/bootstrap.css";
 import "../styles/globals.css";
 import Layout from "../components/Layout";
 import { useEffect, useState } from "react";
-import axios from "axios";
+import { api } from "../lib/api";
 import type { AppProps } from "next/app";
 import type { User } from "../types";
 
@@ -24,21 +24,12 @@ function MyApp({ Component, pageProps }: AppProps) {
   }, [darkMode]);
   const [authenticated, setAuthenticated] = useState(false);
   const [currentUser, setCurrentUser] = useState<User | null>(null);
-  const client = axios.create({
-    baseURL: process.env.NEXT_PUBLIC_API_URL,
-  });
-
   const checkSession = async () => {
     const token = localStorage.getItem("token");
-    const config = {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    };
 
     if (token) {
       try {
-        const session = await client.get("api/user/session", config);
+        const session = await api.get("/api/user/session");
         setAuthenticated(true);
         setCurrentUser({
           userName: session?.data?.user?.userName,

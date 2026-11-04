@@ -1,5 +1,6 @@
 import { Badge, ProgressBar } from "react-bootstrap";
 import axios from "axios";
+import { api } from "../../lib/api";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import Link from "next/link";
@@ -57,9 +58,6 @@ const MyList = ({ entries, currentUser }: MyListProps) => {
     notes: string;
   }>({ status: "planned", progress: 0, rating: null, notes: "" });
 
-  const AniAPi = axios.create({
-    baseURL: process.env.NEXT_PUBLIC_API_URL,
-  });
 
   useEffect(() => {
     if (currentUser === null) router.push("/");
@@ -143,7 +141,7 @@ const MyList = ({ entries, currentUser }: MyListProps) => {
 
   const saveEdit = async (entryId: number) => {
     try {
-      const res = await AniAPi.put(`/api/entries/${entryId}`, editForm);
+      const res = await api.put(`/api/entries/${entryId}`, editForm);
       setLocalEntries((prev) =>
         prev.map((e) => (e.id === entryId ? { ...e, ...res.data } : e))
       );
@@ -155,7 +153,7 @@ const MyList = ({ entries, currentUser }: MyListProps) => {
 
   const removeEntry = async (entryId: number) => {
     try {
-      await AniAPi.delete(`/api/entries/${entryId}`);
+      await api.delete(`/api/entries/${entryId}`);
       setLocalEntries((prev) => prev.filter((e) => e.id !== entryId));
     } catch (err) {
       console.error(err);
@@ -477,13 +475,10 @@ const MyList = ({ entries, currentUser }: MyListProps) => {
 export default MyList;
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
-  const AniAPi = axios.create({
-    baseURL: process.env.NEXT_PUBLIC_API_URL,
-  });
   const id = context.query.id as string;
 
   try {
-    const res = await AniAPi.get(`/api/entries/user/${id}`);
+    const res = await api.get(`/api/entries/user/${id}`);
     return { props: { entries: res.data } };
   } catch {
     return { props: { entries: [] } };

@@ -1,4 +1,5 @@
 import Axios from "axios";
+import { api } from "../../lib/api";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
@@ -34,8 +35,6 @@ const Chapter = ({
   const [sortedChapters, setSortedChapters] = useState<MangadexChapter[]>([]);
   const [dataSaver, setDataSaver] = useState(true);
 
-  const aniapi = Axios.create({ baseURL: process.env.NEXT_PUBLIC_API_URL });
-
   useEffect(() => {
     const sameLang = chapters.filter(
       (el) =>
@@ -51,9 +50,8 @@ const Chapter = ({
 
     // Save reading progress
     if (currentUser?.id && mangaId && chapter.attributes.chapter) {
-      aniapi
+      api
         .put("/api/progress", {
-          user_id: currentUser.id,
           manga_id: mangaId,
           chapter_id: chapter.id,
           chapter_number: chapter.attributes.chapter,

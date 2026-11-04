@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import { getCover } from "../../lib/mangadex";
 import Axios from "axios";
+import { api, apiError } from "../../lib/api";
+import { Honeypot, Turnstile, turnstileEnabled } from "../../components/BotGuard";
 import Link from "next/link";
 import Image from "next/image";
 import Dropdown from "react-bootstrap/Dropdown";
@@ -107,9 +109,10 @@ const AnimeDetails = ({
   const [commentText, setCommentText] = useState("");
   const [submitting, setSubmitting] = useState(false);
 
-  const aniapi = Axios.create({
-    baseURL: process.env.NEXT_PUBLIC_API_URL,
-  });
+  const [website, setWebsite] = useState("");
+  const [turnstileToken, setTurnstileToken] = useState("");
+  const [commentAttempt, setCommentAttempt] = useState(0);
+  const [commentError, setCommentError] = useState("");
 
   const populate = async () => {
     const file = cover?.attributes?.fileName;
@@ -128,8 +131,7 @@ const AnimeDetails = ({
   const addToList = async (status: EntryStatus = "planned") => {
     if (!currentUser?.id) return;
     try {
-      const res = await aniapi.post("/api/entries/upsert", {
-        user_id: currentUser.id,
+      const res = await api.post("/api/entries/upsert", {
         content_id: details.id,
         content_type: "manga",
         status,
@@ -143,7 +145,7 @@ const AnimeDetails = ({
   const updateEntryStatus = async (status: EntryStatus) => {
     if (!entry) return;
     try {
-      const res = await aniapi.put(`/api/entries/${entry.id}`, { status });
+      const res = await api.put(`/api/entries/${entry.id}`, { status });
       setEntry(res.data);
     } catch (err) {
       console.error(err);
@@ -153,7 +155,7 @@ const AnimeDetails = ({
   const removeFromList = async () => {
     if (!entry) return;
     try {
-      await aniapi.delete(`/api/entries/${entry.id}`);
+      await api.delete(`/api/entries/${entry.id}`);
       setEntry(null);
     } catch (err) {
       console.error(err);
@@ -162,7 +164,7 @@ const AnimeDetails = ({
 
   const fetchComments = async () => {
     try {
-      const res = await aniapi.get(`/api/comment/getall/${details.id}`);
+      const res = await api.get(`/api/comment/getall/${details.id}`);
       setComments(res.data);
     } catch (err) {
       console.error(err);
@@ -172,25 +174,30 @@ const AnimeDetails = ({
   const submitComment = async () => {
     if (!commentText.trim() || !currentUser?.id) return;
     setSubmitting(true);
+    setCommentError("");
     try {
-      const res = await aniapi.post("/api/comment/create", {
-        user_id: currentUser.id,
+      const res = await api.post("/api/comment/create", {
         owner_id: details.id,
         type: "manga",
         content: commentText.trim(),
+        website,
+        turnstileToken,
       });
       setComments((prev) => [res.data, ...prev]);
       setCommentText("");
     } catch (err) {
-      console.error(err);
+      setCommentError(apiError(err, "Couldn't post your review. Please try again."));
     } finally {
       setSubmitting(false);
+      // Turnstile tokens are single-use
+      setTurnstileToken("");
+      setCommentAttempt((n) => n + 1);
     }
   };
 
   const deleteComment = async (commentId: number) => {
     try {
-      await aniapi.delete(`/api/comment/delete/${commentId}`);
+      await api.delete(`/api/comment/delete/${commentId}`);
       setComments((prev) => prev.filter((c) => c.id !== commentId));
     } catch (err) {
       console.error(err);
@@ -203,7 +210,7 @@ const AnimeDetails = ({
       fetchComments();
       if (currentUser?.id) {
         try {
-          const res = await aniapi.get(
+          const res = await api.get(
             `/api/entries/check/${currentUser.id}/manga/${details.id}`
           );
           setEntry(res.data);
@@ -439,13 +446,16 @@ const AnimeDetails = ({
                 onChange={(e) => setCommentText(e.target.value)}
                 style={{ width: "100%", padding: "0.6rem", borderRadius: "6px", border: "1px solid var(--bs-border-color)", resize: "vertical" }}
               />
+              <Honeypot value={website} onChange={setWebsite} />
+              <Turnstile key={commentAttempt} onToken={setTurnstileToken} />
               <button
                 onClick={submitComment}
-                disabled={submitting || !commentText.trim()}
+                disabled={submitting || !commentText.trim() || (turnstileEnabled && !turnstileToken)}
                 style={{ alignSelf: "flex-start", padding: "0.4rem 1rem" }}
               >
                 {submitting ? "Posting..." : "Submit"}
               </button>
+              {commentError && <p style={{ color: "#e5484d", margin: 0 }}>{commentError}</p>}
             </div>
           )}
           {comments.length === 0 ? (
