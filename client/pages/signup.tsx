@@ -24,7 +24,7 @@ const Signup = () => {
     setError("");
 
     try {
-      await api.post("/api/user/register", {
+      await api.post("/auth/register", {
         email,
         password,
         userName: username,

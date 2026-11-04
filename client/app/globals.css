@@ -1,0 +1,51 @@
+/* Dark Fantasy theme for App Router pages. The legacy pages router keeps styles/globals.css
+   and Bootstrap until each page is rebuilt here (Phase 3). */
+@import "tailwindcss";
+
+@theme {
+  /* Grounds, darkest to lightest */
+  --color-obsidian: #0b0a0d;
+  --color-crypt: #15131a;
+  --color-vault: #1e1b24;
+  --color-rune: #2e2935;
+  --color-rune-strong: #3a3442;
+
+  /* Text */
+  --color-parchment: #ece6da;
+  --color-parchment-soft: #c9c2b6;
+  --color-ash: #a39c91;
+  --color-ash-dim: #8a837a;
+
+  /* Accents */
+  --color-crimson: #b3362f;
+  --color-crimson-light: #e06a5e;
+  --color-crimson-glow: #f08a7e;
+  --color-gold: #d4b06a;
+  --color-on-crimson: #f3ede2;
+
+  --font-display: var(--font-cormorant), "Cormorant Garamond", Georgia, serif;
+  --font-sans: var(--font-manrope), "Manrope", system-ui, sans-serif;
+
+  /* Arched poster frames */
+  --radius-arch: 200px 200px 10px 10px;
+  --radius-arch-sm: 90px 90px 6px 6px;
+}
+
+@layer base {
+  html {
+    color-scheme: dark;
+  }
+  body {
+    @apply bg-obsidian font-sans text-parchment antialiased;
+  }
+  a {
+    @apply text-crimson-light transition-colors hover:text-crimson-glow;
+  }
+  :focus-visible {
+    @apply outline-2 outline-offset-2 outline-gold;
+  }
+}
+
+@utility eyebrow {
+  @apply text-xs font-bold tracking-[0.22em] uppercase text-ash-dim;
+}

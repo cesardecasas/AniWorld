@@ -39,10 +39,10 @@ const SettingsView = ({ inf, stats }: SettingsProps) => {
 
   const deleteAccount = async () => {
     try {
-      await api.delete(`/api/user/delete/${inf.id}`);
+      await api.delete(`/users/${inf.id}`);
+      await api.post("/auth/logout");
       // Full reload so the app forgets the deleted session
-      localStorage.clear();
-      window.location.href = "/";
+      window.location.assign("/");
     } catch (error) {
       console.log(error);
     }
@@ -52,7 +52,7 @@ const SettingsView = ({ inf, stats }: SettingsProps) => {
     setSaving(true);
     setSaveError("");
     try {
-      await api.put(`/api/user/update/${inf.id}`, { ...form, profilePic: form.profilePic.trim() || null });
+      await api.patch(`/users/${inf.id}`, { ...form, profilePic: form.profilePic.trim() || null });
       setEditMode(false);
     } catch (err) {
       setSaveError(apiError(err, "Failed to save. Please try again."));
@@ -231,23 +231,21 @@ const Settings = ({ currentUser }: SettingsPageProps) => {
 
   useEffect(() => {
     if (!router.isReady) return;
-    if (!localStorage.getItem("token")) {
-      router.replace("/Login");
-      return;
-    }
-    if (currentUser && String(currentUser.id) !== id) {
-      router.replace(`/settings/${currentUser.id}`);
-      return;
-    }
 
-    Promise.allSettled([api.get(`/api/user/getuser/${id}`), api.get(`/api/user/stats/${id}`)]).then(
-      ([userRes, statsRes]) => {
-        if (userRes.status === "fulfilled") setInf(userRes.value.data);
-        else setError(apiError(userRes.reason, "Couldn't load your account."));
-        if (statsRes.status === "fulfilled") setStats(statsRes.value.data);
-      },
-    );
-  }, [router.isReady, id, currentUser]);
+    const load = async () => {
+      // The session cookie is httpOnly, so ask the server who is signed in
+      const session = await api.get("/auth/session").catch(() => null);
+      const me = session?.data?.user;
+      if (!me) return router.replace("/Login");
+      if (String(me.id) !== id) return router.replace(`/settings/${me.id}`);
+
+      const [userRes, statsRes] = await Promise.allSettled([api.get(`/users/${id}`), api.get(`/users/${id}/stats`)]);
+      if (userRes.status === "fulfilled") setInf(userRes.value.data);
+      else setError(apiError(userRes.reason, "Couldn't load your account."));
+      if (statsRes.status === "fulfilled") setStats(statsRes.value.data);
+    };
+    load();
+  }, [router, id, currentUser]);
 
   if (error) return <p style={{ padding: "2rem", textAlign: "center" }}>{error}</p>;
   if (!inf) return <Loader />;

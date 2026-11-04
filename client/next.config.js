@@ -7,7 +7,12 @@ module.exports = {
     ],
   },
   async headers() {
+    // Private and per-user pages stay out of search results even if a crawler ignores robots.txt
+    const noindex = ["/Login", "/signup", "/settings/:path*", "/list/:path*", "/chapter/:path*", "/api/:path*"].map(
+      (source) => ({ source, headers: [{ key: "X-Robots-Tag", value: "noindex, nofollow" }] }),
+    );
     return [
+      ...noindex,
       {
         source: "/(.*)",
         headers: [
@@ -25,7 +30,8 @@ module.exports = {
               // Chapter pages are served from rotating MangaDex@Home nodes, hence the wildcard
               "img-src 'self' data: https://s4.anilist.co https://uploads.mangadex.org https://*.mangadex.network",
               // MangaDex blocks cross-origin browser calls, so it is reached via /api/manga instead
-              "connect-src 'self' https://graphql.anilist.co " + (process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001"),
+              // The AniWorld API is reached through this site's own /api/v1 routes
+              "connect-src 'self' https://graphql.anilist.co",
               "frame-src https://www.youtube-nocookie.com https://www.dailymotion.com https://challenges.cloudflare.com",
               "font-src 'self'",
               "frame-ancestors 'none'",

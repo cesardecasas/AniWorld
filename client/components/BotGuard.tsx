@@ -36,7 +36,9 @@ export const turnstileEnabled = Boolean(SITE_KEY);
 export const Turnstile = ({ onToken }: { onToken: (token: string) => void }) => {
   const ref = useRef<HTMLDivElement>(null);
   const callback = useRef(onToken);
-  callback.current = onToken;
+  useEffect(() => {
+    callback.current = onToken;
+  }, [onToken]);
 
   useEffect(() => {
     if (!SITE_KEY || !ref.current) return;

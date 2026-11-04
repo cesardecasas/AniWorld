@@ -29,9 +29,9 @@ const Login = ({ setAuthenticated, setCurrentUser }: LoginProps) => {
     setError("");
 
     try {
-      const login = await api.post("/api/user/login", { email, password, turnstileToken });
-      if (login.data?.token) {
-        localStorage.setItem("token", login.data.token);
+      const login = await api.post("/auth/login", { email, password, turnstileToken });
+      // The session cookie is set by the server; the response only carries the public user
+      if (login.data?.user) {
         setCurrentUser({
           userName: login.data.user.userName,
           id: login.data.user.id,

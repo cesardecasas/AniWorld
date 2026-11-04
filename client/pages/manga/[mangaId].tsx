@@ -131,7 +131,7 @@ const AnimeDetails = ({
   const addToList = async (status: EntryStatus = "planned") => {
     if (!currentUser?.id) return;
     try {
-      const res = await api.post("/api/entries/upsert", {
+      const res = await api.put("/me/entries", {
         content_id: details.id,
         content_type: "manga",
         status,
@@ -145,7 +145,7 @@ const AnimeDetails = ({
   const updateEntryStatus = async (status: EntryStatus) => {
     if (!entry) return;
     try {
-      const res = await api.put(`/api/entries/${entry.id}`, { status });
+      const res = await api.patch(`/entries/${entry.id}`, { status });
       setEntry(res.data);
     } catch (err) {
       console.error(err);
@@ -155,7 +155,7 @@ const AnimeDetails = ({
   const removeFromList = async () => {
     if (!entry) return;
     try {
-      await api.delete(`/api/entries/${entry.id}`);
+      await api.delete(`/entries/${entry.id}`);
       setEntry(null);
     } catch (err) {
       console.error(err);
@@ -164,7 +164,7 @@ const AnimeDetails = ({
 
   const fetchComments = async () => {
     try {
-      const res = await api.get(`/api/comment/getall/${details.id}`);
+      const res = await api.get(`/titles/${details.id}/comments`);
       setComments(res.data);
     } catch (err) {
       console.error(err);
@@ -176,7 +176,7 @@ const AnimeDetails = ({
     setSubmitting(true);
     setCommentError("");
     try {
-      const res = await api.post("/api/comment/create", {
+      const res = await api.post("/comments", {
         owner_id: details.id,
         type: "manga",
         content: commentText.trim(),
@@ -197,7 +197,7 @@ const AnimeDetails = ({
 
   const deleteComment = async (commentId: number) => {
     try {
-      await api.delete(`/api/comment/delete/${commentId}`);
+      await api.delete(`/comments/${commentId}`);
       setComments((prev) => prev.filter((c) => c.id !== commentId));
     } catch (err) {
       console.error(err);
@@ -211,7 +211,7 @@ const AnimeDetails = ({
       if (currentUser?.id) {
         try {
           const res = await api.get(
-            `/api/entries/check/${currentUser.id}/manga/${details.id}`
+            `/me/entries/manga/${details.id}`
           );
           setEntry(res.data);
         } catch {

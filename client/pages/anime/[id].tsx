@@ -56,7 +56,7 @@ const AnimeDetails = ({
     if (!currentUser?.id || !data) return;
     try {
       const res = await api.get(
-        `/api/entries/check/${currentUser.id}/anime/${data.id}`
+        `/me/entries/anime/${data.id}`
       );
       setEntry(res.data);
     } catch {
@@ -65,9 +65,9 @@ const AnimeDetails = ({
   };
 
   const addToList = async (status: EntryStatus = "planned") => {
-    if (!currentUser?.id) return;
+    if (!currentUser?.id || !data) return;
     try {
-      const res = await api.post("/api/entries/upsert", {
+      const res = await api.put("/me/entries", {
         content_id: data.id,
         content_type: "anime",
         status,
@@ -81,7 +81,7 @@ const AnimeDetails = ({
   const updateEntryStatus = async (status: EntryStatus) => {
     if (!entry) return;
     try {
-      const res = await api.put(`/api/entries/${entry.id}`, { status });
+      const res = await api.patch(`/entries/${entry.id}`, { status });
       setEntry(res.data);
     } catch (err) {
       console.error(err);
@@ -91,7 +91,7 @@ const AnimeDetails = ({
   const removeFromList = async () => {
     if (!entry) return;
     try {
-      await api.delete(`/api/entries/${entry.id}`);
+      await api.delete(`/entries/${entry.id}`);
       setEntry(null);
     } catch (err) {
       console.error(err);
@@ -101,7 +101,7 @@ const AnimeDetails = ({
   const fetchComments = async () => {
     if (!data) return;
     try {
-      const res = await api.get(`/api/comment/getall/${data.id}`);
+      const res = await api.get(`/titles/${data.id}/comments`);
       setComments(res.data);
     } catch (err) {
       console.error(err);
@@ -109,11 +109,11 @@ const AnimeDetails = ({
   };
 
   const submitComment = async () => {
-    if (!commentText.trim() || !currentUser?.id) return;
+    if (!commentText.trim() || !currentUser?.id || !data) return;
     setSubmitting(true);
     setCommentError("");
     try {
-      const res = await api.post("/api/comment/create", {
+      const res = await api.post("/comments", {
         owner_id: data.id,
         type: "anime",
         content: commentText.trim(),
@@ -134,7 +134,7 @@ const AnimeDetails = ({
 
   const deleteComment = async (commentId: number) => {
     try {
-      await api.delete(`/api/comment/delete/${commentId}`);
+      await api.delete(`/comments/${commentId}`);
       setComments((prev) => prev.filter((c) => c.id !== commentId));
     } catch (err) {
       console.error(err);
@@ -193,7 +193,7 @@ const AnimeDetails = ({
           <div className={styles.heroInfo}>
             <h1 className={styles.title}>{data.title}</h1>
             <div className={styles.badges}>
-              {data.score > 0 && (
+              {data.score != null && data.score > 0 && (
                 <span className={`${styles.badge} ${styles.badgeScore}`}>
                   ★ {data.score.toFixed(1)}
                 </span>
@@ -268,7 +268,7 @@ const AnimeDetails = ({
           <section className={styles.section}>
             <h2 className={styles.sectionTitle}>Stats</h2>
             <div className={styles.statsGrid}>
-              {data.score > 0 && (
+              {data.score != null && data.score > 0 && (
                 <div className={styles.statCard}>
                   <span className={styles.statValue}>{data.score.toFixed(1)}</span>
                   <span className={styles.statLabel}>Score</span>

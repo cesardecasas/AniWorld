@@ -1,6 +1,7 @@
 import { Badge, ProgressBar } from "react-bootstrap";
 import axios from "axios";
 import { api } from "../../lib/api";
+import { backendFetch } from "../../lib/server/backend";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import Link from "next/link";
@@ -141,7 +142,7 @@ const MyList = ({ entries, currentUser }: MyListProps) => {
 
   const saveEdit = async (entryId: number) => {
     try {
-      const res = await api.put(`/api/entries/${entryId}`, editForm);
+      const res = await api.patch(`/entries/${entryId}`, editForm);
       setLocalEntries((prev) =>
         prev.map((e) => (e.id === entryId ? { ...e, ...res.data } : e))
       );
@@ -153,7 +154,7 @@ const MyList = ({ entries, currentUser }: MyListProps) => {
 
   const removeEntry = async (entryId: number) => {
     try {
-      await api.delete(`/api/entries/${entryId}`);
+      await api.delete(`/entries/${entryId}`);
       setLocalEntries((prev) => prev.filter((e) => e.id !== entryId));
     } catch (err) {
       console.error(err);
@@ -478,8 +479,10 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   const id = context.query.id as string;
 
   try {
-    const res = await api.get(`/api/entries/user/${id}`);
-    return { props: { entries: res.data } };
+    // Lists are public, so the server can fetch them without the visitor's session
+    const res = await backendFetch(`/users/${encodeURIComponent(id)}/entries`);
+    if (!res.ok) throw new Error(`API responded ${res.status}`);
+    return { props: { entries: await res.json() } };
   } catch {
     return { props: { entries: [] } };
   }

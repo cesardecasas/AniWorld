@@ -4,9 +4,7 @@ const ListPageMod = require('../pages/list/[id]')
 const ListPage = ListPageMod.default || ListPageMod
 
 test('List page renders', () => {
-  const list = { anime_id: [] }
-  const manga = []
-  const props = { list, currentUser: null, manga }
+  const props = { entries: [], currentUser: { id: 1, userName: 'tester' } }
   const { container } = render(React.createElement(ListPage, props))
   expect(container).toBeTruthy()
 })

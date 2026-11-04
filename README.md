@@ -1,41 +1,54 @@
 # AniWorld
 
-## Description
+Track the anime you watch and the manga you read: browse seasons and rankings, read manga chapters,
+keep a personal list and leave reviews.
 
-Front-end(soon to be FullStack) web app for anime discovery using Next.js.
-
-Anime focus web app, made to search for anime/manga details and upcoming releases.
+The backend lives in [AniWorldAPI](https://github.com/cesardecasas/AniWorldAPI).
 
 ## Technologies
 
-* Next.js
-* JavaScript
-* CSS
-* Bootstrap
-* Axios with multiple API's
+* Next.js 16 and React 19, TypeScript
+* App Router with Tailwind CSS and TanStack Query for new pages; the original pages router UI is being rebuilt there
+* Jest for unit tests, Playwright for end-to-end tests
+* Hosted on Netlify, with an edge function that blocks scrapers and bad bots
 
-## API's
+## Data sources
 
-* [AniAPI](https://aniapi.com/)
-* [Animechan](https://animechan.vercel.app/)
-* [Jinkan](https://jikan.docs.apiary.io/#reference/0/season-archive/season-archive-request-example+schema?console=1)
-* [Mangadex](https://api.mangadex.org/docs.html#section/Acceptable-use-policy)
-* [AniWorldAPI](https://github.com/cesardecasas/AniWorldAPI) Docs for the backend of ANiWorld 
+* [AniList](https://docs.anilist.co/) — anime details, seasons and rankings
+* [Jikan](https://docs.api.jikan.moe/) — optional extras (theme songs, episode titles) when its public instance is up
+* [MangaDex](https://api.mangadex.org/docs/) — manga and chapters
+* [Animechan](https://animechan.io/) — quotes
+* [AniWorldAPI](https://github.com/cesardecasas/AniWorldAPI) — accounts, lists, reviews and reading progress
 
-## Future Updates
+## How sign-in works
 
-* Implement Authentication
-* Add a backend using GraphQL and PostgreSQL
-* Possibility of tracking Anime updates and having a List
+The browser never talks to AniWorldAPI directly. This app's `/api/v1/*` routes forward requests to it and keep the
+login token in an httpOnly, SameSite=Lax cookie, so page scripts can't read it. Writes are only accepted from this
+site (CSRF check), and the visitor's IP is passed on so the API's rate limits apply per person.
 
+## Running locally
 
-## Cloning Steps
+```bash
+cd client
+npm install
+cp .env.example .env.local   # point API_URL at a running AniWorldAPI
+npm run dev                  # http://localhost:3000
+```
 
-* Clone the repository using 'git clone' in the terminal
-* After installed, open the directory and cd into the client folder.
-* Run either npm install or yarn add
-* Start the developing server using the command npm run dev or yarn run dev in the client directory  
+| Command | What it does |
+| --- | --- |
+| `npm test` | Jest unit tests |
+| `npm run test:e2e` | Playwright tests on desktop and mobile (starts the dev server; sign-in tests need the API) |
+| `npm run lint` / `npm run typecheck` | ESLint and TypeScript |
 
-### Deployed Link Here
+The Dark Fantasy design tokens can be previewed at `/design` in development.
 
-[Deployment](https://ani-world.vercel.app/)
+## Deploying (Netlify)
+
+Set these environment variables on the site:
+
+| Variable | Value |
+| --- | --- |
+| `API_URL` | The AniWorldAPI URL, e.g. `https://aniworld-api.onrender.com` |
+| `API_PROXY_SECRET` | Same value as the API's `API_PROXY_SECRET` |
+| `NEXT_PUBLIC_TURNSTILE_SITE_KEY` | Optional: enables the Cloudflare Turnstile challenge on sign-up, sign-in and reviews |

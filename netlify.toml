@@ -3,3 +3,5 @@
   base = "client"
   command = "npm run build"
   publish = ".next"
+  # Bot filtering that runs before the app (netlify/edge-functions/bot-guard.ts)
+  edge_functions = "netlify/edge-functions"

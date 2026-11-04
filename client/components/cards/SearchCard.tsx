@@ -25,7 +25,7 @@ const SearchCard = ({ name, image, format, episodes, id, score }: SearchCardProp
             style={{ objectFit: "cover" }}
           />
         )}
-        {score > 0 && (
+        {score != null && score > 0 && (
           <span className={styles.scoreBadge}>★ {score.toFixed(1)}</span>
         )}
       </div>

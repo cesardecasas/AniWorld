@@ -133,6 +133,51 @@ const truncate = (text: string | null, max: number) =>
 
 const routeId = (idMal: number | null, id: number) => (idMal ? String(idMal) : `al-${id}`);
 
+/* Raw AniList shapes, limited to the fields requested above */
+interface CardMedia {
+  id: number;
+  idMal: number | null;
+  title: { userPreferred: string; english: string | null; native: string | null };
+  coverImage: { extraLarge: string | null; large: string | null } | null;
+  bannerImage: string | null;
+  averageScore: number | null;
+  format: string | null;
+  status: string | null;
+  episodes: number | null;
+  duration: number | null;
+  season: string | null;
+  seasonYear: number | null;
+  startDate: FuzzyDate;
+  genres: string[] | null;
+  description: string | null;
+}
+
+interface FullMedia extends CardMedia {
+  endDate: FuzzyDate;
+  popularity: number | null;
+  favourites: number | null;
+  rankings: { rank: number; type: string; allTime: boolean }[] | null;
+  source: string | null;
+  nextAiringEpisode: { episode: number; airingAt: number } | null;
+  tags: { name: string; rank: number; isMediaSpoiler: boolean; isGeneralSpoiler: boolean }[] | null;
+  studios: { edges: { isMain: boolean; node: { name: string } }[] } | null;
+  trailer: { id: string; site: string } | null;
+  streamingEpisodes: { title: string; url: string }[] | null;
+  relations: {
+    edges: {
+      relationType: string;
+      node: {
+        id: number;
+        idMal: number | null;
+        type: string;
+        isAdult: boolean;
+        title: { userPreferred: string };
+        coverImage: { large: string | null } | null;
+      };
+    }[];
+  } | null;
+}
+
 const trailerEmbed = (trailer: { id: string; site: string } | null) => {
   if (!trailer?.id) return null;
   if (trailer.site === "youtube") return `https://www.youtube-nocookie.com/embed/${trailer.id}`;
@@ -140,7 +185,7 @@ const trailerEmbed = (trailer: { id: string; site: string } | null) => {
   return null;
 };
 
-const toCard = (m: any): Anime => ({
+const toCard = (m: CardMedia): Anime => ({
   id: routeId(m.idMal, m.id),
   anilistId: m.id,
   malId: m.idMal ?? null,
@@ -155,8 +200,8 @@ const toCard = (m: any): Anime => ({
   popularityRank: null,
   members: null,
   favourites: null,
-  format: FORMATS[m.format] ?? null,
-  status: STATUSES[m.status] ?? null,
+  format: (m.format && FORMATS[m.format]) ?? null,
+  status: (m.status && STATUSES[m.status]) ?? null,
   episodes: m.episodes ?? null,
   duration: m.duration ?? null,
   season: humanize(m.season),
@@ -174,16 +219,16 @@ const toCard = (m: any): Anime => ({
   relations: [],
 });
 
-const toAnime = (m: any): Anime => {
+const toAnime = (m: FullMedia): Anime => {
   const allTime = (type: string) =>
-    m.rankings?.find((r: any) => r.type === type && r.allTime)?.rank ?? null;
+    m.rankings?.find((r) => r.type === type && r.allTime)?.rank ?? null;
   const start = formatDate(m.startDate);
   const end = formatDate(m.endDate);
   const studios = m.studios?.edges ?? [];
 
   const relations: AnimeRelation[] = (m.relations?.edges ?? [])
-    .filter((e: any) => !e.node.isAdult && e.relationType !== "CHARACTER")
-    .map((e: any) => ({
+    .filter((e) => !e.node.isAdult && e.relationType !== "CHARACTER")
+    .map((e): AnimeRelation => ({
       relation: humanize(e.relationType) ?? "Related",
       type: e.node.type === "MANGA" ? "manga" : "anime",
       // Manga pages are keyed by MangaDex ids, so manga relations link to a title search instead
@@ -203,11 +248,11 @@ const toAnime = (m: any): Anime => {
     nextEpisode: m.nextAiringEpisode ?? null,
     source: humanize(m.source),
     tags: (m.tags ?? [])
-      .filter((t: any) => !t.isMediaSpoiler && !t.isGeneralSpoiler && t.rank >= 60)
+      .filter((t) => !t.isMediaSpoiler && !t.isGeneralSpoiler && t.rank >= 60)
       .slice(0, 8)
-      .map((t: any) => t.name),
-    studios: studios.filter((e: any) => e.isMain).map((e: any) => e.node.name),
-    producers: studios.filter((e: any) => !e.isMain).map((e: any) => e.node.name),
+      .map((t) => t.name),
+    studios: studios.filter((e) => e.isMain).map((e) => e.node.name),
+    producers: studios.filter((e) => !e.isMain).map((e) => e.node.name),
     trailerUrl: trailerEmbed(m.trailer),
     relations,
   };
@@ -225,13 +270,13 @@ export const parseAnimeId = (routeParam: string): { idMal?: number; id?: number 
 export const getAnimeDetails = async (routeParam: string) => {
   const ids = parseAnimeId(routeParam);
   if (!ids) throw new AniListNotFound();
-  const data = await query<{ Media: any }>(DETAIL_QUERY, ids);
+  const data = await query<{ Media: FullMedia }>(DETAIL_QUERY, ids);
   const media = data.Media;
   return {
     anime: toAnime(media),
     // Fallback episode list for when Jikan is unavailable
     streamingEpisodes: (media.streamingEpisodes ?? []).map(
-      (e: any): AnimeEpisode => ({ number: null, title: e.title, url: e.url })
+      (e): AnimeEpisode => ({ number: null, title: e.title, url: e.url })
     ),
   };
 };
@@ -248,7 +293,7 @@ interface ListOptions {
 }
 
 export const listAnime = async (options: ListOptions) => {
-  const data = await query<{ Page: { pageInfo: { hasNextPage: boolean }; media: any[] } }>(PAGE_QUERY, {
+  const data = await query<{ Page: { pageInfo: { hasNextPage: boolean }; media: CardMedia[] } }>(PAGE_QUERY, {
     page: 1,
     perPage: 24,
     ...options,
@@ -267,7 +312,7 @@ export const getAnimeSummaries = async (routeIds: string[]): Promise<Record<stri
   for (let i = 0; i < aniIds.length; i += 50) chunks.push({ id_in: aniIds.slice(i, i + 50) });
 
   const pages = await Promise.all(
-    chunks.map((vars) => query<{ Page: { media: any[] } }>(PAGE_QUERY, { perPage: 50, ...vars }))
+    chunks.map((vars) => query<{ Page: { media: CardMedia[] } }>(PAGE_QUERY, { perPage: 50, ...vars }))
   );
 
   const byId: Record<string, AnimeSummary> = {};

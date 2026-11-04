@@ -7,7 +7,7 @@ const Pagination = () => {
 
   const changePage = (e: React.MouseEvent<HTMLAnchorElement>) => {
     const target = e.target as HTMLElement;
-    let url = router.asPath;
+    const url = router.asPath;
     if (target.innerHTML === "Next") {
       router.push(`${url.replace(`page=${page}`, `page=${page + 1}`)}`);
     } else if (target.innerHTML === "Previous") {

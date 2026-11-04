@@ -51,7 +51,7 @@ const Chapter = ({
     // Save reading progress
     if (currentUser?.id && mangaId && chapter.attributes.chapter) {
       api
-        .put("/api/progress", {
+        .put("/me/progress", {
           manga_id: mangaId,
           chapter_id: chapter.id,
           chapter_number: chapter.attributes.chapter,

@@ -24,7 +24,7 @@ describe('AnimeCard', () => {
 
         render(<AnimeCard name={name} id={id} image="https://cdn.myanimelist.net/images/anime/1813/115732.jpg?s=ab9aed5c30625a0f0111cafb547c5cfb"/>)
 
-        const date = screen.getByText(/Realease Date: Unknown/)
+        const date = screen.getByText(/Release Date: Unknown/)
 
         expect(date)
     })

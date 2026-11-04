@@ -24,27 +24,21 @@ function MyApp({ Component, pageProps }: AppProps) {
   }, [darkMode]);
   const [authenticated, setAuthenticated] = useState(false);
   const [currentUser, setCurrentUser] = useState<User | null>(null);
+  // The session is an httpOnly cookie, so only the server can say who is signed in
   const checkSession = async () => {
-    const token = localStorage.getItem("token");
-
-    if (token) {
-      try {
-        const session = await api.get("/api/user/session");
-        setAuthenticated(true);
-        setCurrentUser({
-          userName: session?.data?.user?.userName,
-          id: session?.data?.user?.id,
-        });
-        localStorage.setItem(
-          "user",
-          JSON.stringify(session?.data?.user?.userName)
-        );
-      } catch (error) {
-        console.log(error);
-        setCurrentUser(null);
-        setAuthenticated(false);
-        localStorage.clear();
-      }
+    // Tokens from before the cookie switch are no longer used
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+    try {
+      const session = await api.get("/auth/session");
+      setAuthenticated(true);
+      setCurrentUser({
+        userName: session.data.user.userName,
+        id: session.data.user.id,
+      });
+    } catch {
+      setCurrentUser(null);
+      setAuthenticated(false);
     }
   };
 

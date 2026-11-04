@@ -1,4 +1,5 @@
 import { useRouter } from "next/router";
+import { api } from "../lib/api";
 import { useState } from "react";
 import Link from "next/link";
 import { BiSearch } from "react-icons/bi";
@@ -31,10 +32,10 @@ const Nav = ({
   const [query, setQuery] = useState("");
   const router = useRouter();
 
-  const logOut = () => {
+  const logOut = async () => {
+    await api.post("/auth/logout").catch(() => undefined);
     setCurrentUser(null);
     setAuthenticated(false);
-    localStorage.clear();
   };
 
   const handleSubmit = () => {

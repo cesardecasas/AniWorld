@@ -9,7 +9,7 @@ const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
 // Jikan allows ~3 req/s and 60 req/min. Rate limits (429) and server errors fail fast,
 // so they are retried with a short backoff; timeouts are not retried to stay within budget.
-export const jikanGet = async <T = any>(
+export const jikanGet = async <T = unknown>(
   path: string,
   { retries = 2, timeout = 4000 }: { retries?: number; timeout?: number } = {}
 ): Promise<T> => {
@@ -32,12 +32,19 @@ export interface JikanExtras {
   episodes: AnimeEpisode[];
 }
 
+interface JikanFull {
+  data: { theme?: { openings?: string[]; endings?: string[] }; rating?: string | null };
+}
+interface JikanEpisodes {
+  data: { mal_id: number; title: string; url: string }[];
+}
+
 /** Best effort: resolves with empty values instead of throwing */
 export const getJikanExtras = async (malId: number): Promise<JikanExtras> => {
   const options = { retries: 0, timeout: 2500 };
   const [full, episodes] = await Promise.allSettled([
-    jikanGet(`anime/${malId}/full`, options),
-    jikanGet(`anime/${malId}/episodes`, options),
+    jikanGet<JikanFull>(`anime/${malId}/full`, options),
+    jikanGet<JikanEpisodes>(`anime/${malId}/episodes`, options),
   ]);
 
   if (full.status === "rejected") {
@@ -50,7 +57,7 @@ export const getJikanExtras = async (malId: number): Promise<JikanExtras> => {
     rating: data?.rating ?? null,
     episodes:
       episodes.status === "fulfilled"
-        ? episodes.value.data.map((e: any) => ({ number: e.mal_id, title: e.title, url: e.url }))
+        ? episodes.value.data.map((e) => ({ number: e.mal_id, title: e.title, url: e.url }))
         : [],
   };
 };
